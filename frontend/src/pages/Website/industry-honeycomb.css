@@ -1,0 +1,583 @@
+/*
+ * Industry honeycomb — the CSS of the "One platform, shaped to how you build"
+ * section of website-micromax.html (its #company-profiles block), ported as-is
+ * under `.cp-scope`. Changes: `[data-theme="dark"]` became the app's `.dark`
+ * class, and the portrait-photo rules were dropped (the centre shows the
+ * industry's name and icon instead). Everything under "Added" is new.
+ */
+
+/* Theme tokens the ported rules read. Light first, dark under `.dark`. The
+   hover card (.cp-tip) is portaled to <body>, so it needs them too. */
+.cp-scope,
+.cp-tip {
+  --ink-0: #0b1220;
+  --ink-1: #1e293b;
+  --ink-2: #475569;
+  --ink-3: #94a3b8;
+  --line-0: rgba(15, 23, 42, 0.05);
+  --line-1: rgba(15, 23, 42, 0.09);
+  --accent: #2d5e8e;
+  --bg-0: #f1f2f3;
+}
+.dark .cp-scope,
+.dark .cp-tip {
+  --ink-0: #eff6ff;
+  --ink-1: #cfe0f5;
+  --ink-2: #94a3b8;
+  --ink-3: #7c8ba3;
+  --line-0: rgba(255, 255, 255, 0.06);
+  --line-1: rgba(255, 255, 255, 0.1);
+  --accent: #6ba2d8;
+  --bg-0: #0b1220;
+}
+
+/* ---- Ported rules ---- */
+.cp-scope .cp-wrap { max-width: 1280px; margin: 0 auto; }
+.cp-scope .cp-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(20px, 3vw, 42px);
+    align-items: stretch;
+  }
+@media (max-width: 940px) {
+.cp-scope .cp-grid { grid-template-columns: 1fr; gap: 26px; }
+}
+.cp-scope .cp-profiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    align-content: start;
+  }
+@media (max-width: 1120px) {
+.cp-scope .cp-profiles { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) {
+.cp-scope .cp-profiles { grid-template-columns: 1fr; }
+}
+.cp-scope .cp-card {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
+    padding: 10px 11px;
+    border: 1px solid var(--line-1);
+    border-radius: 13px;
+    background: color-mix(in oklab, var(--ink-0) 2.5%, transparent);
+    color: var(--ink-1);
+    cursor: pointer;
+    font: inherit;
+    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+.cp-scope .cp-card:hover {
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--line-1));
+    background: color-mix(in oklab, var(--accent) 5%, transparent);
+  }
+.cp-scope .cp-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+.cp-scope .cp-card.cp-active {
+    border-color: color-mix(in oklab, var(--accent) 60%, var(--line-1));
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    box-shadow: 0 10px 24px -14px color-mix(in oklab, var(--accent) 80%, transparent);
+  }
+.cp-scope .cp-card-ico {
+    flex: none;
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    border-radius: 9px;
+    background: color-mix(in oklab, var(--ink-0) 4%, transparent);
+    border: 1px solid var(--line-1);
+    color: var(--ink-2);
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+  }
+.cp-scope .cp-card.cp-active .cp-card-ico {
+    background: color-mix(in oklab, var(--accent) 16%, transparent);
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--line-1));
+    color: var(--accent);
+  }
+.cp-scope .cp-card-ico svg { width: 19px; height: 19px; display: block; }
+.cp-scope .cp-card-body { min-width: 0; }
+.cp-scope .cp-cname {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.18;
+    color: var(--ink-0);
+    letter-spacing: -0.01em;
+  }
+.cp-scope .cp-cmeta {
+    display: block;
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+  }
+.cp-scope .cp-card.cp-active .cp-cmeta { color: color-mix(in oklab, var(--accent) 85%, var(--ink-2)); }
+.cp-scope .cp-ctags {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px;
+  }
+.cp-scope .cp-ctag {
+    font-size: 9px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--ink-0) 6%, transparent);
+    color: var(--ink-3);
+    border: 1px solid var(--line-0);
+    white-space: nowrap;
+  }
+.cp-scope .cp-stage-col { display: flex; flex-direction: column; min-height: 0; }
+@media (max-width: 940px) {
+.cp-scope .cp-stage-col { display: block; }
+}
+.cp-scope .cp-stage {
+    position: relative;
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 392px;
+    border: 0;
+    border-radius: 22px;
+    overflow: hidden;
+    background: transparent;
+  }
+@media (max-width: 940px) {
+.cp-scope .cp-stage { height: 460px; min-height: 0; flex: none; }
+}
+.cp-scope .cp-canvas {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform-origin: center center;
+    transform: translate(-50%, -50%);
+  }
+.cp-scope .cp-canvas { z-index: 2; }
+.cp-scope .cp-fig-name {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    max-width: min(300px, 78%);
+    padding: 10px 18px;
+    border-radius: 13px;
+    text-align: center;
+    text-wrap: balance;
+    font-family: 'Inter Tight', 'Inter', sans-serif;
+    font-weight: 650;
+    font-size: clamp(17px, 1.85vw, 23px);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    color: #fff;
+    background: linear-gradient(180deg,
+      color-mix(in oklab, var(--accent) 30%, rgba(11, 18, 32, .78)),
+      color-mix(in oklab, var(--accent) 16%, rgba(11, 18, 32, .86)));
+    border: 1px solid color-mix(in oklab, #fff 26%, transparent);
+    box-shadow: 0 14px 34px -14px rgba(15, 23, 42, .55);
+    -webkit-backdrop-filter: blur(7px) saturate(1.25);
+            backdrop-filter: blur(7px) saturate(1.25);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .28s ease;
+  }
+.cp-scope .cp-fig-name.is-on { opacity: 1; }
+.cp-scope .cp-stage::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 66%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in oklab, var(--accent) 15%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+.cp-scope .cp-hex {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    padding: 0 11px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: var(--ink-1);
+    background: color-mix(in oklab, var(--cp-gc) 17%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--cp-gc) 40%, transparent);
+    transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .16s ease;
+    
+    animation: cpHexIn .5s cubic-bezier(.2, .7, .2, 1) backwards;
+    will-change: transform, opacity;
+    cursor: default;
+  }
+.dark .cp-scope .cp-hex { background: color-mix(in oklab, var(--cp-gc) 26%, transparent); color: var(--ink-0); }
+.cp-scope .cp-hex > span {
+    display: block;
+    width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    line-height: 1.05;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+.cp-scope .cp-hex:hover {
+    background: color-mix(in oklab, var(--cp-gc) 92%, transparent);
+    color: var(--cp-on);
+    box-shadow: inset 0 0 0 1px var(--cp-gc), 0 8px 18px -8px color-mix(in oklab, var(--cp-gc) 70%, transparent);
+    transform: scale(1.16) rotate(-7deg);
+    z-index: 5;
+  }
+.cp-scope .cp-glabel {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    animation: cpHexIn .5s ease both;
+  }
+.cp-scope .cp-glabel i {
+    width: 7px; height: 7px; border-radius: 2px;
+    background: var(--cp-gc);
+    flex: none;
+  }
+@keyframes cpHexIn {
+    from { opacity: 0; transform: scale(.5); }
+    to   { opacity: 1; transform: none; }
+  }
+.cp-scope .cp-meta { margin-top: 16px; }
+.cp-scope .cp-caption {
+    font-size: clamp(15px, 1.5vw, 18px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--ink-0);
+  }
+.cp-scope .cp-caption b { color: var(--accent); font-weight: 600; }
+.cp-scope .cp-caption span { color: var(--ink-0); }
+.cp-scope .cp-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 12px;
+  }
+.cp-scope .cp-lg {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    color: var(--ink-2);
+  }
+.cp-scope .cp-lg i {
+    width: 12px; height: 11px;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--cp-gc);
+    flex: none;
+  }
+.cp-scope .cp-hex-t { transition: opacity .16s ease, transform .16s ease; }
+.cp-scope .cp-hex-i {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: scale(.5) rotate(10deg);
+    transition: opacity .18s ease, transform .22s cubic-bezier(.2, .7, .2, 1);
+    pointer-events: none; color: var(--cp-on);
+  }
+.cp-scope .cp-hex-i svg { width: 26px; height: 26px; display: block; }
+.cp-scope .cp-hex:hover .cp-hex-t { opacity: 0; transform: scale(.72); }
+.cp-scope .cp-hex:hover .cp-hex-i { opacity: 1; transform: none; }
+.cp-scope .cp-head { margin: 0 0 14px; }
+.cp-scope .cp-modlist {
+    list-style: none; margin: 13px 0 0; padding: 0;
+    display: grid; grid-template-columns: 7fr 3fr;
+    gap: 7px 20px;
+  }
+@media (max-width: 560px) {
+.cp-scope .cp-modlist { grid-template-columns: 1fr; }
+}
+.cp-scope .cp-ml {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 13px; line-height: 1.2; color: var(--ink-1);
+  }
+.cp-scope .cp-ml i {
+    width: 13px; height: 12px; flex: none;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--cp-gc);
+  }
+.cp-scope .cp-ml-name { font-weight: 500; letter-spacing: -0.01em; }
+.cp-scope .cp-ml-n {
+    margin-left: auto; font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px; color: var(--ink-3);
+  }
+.cp-scope .cp-install {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 16px; padding: 9px 15px;
+    border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    color: var(--accent);
+    font-size: 13px; font-weight: 600; letter-spacing: -0.01em;
+    text-decoration: none; line-height: 1.2;
+    transition: background .16s ease, border-color .16s ease, transform .16s ease;
+  }
+.cp-scope .cp-install:hover {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+.cp-scope .cp-install:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cp-scope .cp-install svg { width: 15px; height: 15px; flex: none; }
+.cp-scope .cp-install-ic { transition: transform .18s ease; }
+.cp-scope .cp-install:hover .cp-install-ic { transform: translateY(2px); }
+@media (prefers-reduced-motion: reduce) {
+.cp-scope .cp-install,
+    .cp-scope .cp-install-ic { transition: none; }
+.cp-scope .cp-install:hover { transform: none; }
+.cp-scope .cp-install:hover .cp-install-ic { transform: none; }
+}
+.cp-scope .cp-foot {
+    max-width: 1280px;
+    margin: 22px auto 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-3);
+  }
+.cp-scope .cp-foot b { color: var(--ink-2); font-weight: 500; }
+.cp-scope .cp-sr {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+@media (prefers-reduced-motion: reduce) {
+.cp-scope .cp-hex,
+    .cp-scope .cp-glabel { animation: none !important; }
+.cp-scope .cp-hex { transition: none !important; }
+.cp-scope .cp-card { transition: none !important; }
+.cp-scope .cp-hex:hover { transform: none !important; }
+.cp-scope .cp-hex-i { transition: opacity .15s ease !important; transform: none !important; }
+}
+
+/* ---- Added ---- */
+
+/* .cp-hex is now a <button> (it opens the feature tooltip on hover/focus),
+   so the ported rules above need the usual button-chrome reset and a focus ring. */
+.cp-scope .cp-hex {
+  appearance: none;
+  border: none;
+  font-family: inherit;
+}
+.cp-scope .cp-hex:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Hover / focus card listing a module's own features (ported layout from the
+   hero's .oce-hcpop / .hh-tip popover; content is this module's own data). */
+.cp-tip {
+  position: fixed;
+  z-index: 3000;
+  left: 0;
+  top: 0;
+  width: min(290px, 86vw);
+  box-sizing: border-box;
+  padding: 12px 12px 10px;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--bg-0) 92%, var(--accent) 4%);
+  border: 1px solid color-mix(in oklab, var(--accent) 26%, var(--line-1));
+  box-shadow: 0 18px 44px -18px color-mix(in oklab, var(--accent) 55%, transparent),
+              0 2px 8px -4px rgba(0, 0, 0, 0.25);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--ink-0);
+  font-family: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif;
+}
+.cp-tip-h {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 8px;
+  font: 700 10px ui-monospace, 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--accent) 82%, var(--ink-2));
+}
+.cp-tip-h .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cp-gc, var(--accent));
+  flex: none;
+}
+.cp-tip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cp-tip-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.cp-tip-list li .bul {
+  width: 5px;
+  height: 5px;
+  margin-top: 6px;
+  border-radius: 1.5px;
+  flex: none;
+  background: color-mix(in oklab, var(--cp-gc, var(--accent)) 65%, transparent);
+  transform: rotate(45deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cp-tip {
+    animation: cpTipIn 0.14s ease-out;
+  }
+  @keyframes cpTipIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* The source lays 24 profiles out three across; with ten industries two across reads better. */
+.cp-scope .cp-profiles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 520px) {
+  .cp-scope .cp-profiles { grid-template-columns: 1fr; }
+}
+
+/* Cells that stay across a selection glide to their new place; new ones bloom in
+   (cpHexIn) and cells that are switched off fade out (cpHexOut). */
+.cp-scope .cp-hex {
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .16s ease,
+    left .5s cubic-bezier(.2, .7, .2, 1), top .5s cubic-bezier(.2, .7, .2, 1);
+}
+.cp-scope .cp-hex.is-leaving {
+  animation: cpHexOut .26s ease forwards;
+  pointer-events: none;
+}
+@keyframes cpHexOut {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: scale(.4); }
+}
+
+/* Centre of the comb: the seven-cell flower the source keeps for its portrait,
+   filled with a soft tint and the industry's icon, with the name written across. */
+.cp-scope .cp-flower {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: 234 / 243;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 14px 22px rgba(15, 23, 42, .18));
+}
+.cp-scope .cp-flower::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    40% 0%, 60% 0%, 70% 16.667%, 90% 16.667%, 100% 33.333%, 90% 50%,
+    100% 66.667%, 90% 83.333%, 70% 83.333%, 60% 100%, 40% 100%, 30% 83.333%,
+    10% 83.333%, 0% 66.667%, 10% 50%, 0% 33.333%, 10% 16.667%, 30% 16.667%);
+  background: radial-gradient(circle at 50% 30%,
+    color-mix(in oklab, var(--accent) 34%, transparent),
+    color-mix(in oklab, var(--accent) 9%, transparent) 78%);
+}
+.cp-scope .cp-flower-ico {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  opacity: .3;
+  animation: cpIconIn .35s ease both;
+}
+.cp-scope .cp-flower-ico svg {
+  width: 38%;
+  height: 38%;
+}
+.cp-scope .cp-fig-name.is-on {
+  animation: cpFade .3s ease both;
+}
+@keyframes cpFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes cpIconIn {
+  from { opacity: 0; }
+  to   { opacity: .3; }
+}
+
+/* "What you get" strip under the comb: the selected industry's own summary and features. */
+.cp-scope .cp-gain {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line-1);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 22px 40px;
+}
+@media (max-width: 940px) {
+  .cp-scope .cp-gain { grid-template-columns: 1fr; }
+}
+.cp-scope .cp-gain-summary {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+.cp-scope .cp-gain-h {
+  margin: 0 0 10px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.cp-scope .cp-gain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 22px;
+}
+@media (max-width: 640px) {
+  .cp-scope .cp-gain-list { grid-template-columns: 1fr; }
+}
+.cp-scope .cp-gain-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-1);
+}
+.cp-scope .cp-gain-list li svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-scope .cp-hex.is-leaving,
+  .cp-scope .cp-flower-ico,
+  .cp-scope .cp-fig-name.is-on { animation: none; }
+}

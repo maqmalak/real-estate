@@ -3,5 +3,10 @@
 *.egg-info
 __pycache__/
 node_modules/
-# The React app lives in its own repo (react-realestate)
-frontend/
+# React app build output and local env
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.tsbuildinfo
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local

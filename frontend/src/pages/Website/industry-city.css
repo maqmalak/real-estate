@@ -1,0 +1,704 @@
+/*
+ * IndustryCity — ported from src/pages/Website/industry-city (a static,
+ * dependency-free CSS isometric "hologram city"): a top-down isometric
+ * scene with 7 buildings, animated roads, traffic, a gantry crane and a
+ * conveyor belt. Every rule below is that source's own CSS, scoped under
+ * .ic-scope instead of :root/body/*, and sized to its container (the hero
+ * panel box) via container query units instead of the source's viewport
+ * units, since here it fills a fixed card, not the page.
+ *
+ * Unlike the source (which forced its own always-dark palette regardless of
+ * page theme) and unlike hero-city.ts before it (which recoloured its
+ * Three.js materials per theme in JS), this has no panel background at all
+ * — it floats directly over the page, like hero-city.ts's canvas did — so
+ * --wire/--cyan (the line/edge colours almost everything reads by) are
+ * theme-aware CSS custom properties: a darker, more saturated blue by
+ * default for legibility on the light hero, overridden under .dark with the
+ * source's own pale cyan, which needs a near-black backdrop to read.
+ */
+
+.ic-scope {
+  --text: #ddf6ff;
+  --muted: #8fb4d6;
+  --amber: 255, 209, 102;
+  --wire: 37, 99, 235;
+  --cyan: 2, 132, 199;
+  position: absolute;
+  /* Smaller than the hero panel and offset within it (not inset: 0) — the
+     module ring's own hexes aren't actually centred in that panel box (their
+     positioning math leaves them shifted up and left inside it), so a
+     same-size, evenly-inset rectangle here would sit visibly off-centre
+     against the ring itself even though it's centred in the panel. These
+     values were measured directly against the ring's rendered bounding box. */
+  inset: 7px 80px 61px 0px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  /* No panel background — like hero-city.ts's canvas before it, this floats
+     directly over the page (sky-blue hero in light theme, dark in dark
+     theme) rather than sitting in its own dark box. The wireframe's own
+     line/fill colours pick up the theme instead (see the .dark overrides
+     below the source's ported rules). */
+  color: var(--text);
+  font-family: "Chakra Petch", "Trebuchet MS", system-ui, sans-serif;
+  container-type: size;
+}
+.ic-scope,
+.ic-scope *,
+.ic-scope *::before,
+.ic-scope *::after {
+  box-sizing: border-box;
+}
+/* Dark theme: restore the source's own pale cyan — it was tuned for a
+   near-black backdrop and washes out against the light hero. */
+.dark .ic-scope {
+  --wire: 56, 189, 248;
+  --cyan: 139, 233, 255;
+}
+
+.ic-scope .world {
+  --u: min(2.85cqw, 3.7cqh);
+  position: relative;
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+  /* The source's own margin-top pushed the grid down to clear a fixed page
+     header that doesn't exist here — dropped so the isometric grid's own
+     centre (not shifted by an asymmetric margin) lands on this box's centre,
+     matching the module ring it sits behind. */
+  transform: rotateX(60deg) rotateZ(45deg);
+  transform-style: preserve-3d;
+}
+
+/* ground grid */
+.ic-scope .ground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: rgba(20, 70, 150, 0.16);
+  background-image: linear-gradient(rgba(var(--wire), 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--wire), 0.22) 1px, transparent 1px);
+  background-size: var(--u) var(--u);
+  border: 1.5px solid rgba(var(--wire), 0.85);
+  box-shadow: 0 0 22px rgba(var(--wire), 0.45), inset 0 0 30px rgba(var(--wire), 0.15);
+}
+.ic-scope .pulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--wire), 0.55);
+  box-shadow: 0 0 16px rgba(var(--wire), 0.4), inset 0 0 16px rgba(var(--wire), 0.25);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ic-ring 6s linear infinite;
+}
+.ic-scope .pulse.p2 {
+  animation-delay: -3s;
+}
+@keyframes ic-ring {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+.ic-scope .flat {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--d) * var(--u));
+  transform: translateZ(1px);
+}
+.ic-scope .road {
+  background-color: rgba(14, 44, 100, 0.85);
+  border: 1px solid rgba(var(--wire), 0.4);
+  background-repeat: no-repeat;
+}
+.ic-scope .rx {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 209, 102, 0.6) 0 calc(0.4 * var(--u)),
+    transparent calc(0.4 * var(--u)) var(--u)
+  );
+  background-size: 100% 2px;
+  background-position: 0 50%;
+  animation: ic-dashx 2s linear infinite;
+}
+.ic-scope .ry {
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(255, 209, 102, 0.6) 0 calc(0.4 * var(--u)),
+    transparent calc(0.4 * var(--u)) var(--u)
+  );
+  background-size: 2px 100%;
+  background-position: 50% 0;
+}
+@keyframes ic-dashx {
+  to {
+    background-position: calc(-1 * var(--u)) 50%;
+  }
+}
+.ic-scope .pad {
+  background: rgba(40, 110, 200, 0.12);
+  border: 1px dashed rgba(var(--wire), 0.45);
+  transform: translateZ(0.5px);
+}
+.ic-scope .lawn {
+  background: rgba(52, 211, 153, 0.28);
+  border: 1px solid rgba(52, 211, 153, 0.7);
+  transform: translateZ(2px);
+}
+.ic-scope .belt {
+  background: repeating-linear-gradient(90deg, rgba(10, 30, 70, 0.95) 0 6px, rgba(var(--wire), 0.35) 6px 7px);
+  border: 1px solid rgba(var(--wire), 0.5);
+  transform: translateZ(2px);
+  animation: ic-dashx 1.5s linear infinite;
+}
+
+/* cuboids */
+.ic-scope .cb {
+  --e: var(--cyan);
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--d) * var(--u));
+  transform: translateZ(calc(var(--z, 0) * var(--u)));
+  transform-style: preserve-3d;
+}
+.ic-scope .cb > i {
+  position: absolute;
+  display: block;
+  background-color: rgba(var(--fill), 0.09);
+  border: 1px solid rgba(var(--e), 0.85);
+  box-shadow: 0 0 7px rgba(var(--e), 0.45), inset 0 0 9px rgba(var(--e), 0.16);
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+}
+.ic-scope .cb > .t {
+  inset: 0;
+  transform: translateZ(calc(var(--h) * var(--u)));
+  background-color: rgba(var(--fill), 0.17);
+}
+.ic-scope .cb > .s {
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: calc(var(--h) * var(--u));
+  transform-origin: top;
+  transform: rotateX(90deg);
+}
+.ic-scope .cb > .n {
+  left: 0;
+  bottom: 100%;
+  width: 100%;
+  height: calc(var(--h) * var(--u));
+  transform-origin: bottom;
+  transform: rotateX(-90deg);
+  background-color: rgba(var(--fill), 0.04);
+}
+.ic-scope .cb > .e {
+  left: 100%;
+  top: 0;
+  height: 100%;
+  width: calc(var(--h) * var(--u));
+  transform-origin: left;
+  transform: rotateY(-90deg);
+  background-color: rgba(var(--fill), 0.06);
+}
+.ic-scope .cb > .w {
+  right: 100%;
+  top: 0;
+  height: 100%;
+  width: calc(var(--h) * var(--u));
+  transform-origin: right;
+  transform: rotateY(90deg);
+  background-color: rgba(var(--fill), 0.04);
+}
+.ic-scope .fl > .s {
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 calc(100% / var(--f) - 1px),
+    rgba(var(--e), 0.35) calc(100% / var(--f) - 1px) calc(100% / var(--f))
+  );
+}
+.ic-scope .fl > .e {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(100% / var(--f) - 1px),
+    rgba(var(--e), 0.35) calc(100% / var(--f) - 1px) calc(100% / var(--f))
+  );
+}
+
+.ic-scope .so > i {
+  background-color: var(--c);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+}
+.ic-scope .so > .s {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}
+.ic-scope .so > .e {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42));
+}
+.ic-scope .rib > .s {
+  background-image: repeating-linear-gradient(90deg, transparent 0 7%, rgba(0, 0, 0, 0.28) 7% 9%),
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}
+.ic-scope .rib > .e {
+  background-image: repeating-linear-gradient(180deg, transparent 0 18%, rgba(0, 0, 0, 0.3) 18% 24%),
+    linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42));
+}
+
+/* details on faces (a side face's top edge sits on the ground) */
+.ic-scope .door {
+  position: absolute;
+  top: 0;
+  background: rgba(255, 138, 61, 0.75);
+}
+.ic-scope .clock {
+  position: absolute;
+  left: 20%;
+  top: 25%;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #e6f5ff;
+}
+.ic-scope .clock b {
+  position: absolute;
+  left: calc(50% - 1px);
+  top: 50%;
+  width: 2px;
+  height: 42%;
+  background: #0b2352;
+  transform-origin: top center;
+  animation: ic-spin 6s linear infinite;
+}
+@keyframes ic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ic-scope .cross {
+  position: absolute;
+  inset: 0;
+  animation: ic-beat 1.6s ease-in-out infinite;
+}
+.ic-scope .cross b {
+  position: absolute;
+  background: #fb4f6f;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(251, 79, 111, 0.8);
+}
+.ic-scope .cross b:first-child {
+  left: 41.6%;
+  width: 16.7%;
+  top: 18%;
+  height: 64%;
+}
+.ic-scope .cross b:last-child {
+  left: 21%;
+  width: 58%;
+  top: 41%;
+  height: 18%;
+}
+@keyframes ic-beat {
+  50% {
+    opacity: 0.35;
+  }
+}
+.ic-scope .stripe {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 40%;
+  height: 22%;
+  background: #fb4f6f;
+}
+.ic-scope .siren > i {
+  animation: ic-siren 0.6s steps(1) infinite;
+}
+@keyframes ic-siren {
+  0% {
+    background-color: #fb4f6f;
+  }
+  50% {
+    background-color: #60a5fa;
+  }
+}
+
+.ic-scope .wins {
+  position: absolute;
+  inset: 5%;
+  display: grid;
+  grid-template-rows: repeat(var(--rw), 1fr);
+  grid-template-columns: repeat(var(--cl), 1fr);
+  gap: 18% 22%;
+}
+.ic-scope .wins.side {
+  gap: 22% 18%;
+}
+.ic-scope .wins b {
+  background: rgba(var(--fill), 0.25);
+  animation: ic-lit 9s steps(1) infinite;
+}
+.ic-scope .wins b:nth-child(2n) {
+  animation-duration: 7s;
+  animation-delay: -2s;
+}
+.ic-scope .wins b:nth-child(3n) {
+  animation-duration: 11s;
+  animation-delay: -5s;
+}
+.ic-scope .wins b:nth-child(5n + 1) {
+  animation-duration: 6s;
+  animation-delay: -1s;
+}
+.ic-scope .wins b:nth-child(7n) {
+  animation-duration: 13s;
+  animation-delay: -8s;
+}
+@keyframes ic-lit {
+  0%,
+  55% {
+    background: rgba(255, 209, 102, 0.9);
+    box-shadow: 0 0 5px rgba(255, 209, 102, 0.7);
+  }
+  56%,
+  100% {
+    background: rgba(var(--fill), 0.25);
+    box-shadow: none;
+  }
+}
+
+.ic-scope .flag {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(0.9 * var(--u));
+  height: calc(0.5 * var(--u));
+  transform: translateZ(calc(2.5 * var(--u))) rotateX(90deg);
+  transform-origin: top;
+}
+.ic-scope .flag b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #fb4f6f;
+  transform-origin: left;
+  animation: ic-wave 1.1s ease-in-out infinite alternate;
+}
+@keyframes ic-wave {
+  from {
+    transform: skewY(-10deg);
+  }
+  to {
+    transform: skewY(10deg);
+  }
+}
+
+/* moving groups */
+.ic-scope .grp {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.ic-scope .bob {
+  animation: ic-bob 2.4s ease-in-out infinite alternate;
+}
+@keyframes ic-bob {
+  to {
+    transform: translateZ(calc(0.08 * var(--u)));
+  }
+}
+.ic-scope .fork {
+  animation: ic-fork 3.2s ease-in-out infinite alternate;
+}
+@keyframes ic-fork {
+  to {
+    transform: translateX(calc(1.4 * var(--u)));
+  }
+}
+.ic-scope .crane {
+  animation: ic-crane 10s ease-in-out infinite alternate;
+}
+@keyframes ic-crane {
+  from {
+    transform: translateX(calc(-1.6 * var(--u)));
+  }
+  to {
+    transform: translateX(calc(1.6 * var(--u)));
+  }
+}
+.ic-scope .trolley {
+  animation: ic-trolley 6s ease-in-out infinite alternate;
+}
+@keyframes ic-trolley {
+  from {
+    transform: translateY(calc(-1.1 * var(--u)));
+  }
+  to {
+    transform: translateY(calc(1.1 * var(--u)));
+  }
+}
+.ic-scope .hoist {
+  animation: ic-hoist 3.5s ease-in-out infinite alternate;
+}
+@keyframes ic-hoist {
+  from {
+    transform: translateZ(calc(-0.5 * var(--u)));
+  }
+  to {
+    transform: translateZ(calc(0.3 * var(--u)));
+  }
+}
+/* Tower crane's jib assembly (arm, counter-jib, cab, hook) — new, not in the
+   source. Swings as one rigid group around the mast top via a per-instance
+   transform-origin set inline (see IndustryCity.tsx), the same rigid-group
+   idea as .crane above, just a rotation instead of a slide. */
+.ic-scope .jib {
+  animation: ic-jibswing 14s ease-in-out infinite alternate;
+}
+@keyframes ic-jibswing {
+  from {
+    transform: rotateZ(-35deg);
+  }
+  to {
+    transform: rotateZ(35deg);
+  }
+}
+
+.ic-scope .veh {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--d) * var(--u));
+  transform-style: preserve-3d;
+  pointer-events: none;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.ic-scope .veh i {
+  pointer-events: none;
+}
+.ic-scope .drive-x {
+  animation-name: ic-drivex;
+}
+.ic-scope .drive-y {
+  animation-name: ic-drivey;
+}
+.ic-scope .belt-item {
+  animation: ic-belt 6s linear infinite;
+}
+@keyframes ic-drivex {
+  0% {
+    transform: translateX(0) scale3d(0.01, 0.01, 0.01);
+  }
+  5% {
+    transform: translateX(calc(var(--dist) * 0.05 * var(--u))) scale3d(1, 1, 1);
+  }
+  95% {
+    transform: translateX(calc(var(--dist) * 0.95 * var(--u))) scale3d(1, 1, 1);
+  }
+  100% {
+    transform: translateX(calc(var(--dist) * var(--u))) scale3d(0.01, 0.01, 0.01);
+  }
+}
+@keyframes ic-drivey {
+  0% {
+    transform: translateY(0) scale3d(0.01, 0.01, 0.01);
+  }
+  6% {
+    transform: translateY(calc(var(--dist) * 0.06 * var(--u))) scale3d(1, 1, 1);
+  }
+  94% {
+    transform: translateY(calc(var(--dist) * 0.94 * var(--u))) scale3d(1, 1, 1);
+  }
+  100% {
+    transform: translateY(calc(var(--dist) * var(--u))) scale3d(0.01, 0.01, 0.01);
+  }
+}
+@keyframes ic-belt {
+  0% {
+    transform: translateX(0) scale3d(0.01, 0.01, 0.01);
+  }
+  8% {
+    transform: translateX(calc(0.4 * var(--u))) scale3d(1, 1, 1);
+  }
+  92% {
+    transform: translateX(calc(4.5 * var(--u))) scale3d(1, 1, 1);
+  }
+  100% {
+    transform: translateX(calc(4.9 * var(--u))) scale3d(0.01, 0.01, 0.01);
+  }
+}
+
+/* smoke and labels face the viewer (undo the world rotation) */
+.ic-scope .puff,
+.ic-scope .tag {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: 0;
+  height: 0;
+  transform: translateZ(calc(var(--z) * var(--u))) rotateZ(-45deg) rotateX(-60deg);
+  pointer-events: none;
+}
+.ic-scope .puff b {
+  position: absolute;
+  left: calc(-0.25 * var(--u));
+  top: calc(-0.25 * var(--u));
+  width: calc(0.5 * var(--u));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(160, 190, 225, 0.5);
+  opacity: 0;
+  animation: ic-puff 3.3s ease-out infinite;
+}
+.ic-scope .puff b:nth-child(2) {
+  animation-delay: -1.1s;
+}
+.ic-scope .puff b:nth-child(3) {
+  animation-delay: -2.2s;
+}
+@keyframes ic-puff {
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(0.9 * var(--u)), calc(-2.6 * var(--u))) scale(1.7);
+    opacity: 0;
+  }
+}
+.ic-scope .tag {
+  transform: translateZ(calc(var(--z) * var(--u))) rotateZ(-45deg) rotateX(-60deg) translateZ(600px);
+}
+.ic-scope .tag span {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: auto;
+  cursor: pointer;
+  font-size: clamp(10px, 1.6cqmin, 13px);
+  font-weight: 600;
+  color: #cff4ff;
+  background: rgba(5, 16, 42, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  border-radius: 999px;
+  padding: 0.35em 0.9em;
+  /* Hidden by default — only the name (not the .tag small description below)
+     ever shows, either one building at a time on an automatic loop, or on
+     demand when its building is hovered/tapped/focused (see .bld:hover
+     further down, which overrides this with !important since it must win
+     over whichever phase of the animation is running at that moment). */
+  opacity: 0;
+  visibility: hidden;
+  animation: ic-tagcycle 16s ease-in-out infinite;
+  animation-delay: var(--tagd, 0s);
+  transition: border-color 0.25s, color 0.25s, border-radius 0.25s;
+}
+/* One name at a time: each building's --tagd staggers its slice of this
+   shared 16s loop (8 buildings × 2s apart) so they light up in sequence. */
+@keyframes ic-tagcycle {
+  0%,
+  1%,
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  3%,
+  8% {
+    opacity: 1;
+    visibility: visible;
+  }
+  10% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* The description line is dropped entirely — only the industry name shows now. */
+.ic-scope .tag small {
+  display: none;
+}
+
+/* buildings rise in, highlight on hover, tap or keyboard focus */
+.ic-scope .bld {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  outline: none;
+  animation: ic-rise 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--dl);
+}
+.ic-scope .bld .cb > i {
+  pointer-events: auto;
+  cursor: pointer;
+}
+@keyframes ic-rise {
+  from {
+    transform: scale3d(1, 1, 0.001);
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+.ic-scope .bld:hover .cb:not(.so),
+.ic-scope .bld:focus-visible .cb:not(.so) {
+  --e: var(--amber);
+}
+.ic-scope .bld:hover .cb:not(.so) > i,
+.ic-scope .bld:focus-visible .cb:not(.so) > i {
+  background-color: rgba(255, 209, 102, 0.1);
+}
+.ic-scope .bld:hover .tag span,
+.ic-scope .bld:focus-visible .tag span {
+  /* !important: a CSS animation otherwise wins the cascade over a plain
+     declaration for the same property, so without it a hover landing on the
+     "hidden" phase of the auto-cycle would stay invisible. */
+  opacity: 1 !important;
+  visibility: visible !important;
+  border-color: rgb(var(--amber));
+  color: #ffffff;
+  border-radius: 12px;
+}
+.ic-scope .bld:hover .tag,
+.ic-scope .bld:focus-visible .tag {
+  transform: translateZ(calc(var(--z) * var(--u))) rotateZ(-45deg) rotateX(-60deg) translateZ(900px);
+}
+@container (max-width: 380px) {
+  .ic-scope .tag span {
+    font-size: 9px;
+    padding: 0.3em 0.7em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ic-scope *,
+  .ic-scope *::before,
+  .ic-scope *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ic-scope .puff b {
+    opacity: 0.5;
+  }
+  .ic-scope .pulse {
+    display: none;
+  }
+}

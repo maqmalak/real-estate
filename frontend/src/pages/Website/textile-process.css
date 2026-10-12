@@ -1,0 +1,145 @@
+/*
+ * Textile process diagram — styled after a textile-industry infographic:
+ * a card with a zigzag connector and circular joints, and animation on two
+ * independent layers: a continuous flowing pulse along every connector (the
+ * same travelling-dash technique used by the hero honeycomb's flow lines),
+ * and a JS-driven "current stage" highlight that steps through the icons.
+ *
+ * Theme-aware using the site's own card tokens (the same ones Option B's
+ * <Card> renders with), rather than this diagram's own invented light/dark
+ * colors — so it's not just "theme-aware", it matches Option B's card look
+ * exactly in both themes, switching automatically since --card/--foreground/
+ * etc. are the app's own variables (already flipped by .dark elsewhere).
+ */
+
+.tpd-scope {
+  margin-top: 10px;
+  --tpd-bg: hsl(var(--card));
+  --tpd-trace: hsl(var(--foreground));
+  --tpd-trace-opacity: 0.18;
+  --tpd-pulse: hsl(var(--primary));
+  --tpd-ring-fill: hsl(var(--foreground) / 0.06);
+  --tpd-ring-stroke: hsl(var(--foreground) / 0.2);
+  --tpd-ring-active-fill: hsl(var(--foreground) / 0.12);
+  --tpd-ring-active-stroke: hsl(var(--foreground));
+  --tpd-badge-fill: hsl(var(--foreground));
+  --tpd-num-fill: hsl(var(--card));
+  --tpd-label-fill: hsl(var(--card-foreground));
+  --tpd-sub-fill: hsl(var(--muted-foreground));
+  --tpd-border: hsl(var(--border));
+}
+.tpd-card {
+  /* Same width and card treatment as Option B, per request — the SVG's own
+     viewBox keeps its aspect ratio, so this also makes the card taller. */
+  max-width: 700px;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--tpd-border);
+  box-shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.5);
+}
+.tpd-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tpd-bg-rect {
+  fill: var(--tpd-bg);
+}
+.tpd-grid-line {
+  stroke: hsl(var(--foreground));
+  stroke-opacity: 0.06;
+}
+
+.tpd-trace {
+  fill: none;
+  stroke: var(--tpd-trace);
+  stroke-width: 2;
+  stroke-opacity: var(--tpd-trace-opacity);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tpd-joint {
+  fill: var(--tpd-bg);
+  stroke: var(--tpd-trace);
+  stroke-width: 2;
+}
+
+.tpd-pulse {
+  fill: none;
+  stroke: var(--tpd-pulse);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 34 380;
+  stroke-dashoffset: 414;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tpd-pulse) 85%, transparent));
+  animation: tpdPulse 2.4s cubic-bezier(0.42, 0.05, 0.28, 0.98) infinite;
+}
+@keyframes tpdPulse {
+  0% {
+    stroke-dashoffset: 414;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+.tpd-stage {
+  cursor: default;
+}
+.tpd-stage-ring {
+  fill: var(--tpd-ring-fill);
+  stroke: var(--tpd-ring-stroke);
+  stroke-width: 1.5;
+  /* `r` grows on the active stage — no CSS transform involved, so there's no
+     transform-origin to get wrong and the circle stays exactly centred on
+     its own (already-translated) position. */
+  transition: fill 0.35s ease, stroke 0.35s ease, r 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.tpd-stage.is-active .tpd-stage-ring {
+  fill: var(--tpd-ring-active-fill);
+  stroke: var(--tpd-ring-active-stroke);
+}
+.tpd-num-badge {
+  fill: var(--tpd-badge-fill);
+}
+.tpd-num-text {
+  font-family: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  fill: var(--tpd-num-fill);
+}
+.tpd-stage-label {
+  font-family: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  fill: var(--tpd-label-fill);
+  letter-spacing: -0.01em;
+}
+.tpd-stage-sub {
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  fill: var(--tpd-sub-fill);
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tpd-pulse {
+    animation: none;
+    opacity: 0;
+  }
+  .tpd-stage-ring {
+    transition: none;
+  }
+}

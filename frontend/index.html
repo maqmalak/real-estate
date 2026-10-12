@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" class="dark" style="color-scheme: dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zarmeen Gardens</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Used by the hero's industry-city panel (its own "hologram" tooltip/label type). -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+      <script>
+      // Dark by default; light only when the visitor chose it (saved by the theme toggle). Runs before first paint.
+      try {
+        var m = localStorage.getItem("micromax-theme");
+        var light = m === "light" || (m === "system" && !window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (light) {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.style.colorScheme = "light";
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
