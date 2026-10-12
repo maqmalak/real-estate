@@ -1,0 +1,57 @@
+{%- set booking = frappe.get_doc("RE Booking", doc.booking) if doc.booking else None -%}
+{%- set bill = frappe.get_doc("RE Society Bill", doc.society_bill) if doc.society_bill else None -%}
+{%- set company = frappe.db.get_single_value("Global Defaults", "default_company") -%}
+<style>
+	.re-receipt { font-family: Helvetica, Arial, sans-serif; color: #1f2937; font-size: 12px; }
+	.re-receipt h1 { font-size: 20px; margin: 0; letter-spacing: .5px; }
+	.re-receipt .muted { color: #6b7280; }
+	.re-receipt .head { display: flex; justify-content: space-between; border-bottom: 2px solid #0f766e; padding-bottom: 10px; margin-bottom: 14px; }
+	.re-receipt table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+	.re-receipt th, .re-receipt td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; }
+	.re-receipt th { background: #f0fdfa; }
+	.re-receipt .amount { font-size: 22px; font-weight: bold; color: #0f766e; }
+	.re-receipt .right { text-align: right; }
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+<div class="re-receipt">
+	<div class="head">
+		<div>
+			<h1>{{ company or "Zarmeen Developers" }}</h1>
+			<div class="muted">Zarmeen Gardens Housing Scheme · Lahore</div>
+		</div>
+		<div class="right">
+			<img src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}" style="width:76px;height:76px;float:right;margin-left:10px">
+			<div style="font-size:16px;font-weight:bold">PAYMENT RECEIPT</div>
+			<div>No. {{ doc.name }}</div>
+			<div>{{ frappe.utils.formatdate(doc.posting_date, "dd MMM yyyy") }}</div>
+		</div>
+	</div>
+	<table>
+		<tr><th style="width:30%">Received from</th><td>{{ doc.customer_name }}</td></tr>
+		<tr><th>Plot</th><td>{{ doc.plot }}{% if booking %} · {{ booking.plot_size }} · {{ booking.block }}{% endif %}</td></tr>
+		<tr><th>Against</th><td>{{ doc.payment_against }}: {{ doc.booking or doc.society_bill }}{% if bill %} ({{ bill.bill_month_label }}){% endif %}</td></tr>
+		<tr><th>Mode</th><td>{{ doc.mode_of_payment }}{% if doc.reference_no %} · Ref {{ doc.reference_no }}{% endif %}</td></tr>
+		<tr><th>Amount</th><td class="amount">PKR {{ doc.fmt_amount }}</td></tr>
+		<tr><th>In words</th><td>{{ frappe.utils.money_in_words(doc.amount, "PKR") }}</td></tr>
+	</table>
+	{% if doc.allocations %}
+	<table>
+		<tr><th>Installment</th><th>Due date</th><th class="right">Allocated (PKR)</th></tr>
+		{% for a in doc.allocations %}
+		<tr><td>{{ a.label }}</td><td>{{ frappe.utils.formatdate(a.due_date, "dd MMM yyyy") }}</td><td class="right">{{ "{:,.0f}".format(a.allocated_amount) }}</td></tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+	{% if booking %}
+	<table>
+		<tr><th>Net price</th><th>Paid to date</th><th>Outstanding</th><th>Next due</th></tr>
+		<tr>
+			<td>{{ "{:,.0f}".format(booking.net_price) }}</td>
+			<td>{{ "{:,.0f}".format(booking.paid_amount) }}</td>
+			<td>{{ "{:,.0f}".format(booking.outstanding_amount) }}</td>
+			<td>{% if booking.next_due_date %}{{ frappe.utils.formatdate(booking.next_due_date, "dd MMM yyyy") }} · {{ "{:,.0f}".format(booking.next_due_amount) }}{% else %}—{% endif %}</td>
+		</tr>
+	</table>
+	{% endif %}
+	<p class="muted" style="margin-top:18px">This is a computer-generated receipt. Received by {{ frappe.db.get_value("User", doc.received_by, "full_name") if doc.received_by else "" }}.</p>
+</div>

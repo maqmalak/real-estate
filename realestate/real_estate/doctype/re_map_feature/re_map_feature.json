@@ -1,0 +1,205 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "RE-FEAT-.#####",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "feature_name",
+  "project",
+  "feature_type",
+  "category",
+  "cb1",
+  "geometry_type",
+  "width_ft",
+  "area_kanal",
+  "color",
+  "sb_asset",
+  "asset_status",
+  "completion_pct",
+  "asset",
+  "cb_asset",
+  "erp_project",
+  "contractor",
+  "estimated_cost",
+  "sb_geo",
+  "geojson",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "feature_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Feature Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "RE Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "feature_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Feature Type",
+   "options": "Main Gate\nBack Gate\nBoulevard\nStreet\nPerimeter Road\nCentral Park\nPark\nSchool\nMasjid\nGraveyard\nCommunity Centre\nWater Tank\nWater Supply Line\nSewerage Line\nSewerage Disposal\nElectricity Line\nGrid Station\nTransformer\nInternet Cable\nGarbage Point\nDisposal Site\nGreen Belt\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Category",
+   "options": "Roads and Gates\nPublic Buildings\nInfrastructure\nWaste\nUtility Network\nOther"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "geometry_type",
+   "fieldtype": "Select",
+   "label": "Geometry Type",
+   "options": "Point\nLineString\nPolygon",
+   "read_only": 1
+  },
+  {
+   "fieldname": "width_ft",
+   "fieldtype": "Float",
+   "label": "Width (ft)"
+  },
+  {
+   "fieldname": "area_kanal",
+   "fieldtype": "Float",
+   "label": "Area (Kanal, computed)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Color",
+   "label": "Color"
+  },
+  {
+   "fieldname": "sb_asset",
+   "fieldtype": "Section Break",
+   "label": "Asset & Progress"
+  },
+  {
+   "fieldname": "asset_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Asset Status",
+   "options": "\nPlanned\nIn Progress\nCompleted"
+  },
+  {
+   "fieldname": "completion_pct",
+   "fieldtype": "Percent",
+   "label": "Completion %"
+  },
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "ERPNext Asset",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "cb_asset",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "erp_project",
+   "fieldtype": "Link",
+   "label": "Development Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "contractor",
+   "fieldtype": "Link",
+   "label": "Contractor",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "estimated_cost",
+   "fieldtype": "Currency",
+   "label": "Estimated Cost",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "sb_geo",
+   "fieldtype": "Section Break",
+   "label": "Geometry"
+  },
+  {
+   "fieldname": "geojson",
+   "fieldtype": "Code",
+   "label": "Geometry (GeoJSON)",
+   "options": "JSON",
+   "reqd": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Map Feature",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "feature_name"
+}

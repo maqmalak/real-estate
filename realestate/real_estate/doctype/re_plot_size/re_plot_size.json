@@ -1,0 +1,125 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:size_name",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "size_name",
+  "plot_type",
+  "area_marla",
+  "cb1",
+  "width_ft",
+  "depth_ft",
+  "sb_price",
+  "base_price",
+  "monthly_maintenance"
+ ],
+ "fields": [
+  {
+   "fieldname": "size_name",
+   "fieldtype": "Data",
+   "label": "Size Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "plot_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Plot Type",
+   "options": "Residential\nCommercial",
+   "reqd": 1
+  },
+  {
+   "fieldname": "area_marla",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Area (Marla)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "width_ft",
+   "fieldtype": "Float",
+   "label": "Frontage (ft)"
+  },
+  {
+   "fieldname": "depth_ft",
+   "fieldtype": "Float",
+   "label": "Depth (ft)"
+  },
+  {
+   "fieldname": "sb_price",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "base_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Base Price",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "monthly_maintenance",
+   "fieldtype": "Currency",
+   "label": "Monthly Society Charges",
+   "options": "PKR"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Plot Size",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

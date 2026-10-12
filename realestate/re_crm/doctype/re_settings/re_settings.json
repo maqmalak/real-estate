@@ -1,0 +1,492 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tab_general",
+  "company",
+  "default_project",
+  "default_agent",
+  "cb_g",
+  "auto_create_lead",
+  "reset_demo_html",
+  "tab_wa",
+  "mock_mode",
+  "sb_meta",
+  "phone_number_id",
+  "business_account_id",
+  "app_id",
+  "display_phone_number",
+  "cb_meta",
+  "access_token",
+  "app_secret",
+  "webhook_verify_token",
+  "webhook_url",
+  "sb_call",
+  "calling_api_enabled",
+  "missed_call_follow_up_hours",
+  "sb_send",
+  "broadcast_rate_per_minute",
+  "opt_out_keywords",
+  "opt_in_keywords",
+  "tab_rem",
+  "installment_reminder_days",
+  "due_window_days",
+  "overdue_notice_every_days",
+  "send_booking_confirmation",
+  "cb_rem",
+  "bill_day_of_month",
+  "bill_due_days",
+  "sms_fallback",
+  "fallback_channels",
+  "email_copy",
+  "tab_map",
+  "map_provider",
+  "google_maps_api_key",
+  "google_map_id",
+  "tab_sales_rules",
+  "sb_disc",
+  "max_discount_percent",
+  "sb_sur",
+  "surcharge_enabled",
+  "surcharge_grace_days",
+  "cb_sur",
+  "surcharge_percent",
+  "surcharge_cap_percent",
+  "surcharge_minimum",
+  "sb_tc",
+  "transfer_fee",
+  "reallotment_fee",
+  "cb_tc",
+  "cancellation_deduction_percent",
+  "sb_comm",
+  "agent_commission_percent",
+  "dealer_commission_percent",
+  "cb_comm",
+  "commission_payable_after_percent",
+  "tab_maint",
+  "maintenance_assignee",
+  "complaint_due_days",
+  "cb_maint",
+  "notify_customer_on_completion"
+ ],
+ "fields": [
+  {
+   "fieldname": "tab_general",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "default_project",
+   "fieldtype": "Link",
+   "label": "Default Project",
+   "options": "RE Project"
+  },
+  {
+   "description": "Gets new WhatsApp leads and unassigned chats",
+   "fieldname": "default_agent",
+   "fieldtype": "Link",
+   "label": "Default Agent",
+   "options": "User"
+  },
+  {
+   "fieldname": "cb_g",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_create_lead",
+   "fieldtype": "Check",
+   "label": "Create Lead for Unknown WhatsApp Numbers"
+  },
+  {
+   "fieldname": "reset_demo_html",
+   "fieldtype": "HTML",
+   "label": "Reset Demo Html"
+  },
+  {
+   "fieldname": "tab_wa",
+   "fieldtype": "Tab Break",
+   "label": "WhatsApp"
+  },
+  {
+   "default": "1",
+   "description": "Messages and calls are simulated: nothing is sent to Meta, sent messages move to Delivered / Read by themselves, and numbers ending in 0000 fail so the SMS fallback can be tested.",
+   "fieldname": "mock_mode",
+   "fieldtype": "Check",
+   "label": "Mock Mode (no live WhatsApp)"
+  },
+  {
+   "fieldname": "sb_meta",
+   "fieldtype": "Section Break",
+   "label": "WhatsApp Business Cloud API"
+  },
+  {
+   "fieldname": "phone_number_id",
+   "fieldtype": "Data",
+   "label": "Phone Number ID"
+  },
+  {
+   "fieldname": "business_account_id",
+   "fieldtype": "Data",
+   "label": "WhatsApp Business Account ID"
+  },
+  {
+   "fieldname": "app_id",
+   "fieldtype": "Data",
+   "label": "Meta App ID"
+  },
+  {
+   "description": "Used for wa.me links",
+   "fieldname": "display_phone_number",
+   "fieldtype": "Data",
+   "label": "Business WhatsApp Number",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "cb_meta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Password",
+   "label": "Access Token",
+   "length": 1000
+  },
+  {
+   "description": "Verifies the X-Hub-Signature-256 of webhook calls",
+   "fieldname": "app_secret",
+   "fieldtype": "Password",
+   "label": "App Secret"
+  },
+  {
+   "fieldname": "webhook_verify_token",
+   "fieldtype": "Password",
+   "label": "Webhook Verify Token"
+  },
+  {
+   "fieldname": "webhook_url",
+   "fieldtype": "Data",
+   "label": "Webhook Callback URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_call",
+   "fieldtype": "Section Break",
+   "label": "Calls"
+  },
+  {
+   "description": "Only when Calling is enabled on the business number in Meta. Otherwise the Call button opens WhatsApp (wa.me) and asks the agent to log the call.",
+   "fieldname": "calling_api_enabled",
+   "fieldtype": "Check",
+   "label": "WhatsApp Business Calling API Enabled"
+  },
+  {
+   "default": "2",
+   "fieldname": "missed_call_follow_up_hours",
+   "fieldtype": "Int",
+   "label": "Missed Call Follow-up Due In (hours)"
+  },
+  {
+   "fieldname": "sb_send",
+   "fieldtype": "Section Break",
+   "label": "Broadcasts & Opt-out"
+  },
+  {
+   "default": "60",
+   "fieldname": "broadcast_rate_per_minute",
+   "fieldtype": "Int",
+   "label": "Broadcast Rate (messages / minute)"
+  },
+  {
+   "default": "STOP\nUNSUBSCRIBE\nBAND KARO",
+   "fieldname": "opt_out_keywords",
+   "fieldtype": "Small Text",
+   "label": "Opt Out Keywords"
+  },
+  {
+   "default": "START\nSUBSCRIBE",
+   "fieldname": "opt_in_keywords",
+   "fieldtype": "Small Text",
+   "label": "Opt In Keywords"
+  },
+  {
+   "fieldname": "tab_rem",
+   "fieldtype": "Tab Break",
+   "label": "Reminders"
+  },
+  {
+   "default": "3",
+   "fieldname": "installment_reminder_days",
+   "fieldtype": "Int",
+   "label": "Installment Reminder (days before due)"
+  },
+  {
+   "fieldname": "due_window_days",
+   "fieldtype": "Int",
+   "label": "'Due' Window (days)",
+   "default": "7",
+   "description": "Installments and society bills show as Due this many days before their due date (Overdue after it)"
+  },
+  {
+   "default": "7",
+   "fieldname": "overdue_notice_every_days",
+   "fieldtype": "Int",
+   "label": "Repeat Overdue Notice Every (days)"
+  },
+  {
+   "default": "1",
+   "fieldname": "send_booking_confirmation",
+   "fieldtype": "Check",
+   "label": "Send Booking Confirmation"
+  },
+  {
+   "fieldname": "cb_rem",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "bill_day_of_month",
+   "fieldtype": "Int",
+   "label": "Society Bill Day of Month"
+  },
+  {
+   "default": "15",
+   "fieldname": "bill_due_days",
+   "fieldtype": "Int",
+   "label": "Society Bill Due After (days)"
+  },
+  {
+   "default": "1",
+   "description": "Uses SMS Settings. In mock mode the SMS is only logged.",
+   "fieldname": "sms_fallback",
+   "fieldtype": "Check",
+   "label": "SMS Fallback When WhatsApp Fails"
+  },
+  {
+   "fieldname": "fallback_channels",
+   "fieldtype": "Data",
+   "label": "Fallback Channels",
+   "default": "SMS, Email",
+   "description": "Tried in order when WhatsApp is not possible or fails: SMS, Email"
+  },
+  {
+   "fieldname": "email_copy",
+   "fieldtype": "Check",
+   "label": "Email a Copy",
+   "description": "Also email every automated message to parties with an email address"
+  },
+  {
+   "fieldname": "tab_map",
+   "fieldtype": "Tab Break",
+   "label": "Map"
+  },
+  {
+   "default": "MapLibre (no key)",
+   "description": "MapLibre uses free Esri / OpenStreetMap tiles. Google Maps needs a Maps JavaScript API key (restrict it to your domain in Google Cloud).",
+   "fieldname": "map_provider",
+   "fieldtype": "Select",
+   "label": "Map Provider",
+   "options": "MapLibre (no key)\nGoogle Maps"
+  },
+  {
+   "depends_on": "eval:doc.map_provider=='Google Maps'",
+   "fieldname": "google_maps_api_key",
+   "fieldtype": "Password",
+   "label": "Google Maps API Key"
+  },
+  {
+   "depends_on": "eval:doc.map_provider=='Google Maps'",
+   "fieldname": "google_map_id",
+   "fieldtype": "Data",
+   "label": "Google Map ID (optional)"
+  },
+  {
+   "fieldname": "tab_sales_rules",
+   "fieldtype": "Tab Break",
+   "label": "Sales Rules"
+  },
+  {
+   "fieldname": "sb_disc",
+   "fieldtype": "Section Break",
+   "label": "Discounts"
+  },
+  {
+   "default": "5",
+   "fieldname": "max_discount_percent",
+   "fieldtype": "Percent",
+   "label": "Max Discount Without Approval %"
+  },
+  {
+   "fieldname": "sb_sur",
+   "fieldtype": "Section Break",
+   "label": "Late Payment Surcharge"
+  },
+  {
+   "default": "1",
+   "fieldname": "surcharge_enabled",
+   "fieldtype": "Check",
+   "label": "Charge Late Payment Surcharge"
+  },
+  {
+   "default": "15",
+   "fieldname": "surcharge_grace_days",
+   "fieldtype": "Int",
+   "label": "Grace Days"
+  },
+  {
+   "fieldname": "cb_sur",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "2",
+   "fieldname": "surcharge_percent",
+   "fieldtype": "Percent",
+   "label": "Surcharge % per Month of Overdue"
+  },
+  {
+   "default": "10",
+   "fieldname": "surcharge_cap_percent",
+   "fieldtype": "Percent",
+   "label": "Cap (% of Overdue)"
+  },
+  {
+   "default": "500",
+   "fieldname": "surcharge_minimum",
+   "fieldtype": "Currency",
+   "label": "Minimum Surcharge",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "sb_tc",
+   "fieldtype": "Section Break",
+   "label": "Transfers & Cancellations"
+  },
+  {
+   "default": "50000",
+   "fieldname": "transfer_fee",
+   "fieldtype": "Currency",
+   "label": "Transfer Fee",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "reallotment_fee",
+   "fieldtype": "Currency",
+   "options": "PKR",
+   "label": "Re-allotment Fee",
+   "default": "25000"
+  },
+  {
+   "fieldname": "cb_tc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "10",
+   "fieldname": "cancellation_deduction_percent",
+   "fieldtype": "Percent",
+   "label": "Cancellation Deduction %"
+  },
+  {
+   "fieldname": "sb_comm",
+   "fieldtype": "Section Break",
+   "label": "Commission"
+  },
+  {
+   "default": "1",
+   "fieldname": "agent_commission_percent",
+   "fieldtype": "Percent",
+   "label": "Agent Commission %"
+  },
+  {
+   "default": "2",
+   "fieldname": "dealer_commission_percent",
+   "fieldtype": "Percent",
+   "label": "Dealer Commission %"
+  },
+  {
+   "fieldname": "cb_comm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "25",
+   "fieldname": "commission_payable_after_percent",
+   "fieldtype": "Percent",
+   "label": "Payable After Customer Has Paid %"
+  },
+  {
+   "fieldname": "tab_maint",
+   "fieldtype": "Tab Break",
+   "label": "Maintenance"
+  },
+  {
+   "description": "Gets complaints raised from WhatsApp chats and plots",
+   "fieldname": "maintenance_assignee",
+   "fieldtype": "Link",
+   "label": "Default Maintenance Assignee",
+   "options": "User"
+  },
+  {
+   "default": "2",
+   "fieldname": "complaint_due_days",
+   "fieldtype": "Int",
+   "label": "Complaint Due In (days)"
+  },
+  {
+   "fieldname": "cb_maint",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "notify_customer_on_completion",
+   "fieldtype": "Check",
+   "label": "WhatsApp the Customer When a Complaint Is Resolved"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE CRM",
+ "name": "RE Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

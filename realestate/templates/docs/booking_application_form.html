@@ -1,0 +1,33 @@
+<style>
+.re-doc{font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#1f2937;line-height:1.5}
+.re-doc h2{font-size:17px;text-align:center;letter-spacing:.6px;margin:6px 0 2px;text-transform:uppercase}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:32%}
+.re-doc .grid th{width:auto}
+.re-doc .r{text-align:right}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:right;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}
+{%- set size = frappe.get_doc("RE Plot Size", doc.plot_size) -%}<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>Booking Application Form</h2><div class="sub">Application No. {{ doc.name }} · {{ frappe.utils.formatdate(doc.booking_date, "dd MMM yyyy") }}</div>
+<table><tr><th>Applicant</th><td>{{ cust.customer_name }}</td></tr><tr><th>Mobile</th><td>{{ cust.mobile_no or "" }}</td></tr>
+<tr><th>Father / Husband</th><td>{{ cust.re_father_name or "____________________" }}</td></tr>
+<tr><th>CNIC</th><td>{{ cust.re_cnic or "____________________" }}</td></tr>
+<tr><th>Email</th><td>{{ cust.email_id or "" }}</td></tr><tr><th>Postal address</th><td>{{ cust.re_postal_address or "" }}</td></tr></table>
+<table><tr><th>Nominee</th><td>{{ cust.re_nominee_name or "____________________" }}{% if cust.re_nominee_relation %} ({{ cust.re_nominee_relation }}){% endif %}</td></tr>
+<tr><th>Nominee CNIC</th><td>{{ cust.re_nominee_cnic or "____________________" }}</td></tr><tr><th>Nominee mobile</th><td>{{ cust.re_nominee_mobile or "" }}</td></tr></table>
+<table><tr><th>Plot</th><td>{{ doc.plot }} ({{ plot.plot_type }})</td></tr><tr><th>Size</th><td>{{ doc.plot_size }} — {{ plot.area_marla }} Marla</td></tr>
+<tr><th>Block / street</th><td>{{ doc.block }}{% if plot.street %} · {{ plot.street }}{% endif %}</td></tr>
+<tr><th>Category</th><td>{% if plot.is_corner %}Corner {% endif %}{% if plot.is_park_facing %}Park facing {% endif %}{% if plot.is_boulevard_facing %}Main boulevard{% endif %}{% if not (plot.is_corner or plot.is_park_facing or plot.is_boulevard_facing) %}Standard{% endif %}</td></tr>
+<tr><th>Price</th><td>{{ frappe.utils.fmt_money(doc.total_price, currency="PKR", precision=0) }}{% if doc.discount %} less discount {{ frappe.utils.fmt_money(doc.discount, currency="PKR", precision=0) }} = <b>{{ frappe.utils.fmt_money(doc.net_price, currency="PKR", precision=0) }}</b>{% endif %}</td></tr>
+<tr><th>Payment plan</th><td>{{ doc.payment_plan }}</td></tr><tr><th>Sales agent</th><td>{{ frappe.db.get_value("User", doc.agent, "full_name") if doc.agent else "" }}</td></tr></table>
+<p class="muted">I/We apply for the above plot and agree to the terms of the scheme, the payment plan and the society rules. Booking is confirmed on receipt of the down payment.</p><table class="sign"><tr><td>Customer</td><td class="gap"></td><td>For Zarmeen Developers (Pvt) Ltd<br><span class="muted">Authorised signatory</span></td></tr></table></div>

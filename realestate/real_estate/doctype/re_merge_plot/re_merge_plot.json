@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "plot",
+  "plot_size",
+  "area_marla",
+  "status",
+  "list_price"
+ ],
+ "fields": [
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Plot",
+   "options": "RE Plot",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "plot.plot_size",
+   "fieldname": "plot_size",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Plot Size",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.area_marla",
+   "fieldname": "area_marla",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Area Marla",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.status",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.list_price",
+   "fieldname": "list_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "List Price",
+   "options": "PKR",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Merge Plot",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

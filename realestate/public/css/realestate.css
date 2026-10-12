@@ -1,0 +1,118 @@
+/* WhatsApp chat panel */
+.re-chat { border: 1px solid var(--border-color); border-radius: var(--border-radius-md); display: flex; flex-direction: column; height: 560px; background: var(--card-bg); overflow: hidden; }
+.re-chat-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+.re-chat-head .indicator-pill { margin-left: 6px; }
+.re-chat-head-actions { display: flex; gap: 6px; }
+.re-wa-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #25d366; margin-right: 6px; }
+.re-chat-body { flex: 1; overflow-y: auto; padding: 10px 14px; background: var(--subtle-fg); }
+.re-chat-empty { text-align: center; color: var(--text-muted); padding: 40px 10px; }
+.re-day { text-align: center; font-size: 11px; color: var(--text-muted); margin: 10px 0 6px; }
+.re-msg { display: flex; margin: 4px 0; }
+.re-msg.re-out { justify-content: flex-end; }
+.re-bubble { max-width: 78%; padding: 6px 10px 4px; border-radius: 10px; box-shadow: 0 1px 1px rgba(0, 0, 0, .06); background: var(--card-bg); word-wrap: break-word; }
+.re-out .re-bubble { background: #dcf8c6; }
+[data-theme="dark"] .re-out .re-bubble { background: #005c4b; color: #e9edef; }
+.re-meta { text-align: right; font-size: 10.5px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; }
+.re-tick { margin-left: 3px; letter-spacing: -3px; color: #8696a0; }
+.re-tick.re-read { color: #34b7f1; }
+.re-tick.re-failed { color: var(--red-500); letter-spacing: 0; }
+.re-err { color: var(--red-600); font-size: 11px; }
+.re-agent { font-size: 10.5px; color: #0f766e; font-weight: 600; }
+.re-tpl { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
+.re-img { max-width: 220px; max-height: 220px; border-radius: 6px; display: block; }
+.re-file, .re-loc { display: block; padding: 6px 8px; border-radius: 6px; background: rgba(0, 0, 0, .04); }
+.re-chat-compose { border-top: 1px solid var(--border-color); padding: 8px; position: relative; }
+.re-chat-actions { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+.re-chat-actions .flex-1 { flex: 1; }
+.re-quick-list { position: absolute; bottom: 100%; left: 8px; right: 8px; max-height: 220px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow-md); z-index: 5; }
+.re-quick-item { padding: 6px 10px; cursor: pointer; }
+.re-quick-item:hover { background: var(--subtle-accent); }
+.re-tpl-preview { background: var(--subtle-fg); padding: 10px; border-radius: 8px; white-space: normal; }
+
+/* timeline */
+.re-section-title { margin: 0 0 8px; }
+.re-timeline { border: 1px solid var(--border-color); border-radius: var(--border-radius-md); height: 560px; display: flex; flex-direction: column; }
+.re-tl-filters { padding: 8px; border-bottom: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 4px; }
+.re-tl-list { overflow-y: auto; flex: 1; padding: 6px 10px; }
+.re-tl-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
+.re-tl-icon { width: 24px; text-align: center; font-size: 16px; }
+.re-tl-main { flex: 1; min-width: 0; }
+.re-tl-body { color: var(--text-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+.re-tl-time { font-size: 11px; color: var(--text-light); }
+.re-tl-status { font-size: 10.5px; padding: 1px 6px; border-radius: 8px; background: var(--subtle-accent); margin-left: 4px; }
+
+/* inbox */
+.re-inbox { display: flex; height: calc(100vh - 160px); min-height: 520px; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); overflow: hidden; background: var(--card-bg); }
+.re-inbox-list { width: 340px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+.re-inbox-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; border-bottom: 1px solid var(--border-color); }
+.re-inbox-tabs .badge { margin-left: 3px; }
+.re-inbox-search { padding: 6px 8px; border-bottom: 1px solid var(--border-color); }
+.re-inbox-items { overflow-y: auto; flex: 1; }
+.re-conv { padding: 9px 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+.re-conv:hover { background: var(--subtle-fg); }
+.re-conv.active { background: var(--subtle-accent); }
+.re-conv-top { display: flex; justify-content: space-between; gap: 6px; }
+.re-conv-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.re-conv-last { color: var(--text-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.re-conv-sub { font-size: 11px; color: var(--text-light); }
+.re-unread { background: #25d366; color: #fff; border-radius: 10px; padding: 0 7px; font-size: 11px; font-weight: 600; }
+.re-inbox-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.re-inbox-toolbar { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+.re-inbox-main .re-chat { border: 0; border-radius: 0; height: 100%; }
+.re-inbox-chat { flex: 1; min-height: 0; }
+@media (max-width: 768px) { .re-inbox { flex-direction: column; height: auto; } .re-inbox-list { width: 100%; max-height: 320px; } }
+
+/* site map */
+.re-map-wrap { display: flex; gap: 12px; }
+.re-map { flex: 1; height: calc(100vh - 170px); min-height: 520px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); }
+.re-map-side { width: 280px; display: flex; flex-direction: column; gap: 10px; }
+.re-map-card { border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 10px 12px; background: var(--card-bg); }
+.re-legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 3px 0; }
+.re-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid rgba(0, 0, 0, .15); }
+.re-plot-label { background: transparent; border: 0; box-shadow: none; font-size: 9px; font-weight: 600; color: #1f2937; }
+.re-plot-label::before { display: none; }
+@media (max-width: 900px) { .re-map-wrap { flex-direction: column; } .re-map-side { width: 100%; } }
+
+/* ---------------------------------------------------------------- form visibility (light + dark)
+   Inputs get their own surface, a clearly visible border and a strong focus ring, so fields stand
+   out from the card in both themes; read-only values stay readable. */
+:root, [data-theme="light"] {
+	--re-input-bg: #ffffff;
+	--re-input-border: #9ca3af;
+	--re-input-text: #111827;
+	--re-readonly-bg: #f3f4f6;
+	--re-label: #374151;
+	--re-focus: #2563eb;
+}
+[data-theme="dark"] {
+	--re-input-bg: #1f2937;
+	--re-input-border: #6b7280;
+	--re-input-text: #f9fafb;
+	--re-readonly-bg: #111827;
+	--re-label: #d1d5db;
+	--re-focus: #60a5fa;
+}
+.frappe-control .form-control, .frappe-control select.form-control, .frappe-control textarea.form-control,
+.frappe-control .ql-editor, .frappe-control .ace_editor, .page-form .form-control, .modal .form-control {
+	background-color: var(--re-input-bg) !important;
+	border: 1.5px solid var(--re-input-border) !important;
+	color: var(--re-input-text) !important;
+}
+.frappe-control .ql-container.ql-snow, .frappe-control .ql-toolbar.ql-snow { border-color: var(--re-input-border) !important; }
+.frappe-control .form-control::placeholder { color: color-mix(in srgb, var(--re-input-text) 45%, transparent); }
+.frappe-control .form-control:focus, .page-form .form-control:focus, .modal .form-control:focus {
+	border-color: var(--re-focus) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--re-focus) 30%, transparent) !important;
+	outline: none;
+}
+.frappe-control .control-label, .frappe-control .grid-heading-row { color: var(--re-label) !important; font-weight: 600; }
+.frappe-control .like-disabled-input, .frappe-control .control-value.like-disabled-input,
+.frappe-control .form-control[disabled], .frappe-control .form-control[readonly] {
+	background-color: var(--re-readonly-bg) !important;
+	border: 1px dashed var(--re-input-border) !important;
+	color: var(--re-input-text) !important;
+	opacity: 1;
+}
+.frappe-control input[type="checkbox"] { border: 1.5px solid var(--re-input-border); }
+.form-grid { border: 1.5px solid var(--re-input-border) !important; }
+.form-grid .grid-static-col .static-area { color: var(--re-input-text); }

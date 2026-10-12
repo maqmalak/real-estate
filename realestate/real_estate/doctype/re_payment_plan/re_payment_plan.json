@@ -1,0 +1,202 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:plan_name",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "plan_name",
+  "down_payment_percent",
+  "installments",
+  "frequency",
+  "cb1",
+  "possession_percent",
+  "description",
+  "sb_booking",
+  "booking_percent",
+  "cb_booking",
+  "down_payment_days",
+  "sb_balloon",
+  "balloon_frequency",
+  "cb_balloon",
+  "balloon_percent",
+  "sb_dev",
+  "development_percent",
+  "cb_dev",
+  "development_due_month",
+  "sb_preview",
+  "preview_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "plan_name",
+   "fieldtype": "Data",
+   "label": "Plan Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "down_payment_percent",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Down Payment Percent",
+   "reqd": 1
+  },
+  {
+   "fieldname": "installments",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "No. of Installments"
+  },
+  {
+   "default": "Monthly",
+   "fieldname": "frequency",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Frequency",
+   "options": "Monthly\nQuarterly\nHalf-Yearly"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Kept back from the installments and due with the last one",
+   "fieldname": "possession_percent",
+   "fieldtype": "Percent",
+   "label": "On Possession"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "sb_booking",
+   "fieldtype": "Section Break",
+   "label": "Booking & down payment"
+  },
+  {
+   "fieldname": "booking_percent",
+   "fieldtype": "Percent",
+   "label": "Booking Amount %",
+   "description": "Paid on the booking date"
+  },
+  {
+   "fieldname": "cb_booking",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "down_payment_days",
+   "fieldtype": "Int",
+   "label": "Down Payment Due After (days)",
+   "default": "0",
+   "description": "0 = on the booking date"
+  },
+  {
+   "fieldname": "sb_balloon",
+   "fieldtype": "Section Break",
+   "label": "Balloon payments"
+  },
+  {
+   "fieldname": "balloon_frequency",
+   "fieldtype": "Select",
+   "label": "Balloon Frequency",
+   "options": "\nQuarterly\nHalf-Yearly"
+  },
+  {
+   "fieldname": "cb_balloon",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "balloon_percent",
+   "fieldtype": "Percent",
+   "label": "Balloon Total %",
+   "description": "Split equally over the balloon payments in the term",
+   "depends_on": "balloon_frequency"
+  },
+  {
+   "fieldname": "sb_dev",
+   "fieldtype": "Section Break",
+   "label": "Development charges"
+  },
+  {
+   "fieldname": "development_percent",
+   "fieldtype": "Percent",
+   "label": "Development Charges %"
+  },
+  {
+   "fieldname": "cb_dev",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "development_due_month",
+   "fieldtype": "Int",
+   "label": "Development Charges Due (month)",
+   "description": "Months after booking; 0 = half-way through the term",
+   "depends_on": "development_percent"
+  },
+  {
+   "fieldname": "sb_preview",
+   "fieldtype": "Section Break",
+   "label": "Preview"
+  },
+  {
+   "fieldname": "preview_html",
+   "fieldtype": "HTML",
+   "label": "Schedule Preview"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Payment Plan",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

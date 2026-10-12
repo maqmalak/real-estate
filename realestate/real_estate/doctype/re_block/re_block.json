@@ -1,0 +1,156 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:block_name",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "block_name",
+  "block_code",
+  "project",
+  "block_type",
+  "cb1",
+  "plot_size",
+  "land_use_percent",
+  "planned_plots",
+  "area_kanal",
+  "color",
+  "sb_geo",
+  "geojson",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "block_name",
+   "fieldtype": "Data",
+   "label": "Block Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "Plot number prefix, e.g. A",
+   "fieldname": "block_code",
+   "fieldtype": "Data",
+   "label": "Block Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Project",
+   "options": "RE Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "block_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Block Type",
+   "options": "Residential\nCommercial"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "plot_size",
+   "fieldtype": "Link",
+   "label": "Default Plot Size",
+   "options": "RE Plot Size"
+  },
+  {
+   "fieldname": "land_use_percent",
+   "fieldtype": "Percent",
+   "label": "Share of Scheme"
+  },
+  {
+   "fieldname": "planned_plots",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Planned Plots"
+  },
+  {
+   "fieldname": "area_kanal",
+   "fieldtype": "Float",
+   "label": "Area (Kanal, computed)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "default": "#4f9cf9",
+   "fieldname": "color",
+   "fieldtype": "Color",
+   "label": "Color"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_geo",
+   "fieldtype": "Section Break",
+   "label": "Geometry"
+  },
+  {
+   "fieldname": "geojson",
+   "fieldtype": "Code",
+   "label": "Polygon (GeoJSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Block",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "block_name"
+}

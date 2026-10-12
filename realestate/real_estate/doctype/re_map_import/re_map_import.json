@@ -1,0 +1,140 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "RE-IMP-.#####",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "import_file",
+  "target",
+  "replace_existing",
+  "cb1",
+  "status",
+  "name_property",
+  "block_property",
+  "size_property",
+  "type_property",
+  "sb_log",
+  "result"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "RE Project",
+   "reqd": 1
+  },
+  {
+   "description": "KML or GeoJSON exported from the survey (WGS84)",
+   "fieldname": "import_file",
+   "fieldtype": "Attach",
+   "label": "Import File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Target",
+   "options": "Boundary\nBlocks\nPlots\nMap Features",
+   "reqd": 1
+  },
+  {
+   "description": "Delete existing records of the target type for this project first (plots that are booked are never deleted)",
+   "fieldname": "replace_existing",
+   "fieldtype": "Check",
+   "label": "Replace Existing"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nCompleted\nFailed",
+   "read_only": 1
+  },
+  {
+   "default": "name",
+   "description": "Feature property holding the block / plot number / feature name",
+   "fieldname": "name_property",
+   "fieldtype": "Data",
+   "label": "Name Property"
+  },
+  {
+   "default": "block",
+   "description": "Plots: property holding the block name or code",
+   "fieldname": "block_property",
+   "fieldtype": "Data",
+   "label": "Block Property"
+  },
+  {
+   "default": "size",
+   "fieldname": "size_property",
+   "fieldtype": "Data",
+   "label": "Plot Size Property"
+  },
+  {
+   "default": "type",
+   "fieldname": "type_property",
+   "fieldtype": "Data",
+   "label": "Feature Type Property"
+  },
+  {
+   "fieldname": "sb_log",
+   "fieldtype": "Section Break",
+   "label": "Result"
+  },
+  {
+   "fieldname": "result",
+   "fieldtype": "Long Text",
+   "label": "Result",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Map Import",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

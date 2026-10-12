@@ -1,0 +1,34 @@
+<style>
+.re-doc{font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#1f2937;line-height:1.5}
+.re-doc h2{font-size:17px;text-align:center;letter-spacing:.6px;margin:6px 0 2px;text-transform:uppercase}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:32%}
+.re-doc .grid th{width:auto}
+.re-doc .r{text-align:right}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:right;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set buyer = frappe.get_doc("Customer", doc.to_customer) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>Transfer Letter</h2>
+<div class="sub">{{ doc.name }} · {{ frappe.utils.formatdate(doc.transfer_date, "dd MMM yyyy") }}</div>
+<p>Dear {{ buyer.customer_name }},</p>
+<p>This is to confirm that plot <b>{{ doc.plot }}</b> ({{ plot.plot_size }}, {{ plot.block }}) of <b>Zarmeen Gardens Housing Scheme</b> has been transferred
+from <b>{{ doc.from_customer_name }}</b> to you{% if buyer.re_cnic %}, CNIC {{ buyer.re_cnic }}{% endif %}, with effect from {{ frappe.utils.formatdate(doc.transfer_date, "dd MMM yyyy") }}, after approval by the management.</p>
+<table><tr><th>Plot</th><td>{{ doc.plot }} · {{ plot.plot_size }} · {{ plot.block }}{% if plot.street %} · {{ plot.street }}{% endif %}</td></tr>
+<tr><th>Booking</th><td>{{ doc.booking }}</td></tr>
+<tr><th>New allottee</th><td>{{ buyer.customer_name }}{% if buyer.re_father_name %} s/o, d/o, w/o {{ buyer.re_father_name }}{% endif %}</td></tr>
+<tr><th>Nominee</th><td>{{ buyer.re_nominee_name or "" }}{% if buyer.re_nominee_relation %} ({{ buyer.re_nominee_relation }}){% endif %}</td></tr>
+<tr><th>Balance payable</th><td>{{ frappe.utils.fmt_money(doc.outstanding_at_transfer or 0, currency="PKR", precision=0) }} per the remaining schedule</td></tr>
+<tr><th>Transfer fee</th><td>{{ frappe.utils.fmt_money(doc.transfer_fee or 0, currency="PKR", precision=0) }}{% if doc.fee_invoice %} (invoice {{ doc.fee_invoice }}){% endif %}</td></tr></table>
+<p>All future installments, society charges and correspondence will be in your name. Please keep this letter with your allotment letter; it can be verified by scanning the QR code.</p>
+<table class="sign"><tr><td>Secretary</td><td class="gap"></td><td>Authorised signatory</td></tr></table>
+</div>

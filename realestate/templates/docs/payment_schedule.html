@@ -1,0 +1,28 @@
+<style>
+.re-doc{font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#1f2937;line-height:1.5}
+.re-doc h2{font-size:17px;text-align:center;letter-spacing:.6px;margin:6px 0 2px;text-transform:uppercase}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:32%}
+.re-doc .grid th{width:auto}
+.re-doc .r{text-align:right}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:right;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}
+{%- set size = frappe.get_doc("RE Plot Size", doc.plot_size) -%}<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>Payment Schedule</h2><div class="sub">Booking {{ doc.name }} · {{ doc.payment_plan }}</div><table>
+<tr><th>Customer</th><td>{{ cust.customer_name }}</td></tr>
+<tr><th>Mobile</th><td>{{ cust.mobile_no or doc.mobile_no or "" }}</td></tr>
+<tr><th>Plot</th><td>{{ doc.plot }} · {{ doc.plot_size }} · {{ doc.block }}{% if plot.street %} · {{ plot.street }}{% endif %}</td></tr>
+</table><table class="grid"><tr><th>#</th><th>Installment</th><th>Due date</th><th class="r">Amount</th><th class="r">Paid</th><th>Status</th></tr>
+{% for r in doc.installments %}<tr><td>{{ loop.index }}</td><td>{{ r.label }}</td><td>{{ frappe.utils.formatdate(r.due_date, "dd MMM yyyy") }}</td><td class="r">{{ frappe.utils.fmt_money(r.amount, currency="PKR", precision=0) }}</td><td class="r">{{ frappe.utils.fmt_money(r.paid_amount, currency="PKR", precision=0) }}</td><td>{{ r.status }}</td></tr>{% endfor %}
+<tr><th colspan="3">Total</th><th class="r">{{ frappe.utils.fmt_money(doc.net_price, currency="PKR", precision=0) }}</th><th class="r">{{ frappe.utils.fmt_money(doc.paid_amount, currency="PKR", precision=0) }}</th><th></th></tr></table>
+<div class="box">Outstanding: <b>{{ frappe.utils.fmt_money(doc.outstanding_amount, currency="PKR", precision=0) }}</b>{% if doc.overdue_amount %} · <span class="red">Overdue {{ frappe.utils.fmt_money(doc.overdue_amount, currency="PKR", precision=0) }}</span>{% endif %}{% if doc.next_due_date %} · Next due {{ frappe.utils.formatdate(doc.next_due_date, "dd MMM yyyy") }} ({{ frappe.utils.fmt_money(doc.next_due_amount, currency="PKR", precision=0) }}){% endif %}</div></div>

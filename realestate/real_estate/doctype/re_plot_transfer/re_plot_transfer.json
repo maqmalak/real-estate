@@ -1,0 +1,300 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "booking",
+  "plot",
+  "from_customer",
+  "from_customer_name",
+  "cb1",
+  "to_customer",
+  "to_customer_name",
+  "transfer_date",
+  "transfer_fee",
+  "sb_ndc",
+  "outstanding_at_transfer",
+  "overdue_at_transfer",
+  "cb2",
+  "society_dues_at_transfer",
+  "ndc_clear",
+  "sb_acc",
+  "fee_invoice",
+  "credit_note",
+  "cb3",
+  "new_invoice",
+  "notes",
+  "amended_from",
+  "workflow_state"
+ ],
+ "fields": [
+  {
+   "default": "RE-TRF-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "RE-TRF-.YYYY.-"
+  },
+  {
+   "fieldname": "booking",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Booking",
+   "options": "RE Booking",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "booking.plot",
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Plot",
+   "options": "RE Plot",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "booking.customer",
+   "fieldname": "from_customer",
+   "fieldtype": "Link",
+   "label": "From (current owner)",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "from_customer.customer_name",
+   "fieldname": "from_customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Current Owner",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_customer",
+   "fieldtype": "Link",
+   "label": "To (new owner)",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "to_customer.customer_name",
+   "fieldname": "to_customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "New Owner",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "transfer_date",
+   "fieldtype": "Date",
+   "label": "Transfer Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "transfer_fee",
+   "fieldtype": "Currency",
+   "label": "Transfer Fee",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "sb_ndc",
+   "fieldtype": "Section Break",
+   "label": "No-Dues Check"
+  },
+  {
+   "fieldname": "outstanding_at_transfer",
+   "fieldtype": "Currency",
+   "label": "Balance Moving to New Owner",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overdue_at_transfer",
+   "fieldtype": "Currency",
+   "label": "Overdue (must be nil)",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "society_dues_at_transfer",
+   "fieldtype": "Currency",
+   "label": "Society Dues (must be nil)",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ndc_clear",
+   "fieldtype": "Check",
+   "label": "No Dues \u2014 Clear to Transfer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_acc",
+   "fieldtype": "Section Break",
+   "label": "Accounting"
+  },
+  {
+   "fieldname": "fee_invoice",
+   "fieldtype": "Link",
+   "label": "Transfer Fee Invoice",
+   "no_copy": 1,
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "credit_note",
+   "fieldtype": "Link",
+   "label": "Credit Note (old owner)",
+   "no_copy": 1,
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_invoice",
+   "fieldtype": "Link",
+   "label": "Invoice (new owner)",
+   "no_copy": 1,
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "RE Plot Transfer",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Workflow State",
+   "no_copy": 1,
+   "options": "Workflow State",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Plot Transfer",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Agent",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Recovery Officer",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "plot",
+ "track_changes": 1
+}

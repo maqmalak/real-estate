@@ -1,0 +1,530 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "plot",
+  "block",
+  "plot_size",
+  "project",
+  "cb1",
+  "customer",
+  "customer_name",
+  "mobile_no",
+  "customer_cnic",
+  "nominee_name",
+  "nominee_relation",
+  "crm_deal",
+  "cb2",
+  "booking_date",
+  "agent",
+  "status",
+  "sb_price",
+  "total_price",
+  "discount",
+  "net_price",
+  "cb3",
+  "payment_plan",
+  "first_due_date",
+  "sb_comm",
+  "sales_partner",
+  "dealer_commission_rate",
+  "cb_comm",
+  "agent_commission_rate",
+  "discount_approved_by",
+  "sb_sched",
+  "installments",
+  "sb_totals",
+  "paid_amount",
+  "outstanding_amount",
+  "cb4",
+  "overdue_amount",
+  "overdue_since",
+  "cb5",
+  "next_due_date",
+  "next_due_amount",
+  "sb_fmt",
+  "fmt_net_price",
+  "fmt_outstanding",
+  "fmt_overdue",
+  "fmt_next_due_amount",
+  "sb_acc",
+  "sales_invoice",
+  "surcharge_due",
+  "cb_acc",
+  "cancellation",
+  "transferred_from",
+  "reallotted_from",
+  "possession_section",
+  "possession_date",
+  "possession_given_by",
+  "possession_cb",
+  "possession_remarks",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "RE-BK-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "RE-BK-.YYYY.-"
+  },
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Plot",
+   "options": "RE Plot",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "plot.block",
+   "fieldname": "block",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Block",
+   "options": "RE Block",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.plot_size",
+   "fieldname": "plot_size",
+   "fieldtype": "Link",
+   "label": "Plot Size",
+   "options": "RE Plot Size",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot.project",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "RE Project",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "customer_cnic",
+   "fieldtype": "Data",
+   "label": "CNIC",
+   "fetch_from": "customer.re_cnic",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nominee_name",
+   "fieldtype": "Data",
+   "label": "Nominee",
+   "fetch_from": "customer.re_nominee_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nominee_relation",
+   "fieldtype": "Data",
+   "label": "Nominee Relation",
+   "fetch_from": "customer.re_nominee_relation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "crm_deal",
+   "fieldtype": "Link",
+   "label": "CRM Deal",
+   "options": "CRM Deal"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "booking_date",
+   "fieldtype": "Date",
+   "label": "Booking Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Agent",
+   "options": "User"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Draft\nDue\nOverdue\nPaid\nCancelled",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_price",
+   "fieldtype": "Section Break",
+   "label": "Price & Plan"
+  },
+  {
+   "fieldname": "total_price",
+   "fieldtype": "Currency",
+   "label": "Total Price",
+   "options": "PKR",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "net_price",
+   "fieldtype": "Currency",
+   "label": "Net Price",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_plan",
+   "fieldtype": "Link",
+   "label": "Payment Plan",
+   "options": "RE Payment Plan",
+   "reqd": 1
+  },
+  {
+   "description": "Defaults to one period after the booking date",
+   "fieldname": "first_due_date",
+   "fieldtype": "Date",
+   "label": "First Installment Due"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_comm",
+   "fieldtype": "Section Break",
+   "label": "Sales Partner & Commission"
+  },
+  {
+   "fieldname": "sales_partner",
+   "fieldtype": "Link",
+   "label": "Dealer",
+   "options": "Sales Partner"
+  },
+  {
+   "fieldname": "dealer_commission_rate",
+   "fieldtype": "Percent",
+   "label": "Dealer Commission %"
+  },
+  {
+   "fieldname": "cb_comm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agent_commission_rate",
+   "fieldtype": "Percent",
+   "label": "Agent Commission %"
+  },
+  {
+   "description": "Needed when the discount is above the limit in RE Settings",
+   "fieldname": "discount_approved_by",
+   "fieldtype": "Link",
+   "label": "Discount Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_sched",
+   "fieldtype": "Section Break",
+   "label": "Payment Schedule"
+  },
+  {
+   "fieldname": "installments",
+   "fieldtype": "Table",
+   "label": "Installments",
+   "options": "RE Installment"
+  },
+  {
+   "fieldname": "sb_totals",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "label": "Paid Amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding Amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "overdue_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Overdue Amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overdue_since",
+   "fieldtype": "Date",
+   "label": "Overdue Since",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "next_due_date",
+   "fieldtype": "Date",
+   "label": "Next Due Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "next_due_amount",
+   "fieldtype": "Currency",
+   "label": "Next Due Amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_fmt",
+   "fieldtype": "Section Break",
+   "label": "Message Variables"
+  },
+  {
+   "fieldname": "fmt_net_price",
+   "fieldtype": "Data",
+   "label": "Fmt Net Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fmt_outstanding",
+   "fieldtype": "Data",
+   "label": "Fmt Outstanding",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fmt_overdue",
+   "fieldtype": "Data",
+   "label": "Fmt Overdue",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fmt_next_due_amount",
+   "fieldtype": "Data",
+   "label": "Fmt Next Due Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_acc",
+   "fieldtype": "Section Break",
+   "label": "Accounting"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "no_copy": 1,
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "surcharge_due",
+   "fieldtype": "Currency",
+   "label": "Surcharge Due",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_acc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cancellation",
+   "fieldtype": "Link",
+   "label": "Cancellation",
+   "no_copy": 1,
+   "options": "RE Booking Cancellation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transferred_from",
+   "fieldtype": "Link",
+   "label": "Transferred From",
+   "no_copy": 1,
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reallotted_from",
+   "fieldtype": "Link",
+   "options": "RE Booking",
+   "label": "Re-allotted From",
+   "read_only": 1
+  },
+  {
+   "fieldname": "possession_section",
+   "fieldtype": "Section Break",
+   "label": "Possession",
+   "collapsible": 1,
+   "depends_on": "eval:doc.docstatus==1"
+  },
+  {
+   "fieldname": "possession_date",
+   "fieldtype": "Date",
+   "label": "Possession Given On",
+   "read_only": 1,
+   "in_list_view": 0,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "possession_given_by",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Handed Over By",
+   "read_only": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "possession_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "possession_remarks",
+   "fieldtype": "Small Text",
+   "label": "Possession Remarks",
+   "read_only": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "RE Booking",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Booking",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "customer_name,plot",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name",
+ "track_changes": 1
+}

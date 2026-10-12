@@ -1,0 +1,347 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: realestate\n"
+"Language: ur\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Real Estate"
+msgstr "رئیل اسٹیٹ"
+
+msgid "Zarmeen Gardens"
+msgstr "زرمین گارڈنز"
+
+msgid "Housing Scheme"
+msgstr "ہاؤسنگ اسکیم"
+
+msgid "RE Project"
+msgstr "منصوبہ"
+
+msgid "RE Block"
+msgstr "بلاک"
+
+msgid "RE Plot"
+msgstr "پلاٹ"
+
+msgid "RE Plot Size"
+msgstr "پلاٹ کا سائز"
+
+msgid "RE Booking"
+msgstr "بکنگ"
+
+msgid "RE Payment"
+msgstr "رسید"
+
+msgid "RE Payment Plan"
+msgstr "ادائیگی کا منصوبہ"
+
+msgid "RE Installment"
+msgstr "قسط"
+
+msgid "RE Society Bill"
+msgstr "سوسائٹی بل"
+
+msgid "RE Charge Head"
+msgstr "چارج ہیڈ"
+
+msgid "RE Map Feature"
+msgstr "نقشے کی خصوصیت"
+
+msgid "RE Map Import"
+msgstr "نقشہ درآمد"
+
+msgid "RE Site Visit"
+msgstr "سائٹ وزٹ"
+
+msgid "RE Conversation"
+msgstr "واٹس ایپ گفتگو"
+
+msgid "RE Broadcast"
+msgstr "براڈکاسٹ"
+
+msgid "RE Quick Reply"
+msgstr "فوری جواب"
+
+msgid "RE Reminder Log"
+msgstr "یاد دہانی لاگ"
+
+msgid "RE Plot Transfer"
+msgstr "پلاٹ کی منتقلی"
+
+msgid "RE Booking Cancellation"
+msgstr "بکنگ کی منسوخی"
+
+msgid "RE Plot Merge"
+msgstr "پلاٹ کا انضمام"
+
+msgid "RE Surcharge"
+msgstr "تاخیری جرمانہ"
+
+msgid "RE Surcharge Waiver"
+msgstr "جرمانے کی معافی"
+
+msgid "RE Commission"
+msgstr "کمیشن"
+
+msgid "RE Generated Document"
+msgstr "جاری شدہ دستاویز"
+
+msgid "RE Vault Document"
+msgstr "دستاویزی والٹ"
+
+msgid "RE Maintenance Plan"
+msgstr "دیکھ بھال کا منصوبہ"
+
+msgid "RE Settings"
+msgstr "ترتیبات"
+
+msgid "Plot"
+msgstr "پلاٹ"
+
+msgid "Plots"
+msgstr "پلاٹس"
+
+msgid "Block"
+msgstr "بلاک"
+
+msgid "Customer"
+msgstr "گاہک"
+
+msgid "Owner"
+msgstr "مالک"
+
+msgid "Booking"
+msgstr "بکنگ"
+
+msgid "Bookings"
+msgstr "بکنگز"
+
+msgid "Installment"
+msgstr "قسط"
+
+msgid "Installments"
+msgstr "اقساط"
+
+msgid "Down Payment"
+msgstr "پیشگی ادائیگی"
+
+msgid "On Possession"
+msgstr "قبضے پر"
+
+msgid "Due Date"
+msgstr "آخری تاریخ"
+
+msgid "Amount"
+msgstr "رقم"
+
+msgid "Paid"
+msgstr "ادا شدہ"
+
+msgid "Due"
+msgstr "واجب الادا"
+
+msgid "Overdue"
+msgstr "زائد المیعاد"
+
+msgid "Unpaid"
+msgstr "غیر ادا شدہ"
+
+msgid "Partly Paid"
+msgstr "جزوی ادا شدہ"
+
+msgid "Outstanding"
+msgstr "بقایا"
+
+msgid "Net Price"
+msgstr "خالص قیمت"
+
+msgid "Discount"
+msgstr "رعایت"
+
+msgid "Total Price"
+msgstr "کل قیمت"
+
+msgid "Paid Amount"
+msgstr "ادا شدہ رقم"
+
+msgid "Available"
+msgstr "دستیاب"
+
+msgid "Booked"
+msgstr "بک شدہ"
+
+msgid "Sold"
+msgstr "فروخت شدہ"
+
+msgid "Reserved"
+msgstr "محفوظ"
+
+msgid "Blocked"
+msgstr "بند"
+
+msgid "Cancelled"
+msgstr "منسوخ"
+
+msgid "Draft"
+msgstr "مسودہ"
+
+msgid "Pending Approval"
+msgstr "منظوری زیر التوا"
+
+msgid "Approved"
+msgstr "منظور شدہ"
+
+msgid "Rejected"
+msgstr "مسترد"
+
+msgid "Submit for Approval"
+msgstr "منظوری کے لیے بھیجیں"
+
+msgid "Approve"
+msgstr "منظور کریں"
+
+msgid "Reject"
+msgstr "مسترد کریں"
+
+msgid "Revise"
+msgstr "نظرثانی کریں"
+
+msgid "Society Bill"
+msgstr "سوسائٹی بل"
+
+msgid "Maintenance"
+msgstr "دیکھ بھال"
+
+msgid "Security"
+msgstr "سیکیورٹی"
+
+msgid "Garbage Collection"
+msgstr "کچرا اٹھانا"
+
+msgid "Water"
+msgstr "پانی"
+
+msgid "Street Light"
+msgstr "اسٹریٹ لائٹ"
+
+msgid "Park Maintenance"
+msgstr "پارک کی دیکھ بھال"
+
+msgid "Sweeper"
+msgstr "صفائی"
+
+msgid "Arrears (earlier bills)"
+msgstr "سابقہ بقایا جات"
+
+msgid "Payable"
+msgstr "قابل ادائیگی"
+
+msgid "Receipt"
+msgstr "رسید"
+
+msgid "Mode of Payment"
+msgstr "ادائیگی کا طریقہ"
+
+msgid "Transfer Fee"
+msgstr "منتقلی فیس"
+
+msgid "Refund"
+msgstr "واپسی"
+
+msgid "Deduction"
+msgstr "کٹوتی"
+
+msgid "Commission"
+msgstr "کمیشن"
+
+msgid "Agent"
+msgstr "ایجنٹ"
+
+msgid "Dealer"
+msgstr "ڈیلر"
+
+msgid "Site Visit"
+msgstr "سائٹ وزٹ"
+
+msgid "Scheduled"
+msgstr "طے شدہ"
+
+msgid "Completed"
+msgstr "مکمل"
+
+msgid "Complaint"
+msgstr "شکایت"
+
+msgid "Allotment Letter"
+msgstr "الاٹمنٹ لیٹر"
+
+msgid "Payment Schedule"
+msgstr "ادائیگی کا شیڈول"
+
+msgid "No Demand Certificate"
+msgstr "عدم مطالبہ سرٹیفکیٹ"
+
+msgid "Possession Letter"
+msgstr "قبضہ لیٹر"
+
+msgid "Site Plan"
+msgstr "سائٹ پلان"
+
+msgid "Sale Agreement"
+msgstr "معاہدہ بیع"
+
+msgid "Maintenance Bill"
+msgstr "مینٹیننس بل"
+
+msgid "Customer Account Statement"
+msgstr "گاہک کا کھاتہ"
+
+msgid "Final Notice"
+msgstr "حتمی نوٹس"
+
+msgid "Installment Reminder"
+msgstr "قسط کی یاد دہانی"
+
+msgid "Cancellation Letter"
+msgstr "منسوخی کا خط"
+
+msgid "5 Marla"
+msgstr "5 مرلہ"
+
+msgid "10 Marla"
+msgstr "10 مرلہ"
+
+msgid "1 Kanal"
+msgstr "1 کنال"
+
+msgid "Marla"
+msgstr "مرلہ"
+
+msgid "Kanal"
+msgstr "کنال"
+
+msgid "Main Gate"
+msgstr "مین گیٹ"
+
+msgid "Central Park"
+msgstr "سینٹرل پارک"
+
+msgid "Masjid"
+msgstr "مسجد"
+
+msgid "School"
+msgstr "اسکول"
+
+msgid "Graveyard"
+msgstr "قبرستان"
+
+msgid "Water Tank"
+msgstr "پانی کی ٹینکی"
+
+msgid "Grid Station"
+msgstr "گرڈ اسٹیشن"
+
+msgid "Transformer"
+msgstr "ٹرانسفارمر"

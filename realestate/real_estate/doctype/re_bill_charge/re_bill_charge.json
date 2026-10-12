@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "charge",
+  "charge_head",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "charge",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Charge",
+   "reqd": 1
+  },
+  {
+   "fieldname": "charge_head",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Charge Head",
+   "options": "RE Charge Head"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "options": "PKR",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Bill Charge",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

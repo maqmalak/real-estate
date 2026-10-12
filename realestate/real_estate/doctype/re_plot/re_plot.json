@@ -1,0 +1,319 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:plot_no",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "plot_no",
+  "project",
+  "block",
+  "plot_size",
+  "plot_type",
+  "area_marla",
+  "area_sqft",
+  "cb1",
+  "status",
+  "hold_reason",
+  "possession_date",
+  "payment_status",
+  "list_price",
+  "price_change_reason",
+  "street",
+  "is_corner",
+  "is_park_facing",
+  "is_boulevard_facing",
+  "sb_owner",
+  "customer",
+  "customer_name",
+  "cb2",
+  "booking",
+  "mobile_no",
+  "merged_into",
+  "tab_geo",
+  "map_html",
+  "centre_lat",
+  "centre_lng",
+  "geojson",
+  "tab_engage",
+  "re_engagement_html",
+  "price_history_section",
+  "price_history"
+ ],
+ "fields": [
+  {
+   "fieldname": "plot_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Plot No",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "RE Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "block",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Block",
+   "options": "RE Block",
+   "reqd": 1
+  },
+  {
+   "fieldname": "plot_size",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Plot Size",
+   "options": "RE Plot Size",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "plot_size.plot_type",
+   "fieldname": "plot_type",
+   "fieldtype": "Select",
+   "label": "Plot Type",
+   "options": "Residential\nCommercial",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "plot_size.area_marla",
+   "fetch_if_empty": 1,
+   "fieldname": "area_marla",
+   "fieldtype": "Float",
+   "label": "Area (Marla)"
+  },
+  {
+   "fieldname": "area_sqft",
+   "fieldtype": "Float",
+   "label": "Area (sq ft)",
+   "read_only": 1,
+   "precision": "0",
+   "description": "1 Marla = 272.25 sq ft"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Available",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Available\nHold\nReserved\nBooked\nSold\nPossession Given\nBlocked",
+   "reqd": 1
+  },
+  {
+   "fieldname": "hold_reason",
+   "fieldtype": "Small Text",
+   "label": "Hold Reason",
+   "depends_on": "eval:doc.status=='Hold'",
+   "read_only": 1
+  },
+  {
+   "fieldname": "possession_date",
+   "fieldtype": "Date",
+   "label": "Possession Date",
+   "read_only": 1,
+   "depends_on": "possession_date"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Payment Status",
+   "options": "\nPaid\nDue\nOverdue",
+   "read_only": 1
+  },
+  {
+   "fieldname": "list_price",
+   "fieldtype": "Currency",
+   "label": "List Price",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "price_change_reason",
+   "fieldtype": "Data",
+   "label": "Reason for Price Change",
+   "description": "Recorded in the price history when the list price changes"
+  },
+  {
+   "fieldname": "street",
+   "fieldtype": "Data",
+   "label": "Street"
+  },
+  {
+   "fieldname": "is_corner",
+   "fieldtype": "Check",
+   "label": "Corner"
+  },
+  {
+   "fieldname": "is_park_facing",
+   "fieldtype": "Check",
+   "label": "Park Facing"
+  },
+  {
+   "fieldname": "is_boulevard_facing",
+   "fieldtype": "Check",
+   "label": "Boulevard Facing"
+  },
+  {
+   "fieldname": "sb_owner",
+   "fieldtype": "Section Break",
+   "label": "Ownership"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "booking",
+   "fieldtype": "Link",
+   "label": "Booking",
+   "options": "RE Booking",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "customer.mobile_no",
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "options": "Phone",
+   "read_only": 1
+  },
+  {
+   "fieldname": "merged_into",
+   "fieldtype": "Link",
+   "label": "Merged Into",
+   "options": "RE Plot",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tab_geo",
+   "fieldtype": "Tab Break",
+   "label": "Map"
+  },
+  {
+   "fieldname": "map_html",
+   "fieldtype": "HTML",
+   "label": "Map Html"
+  },
+  {
+   "fieldname": "centre_lat",
+   "fieldtype": "Float",
+   "label": "Latitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "centre_lng",
+   "fieldtype": "Float",
+   "label": "Longitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "geojson",
+   "fieldtype": "Code",
+   "label": "Polygon (GeoJSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "tab_engage",
+   "fieldtype": "Tab Break",
+   "label": "WhatsApp & Timeline"
+  },
+  {
+   "fieldname": "re_engagement_html",
+   "fieldtype": "HTML",
+   "label": "Re Engagement Html"
+  },
+  {
+   "fieldname": "price_history_section",
+   "fieldtype": "Section Break",
+   "label": "Price History",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "price_history",
+   "fieldtype": "Table",
+   "options": "RE Plot Price",
+   "label": "Price History",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Plot",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "block,plot_size,status,customer_name",
+ "sort_field": "plot_no",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "plot_no",
+ "track_changes": 1
+}

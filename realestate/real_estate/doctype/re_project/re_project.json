@@ -1,0 +1,176 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:project_name",
+ "creation": "2026-10-10 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project_name",
+  "company",
+  "location",
+  "is_demo",
+  "cb1",
+  "total_area_kanal",
+  "centre_lat",
+  "centre_lng",
+  "default_zoom",
+  "sb_land",
+  "land_use",
+  "land_use_total",
+  "sb_map",
+  "boundary_geojson",
+  "boundary_area_kanal",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "description": "Demo data can be wiped and regenerated with Reset Demo Data",
+   "fieldname": "is_demo",
+   "fieldtype": "Check",
+   "label": "Sample / Demo Project"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_area_kanal",
+   "fieldtype": "Float",
+   "label": "Total Area (Kanal)",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "centre_lat",
+   "fieldtype": "Float",
+   "label": "Centre Latitude",
+   "precision": "6"
+  },
+  {
+   "fieldname": "centre_lng",
+   "fieldtype": "Float",
+   "label": "Centre Longitude",
+   "precision": "6"
+  },
+  {
+   "default": "16",
+   "fieldname": "default_zoom",
+   "fieldtype": "Int",
+   "label": "Default Zoom"
+  },
+  {
+   "fieldname": "sb_land",
+   "fieldtype": "Section Break",
+   "label": "Land Use"
+  },
+  {
+   "fieldname": "land_use",
+   "fieldtype": "Table",
+   "label": "Land Use",
+   "options": "RE Land Use"
+  },
+  {
+   "fieldname": "land_use_total",
+   "fieldtype": "Percent",
+   "label": "Land Use Total",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "sb_map",
+   "fieldtype": "Section Break",
+   "label": "Boundary"
+  },
+  {
+   "description": "Polygon geometry or Feature in WGS84 (lng, lat)",
+   "fieldname": "boundary_geojson",
+   "fieldtype": "Code",
+   "label": "Boundary (GeoJSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "boundary_area_kanal",
+   "fieldtype": "Float",
+   "label": "Boundary Area (Kanal, computed)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-10 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "name": "RE Project",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "location",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "project_name",
+ "track_changes": 1
+}

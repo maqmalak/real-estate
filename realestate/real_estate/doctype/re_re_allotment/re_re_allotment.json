@@ -1,0 +1,276 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-10-12 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "index_web_pages_for_search": 0,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-12 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Real Estate",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "name": "RE Re-allotment",
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "RE-RAL-.YYYY.-",
+   "default": "RE-RAL-.YYYY.-"
+  },
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "options": "RE Plot",
+   "label": "Plot",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "cancellation",
+   "fieldtype": "Link",
+   "options": "RE Booking Cancellation",
+   "label": "Cancellation",
+   "description": "The approved cancellation that released the plot"
+  },
+  {
+   "fieldname": "previous_booking",
+   "fieldtype": "Link",
+   "options": "RE Booking",
+   "label": "Previous Booking",
+   "read_only": 1
+  },
+  {
+   "fieldname": "previous_customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "Previous Allottee",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "label": "New Allottee",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "new_customer_name",
+   "fieldtype": "Data",
+   "label": "New Allottee Name",
+   "fetch_from": "new_customer.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "new_customer_cnic",
+   "fieldtype": "Data",
+   "label": "CNIC",
+   "fetch_from": "new_customer.re_cnic",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reallotment_date",
+   "fieldtype": "Date",
+   "label": "Re-allotment Date",
+   "reqd": 1,
+   "default": "Today"
+  },
+  {
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Agent"
+  },
+  {
+   "fieldname": "sb_price",
+   "fieldtype": "Section Break",
+   "label": "Price & plan"
+  },
+  {
+   "fieldname": "total_price",
+   "fieldtype": "Currency",
+   "options": "PKR",
+   "label": "Price",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "options": "PKR",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "net_price",
+   "fieldtype": "Currency",
+   "options": "PKR",
+   "label": "Net Price",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_plan",
+   "fieldtype": "Link",
+   "options": "RE Payment Plan",
+   "label": "Payment Plan",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reallotment_fee",
+   "fieldtype": "Currency",
+   "options": "PKR",
+   "label": "Re-allotment Fee",
+   "description": "Billed to the new allottee (default from RE Settings)"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "sb_result",
+   "fieldtype": "Section Break",
+   "label": "Result"
+  },
+  {
+   "fieldname": "new_booking",
+   "fieldtype": "Link",
+   "options": "RE Booking",
+   "label": "New Booking",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "fee_invoice",
+   "fieldtype": "Link",
+   "options": "Sales Invoice",
+   "label": "Fee Invoice",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "RE Re-allotment",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Workflow State",
+   "no_copy": 1,
+   "options": "Workflow State",
+   "read_only": 1
+  }
+ ],
+ "field_order": [
+  "naming_series",
+  "plot",
+  "cancellation",
+  "previous_booking",
+  "previous_customer",
+  "cb1",
+  "new_customer",
+  "new_customer_name",
+  "new_customer_cnic",
+  "reallotment_date",
+  "agent",
+  "sb_price",
+  "total_price",
+  "discount",
+  "net_price",
+  "cb2",
+  "payment_plan",
+  "reallotment_fee",
+  "remarks",
+  "sb_result",
+  "new_booking",
+  "fee_invoice",
+  "amended_from",
+  "workflow_state"
+ ],
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "write": 1,
+   "submit": 1,
+   "cancel": 0
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Agent",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "print": 1
+  }
+ ],
+ "title_field": "new_customer_name"
+}
