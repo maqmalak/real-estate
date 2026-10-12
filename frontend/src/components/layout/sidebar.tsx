@@ -1,5 +1,6 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { ExternalLink, X, LayoutGrid } from "lucide-react";
+import { useState } from "react";
+import { NavLink, matchPath, useLocation } from "react-router-dom";
+import { ChevronRight, ExternalLink, X, LayoutGrid } from "lucide-react";
 import { cn } from "@/utils/cn";
 import type { NavGroup } from "@/app/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +30,21 @@ function BackToDesktop({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+const OPEN_KEY = "sidebar.open-groups";
+
+/** Titled groups start collapsed ("less"); the user's show/less choices are remembered per group title. */
+function useOpenGroups() {
+  const [open, setOpen] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem(OPEN_KEY) || "{}"); } catch { return {}; }
+  });
+  const toggle = (title: string, value: boolean) => setOpen((o) => {
+    const next = { ...o, [title]: value };
+    try { localStorage.setItem(OPEN_KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
+    return next;
+  });
+  return { open, toggle };
+}
+
 function NavLinks({
   groups,
   appLabel,
@@ -46,6 +62,12 @@ function NavLinks({
   const activeHashLink = hashLinks.find((to) => to === location.pathname + location.hash);
   const linkClass = (to: string) => ({ isActive }: { isActive: boolean }) =>
     navLinkClass({ isActive: to.includes("#") ? to === activeHashLink : isActive && !(activeHashLink && activeHashLink.startsWith(to + "#")) });
+  const { open, toggle } = useOpenGroups();
+  // The group holding the current page always shows, so you can see where you are.
+  const isHere = (to: string) => {
+    const path = to.split("#")[0];
+    return !!matchPath({ path, end: isAppRoot(path) }, location.pathname) || (!isAppRoot(path) && location.pathname.startsWith(path + "/"));
+  };
   const visibleGroups = groups
     .map((group) => ({
       ...group,
@@ -54,20 +76,30 @@ function NavLinks({
     .filter((group) => group.items.length > 0);
 
   return (
-    <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4 scrollbar-thin">
+    <nav className="flex-1 space-y-2 overflow-y-auto px-3 py-4 scrollbar-thin">
       {appLabel && !visibleGroups[0]?.title && (
         <p className="px-2 text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted">
           {appLabel}
         </p>
       )}
-      {visibleGroups.map((group, gi) => (
+      {visibleGroups.map((group, gi) => {
+        const here = group.items.some((i) => isHere(i.to));
+        const expanded = !group.title || (open[group.title] ?? here);
+        return (
         <div key={gi} className="space-y-1">
           {group.title && (
-            <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted">
-              {group.title}
-            </p>
+            <button type="button" onClick={() => toggle(group.title!, !expanded)} aria-expanded={expanded}
+              title={expanded ? "Show less" : `Show ${group.items.length} items`}
+              className="group/head flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted transition-colors hover:bg-white/5 hover:text-sidebar-foreground">
+              <ChevronRight className={cn("h-3 w-3 shrink-0 transition-transform duration-200", expanded && "rotate-90")} />
+              <span className="truncate">{group.title}</span>
+              {here && !expanded && <span className="h-1.5 w-1.5 rounded-full bg-primary" title="Current page is in this group" />}
+              <span className="ml-auto shrink-0 whitespace-nowrap rounded-full bg-white/10 px-1.5 text-[9px] font-medium normal-case tracking-normal opacity-70 group-hover/head:opacity-100">
+                {expanded ? "less" : group.items.length}
+              </span>
+            </button>
           )}
-          {group.items.map((item) => {
+          {expanded && group.items.map((item) => {
             const Icon = item.icon;
             return (
               item.to.startsWith("/desk/") ? (
@@ -87,7 +119,8 @@ function NavLinks({
             );
           })}
         </div>
-      ))}
+        );
+      })}
     </nav>
   );
 }

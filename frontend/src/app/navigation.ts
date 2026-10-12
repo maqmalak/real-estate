@@ -301,6 +301,18 @@ const HOME_NAV: NavGroup[] = [...APP_GROUPS, "More"]
 export const APP_NAVIGATION: Record<string, NavGroup[]> = {
   home: HOME_NAV,
   re: [
+    { items: [
+      { label: "Home", to: "/re/home", icon: House },
+    ] },
+    { title: "Overview", items: [
+      { label: "Dashboard", to: "/re", icon: LayoutDashboard },
+      { label: "Today", to: "/re/today", icon: CalendarClock },
+      { label: "Society Map", to: "/re/map", icon: MapIcon },
+      { label: "Plots", to: "/re/plots", icon: Boxes },
+      { label: "Insights", to: "/re/insights", icon: BarChart3, roles: ["Sales Manager", "Accounts User", "Accounts Manager"] },
+      { label: "Reports", to: "/re/reports", icon: FileText, roles: ["Sales Manager", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager", "Projects User", "Projects Manager"] },
+      { label: "Acceptance checks", to: "/re/acceptance", icon: ShieldCheck, roles: ["System Manager"] },
+    ] },
     { title: "Setup", items: [
       { label: "Projects", to: "/re/d/re-project", icon: Landmark, roles: ["Sales Manager", "Projects User", "Projects Manager"] },
       { label: "Blocks", to: "/re/d/re-block", icon: Boxes, roles: ["Sales Manager"] },
@@ -311,16 +323,6 @@ export const APP_NAVIGATION: Record<string, NavGroup[]> = {
       { label: "Quick Replies", to: "/re/d/re-quick-reply", icon: Ticket, roles: ["Sales Manager", "Sales User"] },
       { label: "Users & Roles", to: "/re/settings/users", icon: ShieldCheck, roles: ["System Manager"] },
       { label: "Settings", to: "/re/d/re-settings", icon: SettingsIcon, roles: ["System Manager"] },
-    ] },
-    { title: "Zarmeen Gardens", items: [
-      { label: "Home", to: "/re/home", icon: House },
-      { label: "Dashboard", to: "/re", icon: LayoutDashboard },
-      { label: "Today", to: "/re/today", icon: CalendarClock },
-      { label: "Society Map", to: "/re/map", icon: MapIcon },
-      { label: "Plots", to: "/re/plots", icon: Boxes },
-      { label: "Insights", to: "/re/insights", icon: BarChart3, roles: ["Sales Manager", "Accounts User", "Accounts Manager"] },
-      { label: "Reports", to: "/re/reports", icon: FileText, roles: ["Sales Manager", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager", "Projects User", "Projects Manager"] },
-      { label: "Acceptance checks", to: "/re/acceptance", icon: ShieldCheck, roles: ["System Manager"] },
     ] },
     { title: "Sales & Collections", items: [
       { label: "Bookings", to: "/re/d/re-booking", icon: ClipboardList, roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Accounts Manager", "Recovery Officer"] },
@@ -346,7 +348,7 @@ export const APP_NAVIGATION: Record<string, NavGroup[]> = {
       { label: "Broadcasts", to: "/re/d/re-broadcast", icon: Radar, roles: ["Sales Manager", "Recovery Officer", "Society Manager"] },
       { label: "Reminder Log", to: "/re/d/re-reminder-log", icon: Hourglass, roles: ["Sales Manager", "Recovery Officer", "Society Manager", "Accounts User", "Accounts Manager"] },
     ] },
-    { title: "Society Ops", items: [
+    { title: "Society Operations", items: [
       { label: "Society Bills", to: "/re/d/re-society-bill", icon: FileCheck2, roles: ["Society Manager", "Accounts User", "Accounts Manager", "Recovery Officer", "Sales Manager"] },
       { label: "Bulk Collection", to: "/re/society/collect", icon: HandCoins, roles: ["Society Manager", "Accounts User", "Accounts Manager", "Recovery Officer"] },
       { label: "Charge Heads", to: "/re/d/re-charge-head", icon: Percent, roles: ["Society Manager", "Accounts User", "Accounts Manager"] },

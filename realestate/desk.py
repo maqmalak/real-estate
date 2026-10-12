@@ -158,25 +158,36 @@ def _workspace():
 
 
 def _sidebar():
+	# Same groups and order as the React sidebar (app/navigation.ts): Home, then collapsible sections, closed by default.
 	items = [
 		("Link", "Home", "Workspace", "Real Estate", "home"),
+		("Section Break", "Overview", None, None, "layout-dashboard"),
 		("Link", "Dashboard", "Dashboard", "Real Estate", "chart"),
 		("Link", "Site Map", "Page", "re-site-map", "map"),
-		("Link", "WhatsApp Inbox", "Page", "re-inbox", "message-circle"),
-		("Section Break", "Setup", None, None, "settings"),
-		("Link", "RE Settings", "DocType", "RE Settings", "settings"),
-		("Link", "Project", "DocType", "RE Project", "building"),
-		("Link", "Map Import", "DocType", "RE Map Import", "upload"),
-		("Link", "Payment Plans", "DocType", "RE Payment Plan", "calendar"),
-		("Link", "Quick Replies", "DocType", "RE Quick Reply", "zap"),
-		("Section Break", "Land & Sales", None, None, "layers"),
 		("Link", "Plots", "DocType", "RE Plot", "grid"),
+		("Section Break", "Setup", None, None, "settings"),
+		("Link", "Project", "DocType", "RE Project", "building"),
 		("Link", "Blocks", "DocType", "RE Block", "square"),
+		("Link", "Plot Sizes", "DocType", "RE Plot Size", "ruler"),
+		("Link", "Payment Plans", "DocType", "RE Payment Plan", "calendar"),
+		("Link", "Map Import", "DocType", "RE Map Import", "upload"),
+		("Link", "Quick Replies", "DocType", "RE Quick Reply", "zap"),
+		("Link", "RE Settings", "DocType", "RE Settings", "settings"),
+		("Section Break", "Sales & Collections", None, None, "layers"),
 		("Link", "Bookings", "DocType", "RE Booking", "file-check"),
 		("Link", "Payments", "DocType", "RE Payment", "wallet"),
-		("Link", "Society Bills", "DocType", "RE Society Bill", "receipt"),
+		("Link", "Sales Invoices", "DocType", "Sales Invoice", "receipt"),
+		("Link", "Payment Entries", "DocType", "Payment Entry", "wallet"),
 		("Link", "Customers", "DocType", "Customer", "customer"),
-		("Section Break", "CRM", None, None, "users"),
+		("Section Break", "Operations", None, None, "gauge"),
+		("Link", "Transfers", "DocType", "RE Plot Transfer", "arrow-left-right"),
+		("Link", "Cancellations", "DocType", "RE Booking Cancellation", "x-circle"),
+		("Link", "Re-allotments", "DocType", "RE Re Allotment", "arrow-left-right"),
+		("Link", "Plot Merges", "DocType", "RE Plot Merge", "combine"),
+		("Link", "Surcharges", "DocType", "RE Surcharge", "percent"),
+		("Link", "Commissions", "DocType", "RE Commission", "calculator"),
+		("Section Break", "CRM & WhatsApp", None, None, "users"),
+		("Link", "WhatsApp Inbox", "Page", "re-inbox", "message-circle"),
 		("Link", "Leads", "DocType", "CRM Lead", "users-round"),
 		("Link", "Deals", "DocType", "CRM Deal", "handshake"),
 		("Link", "Site Visits", "DocType", "RE Site Visit", "map-pin"),
@@ -185,7 +196,14 @@ def _sidebar():
 		("Link", "Broadcasts", "DocType", "RE Broadcast", "megaphone"),
 		("Link", "Templates", "DocType", "WhatsApp Template", "file-text"),
 		("Link", "Open Frappe CRM", "URL", None, "external-link"),
-		("Section Break", "Development & Buying", None, None, "hammer"),
+		("Section Break", "Society Operations", None, None, "building-2"),
+		("Link", "Society Bills", "DocType", "RE Society Bill", "receipt"),
+		("Link", "Charge Heads", "DocType", "RE Charge Head", "list"),
+		("Link", "Maintenance Plans", "DocType", "RE Maintenance Plan", "calendar-clock"),
+		("Link", "Maintenance Tasks", "DocType", "Task", "list-checks"),
+		("Link", "Infrastructure", "DocType", "RE Map Feature", "factory"),
+		("Link", "ToDo", "DocType", "ToDo", "check"),
+		("Section Break", "Development & Costs", None, None, "hammer"),
 		("Link", "Development Projects", "DocType", "Project", "folder-kanban"),
 		("Link", "Budgets", "DocType", "Budget", "target"),
 		("Link", "Material Requests", "DocType", "Material Request", "clipboard-list"),
@@ -194,17 +212,9 @@ def _sidebar():
 		("Link", "Purchase Invoices", "DocType", "Purchase Invoice", "file-text"),
 		("Link", "Material Issues", "DocType", "Stock Entry", "package-minus"),
 		("Link", "Assets", "DocType", "Asset", "building-2"),
-		("Section Break", "Accounts & Documents", None, None, "landmark"),
-		("Link", "Sales Invoices", "DocType", "Sales Invoice", "receipt"),
-		("Link", "Payment Entries", "DocType", "Payment Entry", "wallet"),
-		("Link", "Charge Heads", "DocType", "RE Charge Head", "list"),
+		("Section Break", "Documents", None, None, "folder"),
 		("Link", "Generated Documents", "DocType", "RE Generated Document", "file-badge"),
 		("Link", "Document Vault", "DocType", "RE Vault Document", "archive"),
-		("Section Break", "Maintenance", None, None, "wrench"),
-		("Link", "Maintenance Tasks", "DocType", "Task", "list-checks"),
-		("Link", "ToDo", "DocType", "ToDo", "check"),
-		("Link", "Maintenance Plans", "DocType", "RE Maintenance Plan", "calendar-clock"),
-		("Link", "Projects", "DocType", "Project", "folder"),
 		("Section Break", "Reports", None, None, "sheet"),
 	] + [("Link", r, "Report", r, "") for _m, rs in REPORTS for r in rs]
 	sb = frappe.get_doc("Workspace Sidebar", "Real Estate") if frappe.db.exists("Workspace Sidebar", "Real Estate") else frappe.new_doc("Workspace Sidebar")
@@ -214,7 +224,7 @@ def _sidebar():
 	for kind, label, link_type, target, icon in items:
 		if kind == "Section Break":
 			in_section = True
-			sb.append("items", {"type": kind, "label": label, "icon": icon, "indent": 1, "collapsible": 1, "keep_closed": label == "Reports"})
+			sb.append("items", {"type": kind, "label": label, "icon": icon, "indent": 1, "collapsible": 1, "keep_closed": 1})
 			continue
 		row = {"type": "Link", "label": label, "link_type": link_type, "link_to": target, "icon": icon, "child": int(in_section)}
 		if link_type == "URL":
