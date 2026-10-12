@@ -4,7 +4,7 @@
  * submit / cancel, Connections, Activity, attachments. Per-DocType extras (summary cards, actions) come from
  * ENHANCERS below.
  */
-import { todayISO } from "@/re/lib/format";
+import { money, todayISO } from "@/re/lib/format";
 import { get } from "@/re/lib/api";
 import type { LucideIcon } from "lucide-react";
 import { FileText } from "lucide-react";
@@ -146,9 +146,17 @@ export function buildConfig(meta: FormMeta, base: string, enhancer: Enhancer = {
       if (!child || f.hidden) continue;
       const cols = child.fields.map(toField).filter((c): c is DocField => Boolean(c) && !["Section Break", "Column Break", "Tab Break"].includes(c!.fieldtype));
       const listed = cols.filter((c) => c.in_list_view);
+      // every money column gets a total under the grid (bill charges, installments, allocations…)
+      const moneyCols = cols.filter((c) => c.fieldtype === "Currency");
       children.push({
         key: f.fieldname, label: f.label ?? f.fieldname, doctype: child.doctype, columns: (listed.length ? listed : cols).slice(0, 6),
         dialogColumns: cols, readOnly: Boolean(f.read_only), tab: tabLabel, wide: cols.length > 6,
+        totals: moneyCols.length
+          ? (rows) => [
+            { label: "Rows", value: rows.length, align: "left" as const },
+            ...moneyCols.map((c) => ({ label: `Total ${c.label ?? c.fieldname}`, value: money(rows.reduce((a, r) => a + (Number(r[c.fieldname]) || 0), 0)), align: "right" as const })),
+          ]
+          : undefined,
       });
       continue;
     }

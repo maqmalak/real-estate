@@ -329,7 +329,7 @@ export const APP_NAVIGATION: Record<string, NavGroup[]> = {
       { label: "Receipts", to: "/re/d/re-payment", icon: Calculator, roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager"] },
       { label: "Sales Invoices", to: "/selling/sales-invoices", icon: FileText, roles: ["Sales Manager", "Accounts User", "Accounts Manager", "Recovery Officer"] },
       { label: "Payment Entries", to: "/accounting/payment-entries", icon: ArrowLeftRight, roles: ["Sales Manager", "Accounts User", "Accounts Manager"] },
-      { label: "Customers", to: "/masters/customers", icon: Briefcase, roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager"] },
+      { label: "Customers", to: "/re/customers", icon: Briefcase, roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager"] },
     ] },
     { title: "Operations", items: [
       { label: "Operations Hub", to: "/re/operations", icon: Gauge, roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Accounts Manager", "Recovery Officer"] },
@@ -362,7 +362,7 @@ export const APP_NAVIGATION: Record<string, NavGroup[]> = {
       { label: "Purchase Receipts", to: "/purchase/receipts", icon: Truck, roles: ["Projects User", "Projects Manager", "Accounts User", "Accounts Manager", "Stock User", "Purchase User"] },
       { label: "Purchase Invoices", to: "/purchase/invoices", icon: FileText, roles: ["Accounts User", "Accounts Manager", "Purchase User"] },
       { label: "Stock Entries", to: "/inventory/stock-entries", icon: Package, roles: ["Projects User", "Projects Manager", "Stock User"] },
-      { label: "Assets", to: "/assets", icon: Warehouse, roles: ["Accounts User", "Accounts Manager", "Projects User", "Projects Manager"] },
+      { label: "Assets", to: "/re/assets", icon: Warehouse, roles: ["Accounts User", "Accounts Manager", "Projects User", "Projects Manager"] },
     ] },
     { title: "Documents", items: [
       { label: "Documents", to: "/re/documents", icon: FileCheck2, roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager"] },

@@ -10,6 +10,7 @@ import { Input, Label, Select } from "@/re/components/ui/input";
 import { Empty, Skeleton } from "@/re/components/ui/skeleton";
 import { getList, post } from "@/re/lib/api";
 import { date, dateTime } from "@/re/lib/format";
+import { LANG_LABEL, LangToggle, type DocLang } from "@/re/components/record/GenerateDocs";
 
 const TYPES: Record<string, string> = {
   "Booking Application Form": "RE Booking", "Allotment Letter": "RE Booking", "Payment Schedule": "RE Booking", "Installment Reminder": "RE Booking",
@@ -19,20 +20,21 @@ const TYPES: Record<string, string> = {
   "Transfer Application": "RE Plot Transfer", "Transfer Letter": "RE Plot Transfer",
 };
 
-interface Gen { name: string; document_type: string; reference_doctype: string; reference_name: string; version: number; customer: string | null; plot: string | null; issued_on: string; file: string | null }
+interface Gen { name: string; document_type: string; reference_doctype: string; reference_name: string; version: number; language: DocLang | null; customer: string | null; plot: string | null; issued_on: string; file: string | null }
 interface Vault { name: string; title: string; document_type: string; authority: string | null; reference_no: string | null; issue_date: string | null; expiry_date: string | null; status: string; file: string | null }
 
 export function DocumentsPage() {
   const qc = useQueryClient();
   const [type, setType] = useState("Allotment Letter");
   const [ref, setRef] = useState("");
+  const [lang, setLang] = useState<DocLang>("en");
   const gen = useQuery({ queryKey: ["re-gen-docs"], queryFn: () => getList<Gen>("RE Generated Document", {
-    fields: ["name", "document_type", "reference_doctype", "reference_name", "version", "customer", "plot", "issued_on", "file"], orderBy: "issued_on desc", limit: 40 }) });
+    fields: ["name", "document_type", "reference_doctype", "reference_name", "version", "language", "customer", "plot", "issued_on", "file"], orderBy: "issued_on desc", limit: 40 }) });
   const vault = useQuery({ queryKey: ["re-vault"], queryFn: () => getList<Vault>("RE Vault Document", {
     fields: ["name", "title", "document_type", "authority", "reference_no", "issue_date", "expiry_date", "status", "file"], orderBy: "expiry_date asc", limit: 100 }) });
   const make = useMutation({
-    mutationFn: () => post<{ file_url: string; version: number }>("realestate.documents.generate", { document_type: type, reference_name: ref.trim() }),
-    onSuccess: (r) => { toast.success(`${type} v${r.version} generated`); window.open(r.file_url, "_blank"); void qc.invalidateQueries({ queryKey: ["re-gen-docs"] }); },
+    mutationFn: () => post<{ file_url: string; version: number }>("realestate.documents.generate", { document_type: type, reference_name: ref.trim(), language: lang }),
+    onSuccess: (r) => { toast.success(`${type} (${LANG_LABEL[lang]}) v${r.version} generated`); window.open(r.file_url, "_blank"); void qc.invalidateQueries({ queryKey: ["re-gen-docs"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
   return (
@@ -44,7 +46,7 @@ export function DocumentsPage() {
       <Card>
         <CardHeader><CardTitle>Generate a document</CardTitle><CardDescription>Also available from the Actions menu of a booking, plot, bill or receipt</CardDescription></CardHeader>
         <CardContent>
-          <form className="grid gap-3 sm:grid-cols-[16rem_1fr_auto] sm:items-end" onSubmit={(e) => { e.preventDefault(); if (ref.trim()) make.mutate(); }}>
+          <form className="grid gap-3 sm:grid-cols-[16rem_1fr_auto_auto] sm:items-end" onSubmit={(e) => { e.preventDefault(); if (ref.trim()) make.mutate(); }}>
             <div>
               <Label htmlFor="d-type">Document</Label>
               <Select id="d-type" value={type} onChange={(e) => setType(e.target.value)}>{Object.keys(TYPES).map((t) => <option key={t}>{t}</option>)}</Select>
@@ -53,6 +55,7 @@ export function DocumentsPage() {
               <Label htmlFor="d-ref">{TYPES[type]} name</Label>
               <Input id="d-ref" required value={ref} onChange={(e) => setRef(e.target.value)} placeholder={TYPES[type] === "RE Plot" ? "e.g. A-012" : TYPES[type] === "Customer" ? "Customer name" : "e.g. RE-BK-2026-00001"} />
             </div>
+            <div><Label>Language</Label><div><LangToggle value={lang} onChange={setLang} /></div></div>
             <Button type="submit" disabled={make.isPending}>{make.isPending ? <Loader2 className="animate-spin" /> : <FileText />} Generate PDF</Button>
           </form>
         </CardContent>
@@ -64,7 +67,7 @@ export function DocumentsPage() {
             {gen.isLoading ? <Skeleton className="h-40" /> : !gen.data?.length ? <Empty title="None yet" /> : gen.data.map((g) => (
               <div key={g.name} className="flex items-center justify-between gap-3 py-2 text-sm">
                 <div className="min-w-0">
-                  <p className="font-medium">{g.document_type} <span className="text-xs text-muted-foreground">v{g.version}</span></p>
+                  <p className="font-medium">{g.document_type} <span className="text-xs text-muted-foreground">v{g.version}</span>{g.language === "ur" && <span className="ml-1.5 rounded-full bg-teal-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-teal-700 dark:text-teal-300">اردو</span>}</p>
                   <p className="truncate text-xs text-muted-foreground">{g.reference_name}{g.plot ? ` · plot ${g.plot}` : ""} · {dateTime(g.issued_on)}</p>
                 </div>
                 {g.file && <Button size="sm" variant="outline" asChild><a href={g.file} target="_blank" rel="noreferrer">PDF</a></Button>}

@@ -47,7 +47,14 @@ import type { CrmDeal } from "@/types/frappe";
 type ViewMode = "list" | "kanban";
 
 function dealName(r: CrmDeal): string {
-  return r.organization || r.organization_name || r.name || "";
+  // a person's deal (real estate buyers) is titled by the person, a company deal by the organisation
+  return r.organization || r.organization_name || r.lead_name || r.name || "";
+}
+
+/** Real-estate interest on a deal (block, plot size, budget) — shown when the deal has no value yet. */
+function dealInterest(r: CrmDeal): string {
+  const x = r as CrmDeal & { re_interested_block?: string; re_plot_size?: string; re_budget?: number };
+  return [x.re_plot_size, x.re_interested_block, x.re_budget ? `budget ${formatMoney(Number(x.re_budget), r.currency, { compact: true })}` : ""].filter(Boolean).join(" · ");
 }
 
 function dealValue(r: CrmDeal): number {
@@ -114,7 +121,7 @@ export function DealsPage() {
     doctype: "CRM Deal",
     columnField: "status",
     filters: kanbanFilters,
-    kanbanFields: ["deal_value", "expected_deal_value", "currency", "lead_name", "mobile_no", "phone"],
+    kanbanFields: ["deal_value", "expected_deal_value", "currency", "lead_name", "mobile_no", "phone", "re_interested_block", "re_plot_size", "re_budget"],
     enabled: view === "kanban",
   });
 
@@ -261,10 +268,11 @@ export function DealsPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
         {/* Clicking a card filters the List and the Pipeline to it; clicking it again (or Total) releases it. */}
-        <StatCard label="Total Deals" value={stats.total} icon={<Users className="h-4 w-4" />} tone="primary" onClick={cardFilter.clear} />
+        <StatCard size="compact" label="Total Deals" value={stats.total} icon={<Users className="h-4 w-4" />} tone="primary" onClick={cardFilter.clear} />
         <StatCard
+          size="compact"
           label="Pipeline Value"
           value={formatMoney(stats.pipeline, stats.currency, { compact: true })}
           icon={<Coins className="h-4 w-4" />}
@@ -272,8 +280,9 @@ export function DealsPage() {
           onClick={() => cardFilter.toggle("pipeline")}
           active={cardFilter.active === "pipeline"}
         />
-        <StatCard label="Open Deals" value={stats.open} icon={<TrendingUp className="h-4 w-4" />} tone="amber" onClick={() => cardFilter.toggle("open")} active={cardFilter.active === "open"} />
+        <StatCard size="compact" label="Open Deals" value={stats.open} icon={<TrendingUp className="h-4 w-4" />} tone="amber" onClick={() => cardFilter.toggle("open")} active={cardFilter.active === "open"} />
         <StatCard
+          size="compact"
           label="Won Value"
           value={formatMoney(stats.won, stats.currency, { compact: true })}
           icon={<Handshake className="h-4 w-4" />}
@@ -281,7 +290,7 @@ export function DealsPage() {
           onClick={() => cardFilter.toggle("won")}
           active={cardFilter.active === "won"}
         />
-        <StatCard label="Lost Deals" value={stats.lost} icon={<X className="h-4 w-4" />} tone="rose" onClick={() => cardFilter.toggle("lost")} active={cardFilter.active === "lost"} />
+        <StatCard size="compact" label="Lost Deals" value={stats.lost} icon={<X className="h-4 w-4" />} tone="rose" onClick={() => cardFilter.toggle("lost")} active={cardFilter.active === "lost"} />
       </div>
 
       <ActiveCardFilter label={cardFilter.active ? DEAL_CARD_LABELS[cardFilter.active] : null} onClear={cardFilter.clear} />
@@ -358,9 +367,9 @@ export function DealsPage() {
               <RecordId name={r.name} className="block text-[10px]" />
               <div className="flex min-w-0 items-center gap-2">
                 <Avatar name={dealName(r)} size="sm" className={avatarTone(dealName(r))} />
-                <p className="min-w-0 flex-1 truncate text-sm font-medium">{dealName(r)}</p>
+                <p className="min-w-0 flex-1 truncate text-sm font-semibold">{dealName(r)}</p>
               </div>
-              {r.lead_name && (
+              {r.lead_name && r.lead_name !== dealName(r) && (
                 <p className="flex min-w-0 items-center gap-1 truncate text-xs text-muted-foreground">
                   <Mail className="h-3.5 w-3.5 shrink-0" />{r.lead_name}
                 </p>
@@ -391,9 +400,11 @@ export function DealsPage() {
                   )}
                 </p>
               )}
-              <p className="text-sm font-semibold text-emerald-600">
-                {formatMoney(dealValue(r), r.currency)}
-              </p>
+              {dealValue(r) > 0 ? (
+                <p className="text-sm font-semibold text-emerald-600">{formatMoney(dealValue(r), r.currency)}</p>
+              ) : dealInterest(r) ? (
+                <p className="truncate rounded-md bg-primary/[0.07] px-1.5 py-0.5 text-xs font-medium text-primary">{dealInterest(r)}</p>
+              ) : null}
               <div className="flex min-w-0 items-center justify-between gap-2">
                 <StatusBadge status={r.status} />
                 {r.deal_owner && <span className="min-w-0 truncate text-[11px] text-muted-foreground">{r.deal_owner}</span>}

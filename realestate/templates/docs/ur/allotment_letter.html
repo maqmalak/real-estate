@@ -1,0 +1,32 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>الاٹمنٹ لیٹر</h2><div class="sub">حوالہ {{ ur_ltr(doc.name) }} · {{ ur_date(frappe.utils.nowdate()) }}</div>
+<p>محترم / محترمہ {{ cust.customer_name }}،</p><p>ہمیں آپ کو <b>زرمین گارڈنز ہاؤسنگ اسکیم</b> میں درج ذیل پلاٹ الاٹ کرتے ہوئے خوشی ہو رہی ہے، جو ادائیگی کے پلان اور اسکیم کی شرائط و ضوابط سے مشروط ہے:</p>
+<table><tr><th>گاہک</th><td>{{ cust.customer_name }}{% if cust.re_father_name %} ولد / زوجہ {{ cust.re_father_name }}{% endif %}</td></tr>
+<tr><th>شناختی کارڈ</th><td>{{ ur_ltr(cust.re_cnic) }}</td></tr>
+<tr><th>موبائل</th><td>{{ ur_ltr(cust.mobile_no or doc.mobile_no) }}</td></tr>
+<tr><th>نامزد وارث</th><td>{{ cust.re_nominee_name or "" }}{% if cust.re_nominee_relation %} ({{ ur(cust.re_nominee_relation) }}){% endif %}</td></tr>
+<tr><th>پلاٹ</th><td>{{ ur_ltr(doc.plot) }} · {{ ur(doc.plot_size) }} · {{ ur(doc.block) }}{% if plot.street %} · {{ plot.street }}{% endif %}</td></tr></table>
+<table><tr><th>خالص قیمت</th><td>{{ ur_money(doc.net_price) }}</td></tr>
+<tr><th>ادائیگی پلان</th><td>{{ ur(doc.payment_plan) }} — شیڈول منسلک ہے</td></tr><tr><th>اب تک ادا شدہ</th><td>{{ ur_money(doc.paid_amount) }}</td></tr></table>
+<p>یہ الاٹمنٹ انتظامیہ کی تحریری منظوری کے بغیر قابلِ منتقلی نہیں۔ براہِ کرم یہ خط محفوظ رکھیں، قبضہ کے وقت اس کی ضرورت ہوگی۔</p><table class="sign"><tr><td>گاہک</td><td class="gap"></td><td>برائے زرمین ڈویلپرز (پرائیویٹ) لمیٹڈ<br><span class="muted">مجاز دستخط کنندہ</span></td></tr></table></div>

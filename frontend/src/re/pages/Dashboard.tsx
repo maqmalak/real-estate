@@ -10,7 +10,8 @@ import {
   PhoneCall, Users, Wrench, FileWarning, Inbox,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   Avatar, axisShort, C, ChartCard, SeriesLegend, useSeriesPrefs, ChartTip, compact, DataTable, Donut, Gauge, Highlights, KpiCard, Pill, pctDelta, Segmented, STATUS_TONE, useChartTheme,
@@ -19,22 +20,37 @@ import { StatusBadge } from "@/re/components/ui/badge";
 import { Button } from "@/re/components/ui/button";
 import { Empty, Skeleton } from "@/re/components/ui/skeleton";
 import type { BlockScore, Receipt } from "@/re/lib/analytics-types";
-import { get } from "@/re/lib/api";
-import { date, money, num, time, waNumber } from "@/re/lib/format";
+import { get, post } from "@/re/lib/api";
+import { date, money, num, time } from "@/re/lib/format";
 import type { Dashboard } from "@/re/lib/types";
-import { cn, deskUrl, slug } from "@/re/lib/utils";
+import { cn, followUpUrl, recordUrl } from "@/re/lib/utils";
 import { useAuth } from "@/re/providers/auth";
 import { useTheme } from "@/re/providers/theme";
 
-export function CallButtons({ phone }: { phone: string | null | undefined }) {
+/** Call + WhatsApp. WhatsApp opens the chat in the team inbox (/re/inbox) — created on the spot for a number that has
+ *  never messaged — so the conversation stays in the ERP instead of the WhatsApp app. */
+export function CallButtons({ phone, partyType, party }: { phone: string | null | undefined; partyType?: string | null; party?: string | null }) {
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
   if (!phone) return null;
+  const openChat = async () => {
+    setBusy(true);
+    try {
+      const name = await post<string>("realestate.whatsapp.inbox.open_conversation", { phone, party_type: partyType ?? undefined, party: party ?? undefined });
+      navigate(`/re/inbox?view=everything&c=${encodeURIComponent(name)}`);
+    } catch (e) {
+      toast.error((e as Error).message || "Could not open the chat");
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <div className="flex gap-1">
       <Button asChild size="icon" variant="outline" className="size-8" title={`Call ${phone}`}>
         <a href={`tel:${phone}`}><Phone /></a>
       </Button>
-      <Button asChild size="icon" variant="outline" className="size-8 text-emerald-600" title="WhatsApp">
-        <a href={`https://wa.me/${waNumber(phone)}`} target="_blank" rel="noreferrer"><MessageCircle /></a>
+      <Button size="icon" variant="outline" className="size-8 text-emerald-600" title="Open the WhatsApp chat in the inbox" disabled={busy} onClick={() => void openChat()}>
+        <MessageCircle />
       </Button>
     </div>
   );
@@ -289,17 +305,17 @@ export function DashboardPage() {
                   <p className="truncate font-medium">{v.party_name}</p>
                   <p className="truncate text-xs text-muted-foreground"><PhoneCall className="mr-1 inline size-3" />Site visit · {date(v.visit_on)} {time(v.visit_on)}{v.interested_plot && ` · plot ${v.interested_plot}`}</p>
                 </div>
-                <CallButtons phone={v.mobile_no} />
+                <CallButtons phone={v.mobile_no} partyType={v.party_type} party={v.party} />
               </div>
             ))}
             {data.schedule.follow_ups.map((f) => (
               <div key={f.name} className="flex items-center gap-3 py-2.5">
                 <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400"><CalendarClock className="size-4" /></span>
                 <div className="min-w-0 flex-1">
-                  <a className="block truncate font-medium hover:underline" href={deskUrl(`crm-task/${f.name}`)} target="_blank" rel="noreferrer">{f.title}</a>
+                  <Link className="block truncate font-medium hover:underline" to={followUpUrl(f)}>{f.title}</Link>
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">Due {date(f.due_date)} {time(f.due_date)} <StatusBadge status={f.priority} /></p>
                 </div>
-                <CallButtons phone={f.mobile_no} />
+                <CallButtons phone={f.mobile_no} partyType={f.reference_doctype} party={f.reference_docname} />
               </div>
             ))}
           </div>
@@ -310,24 +326,24 @@ export function DashboardPage() {
             ["complaints", `Complaints ${data.urgent.length}`], ["documents", `Documents ${data.expiring?.length ?? 0}`], ["approvals", `Approvals ${data.approvals?.count ?? 0}`]]} />}>
           <div className="divide-y">
             {urgentTab === "complaints" && (data.urgent.length ? data.urgent.map((u) => (
-              <a key={u.name} href={deskUrl(`${slug("Task")}/${u.name}`)} target="_blank" rel="noreferrer" className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
+              <Link key={u.name} to={recordUrl("Task", u.name)} className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
                 <span className={cn("grid size-9 shrink-0 place-items-center rounded-xl", u.re_priority === "Critical" || u.priority === "Urgent" ? "bg-red-500/15 text-red-600 dark:text-red-400" : "bg-orange-500/15 text-orange-600 dark:text-orange-400")}><Wrench className="size-4" /></span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{u.subject}</p>
                   <p className="truncate text-xs text-muted-foreground">{[u.type, u.re_block, u.re_plot].filter(Boolean).join(" · ")} · due {date(u.exp_end_date)}</p>
                 </div>
                 <div className="flex shrink-0 gap-1"><StatusBadge status={u.re_priority ?? u.priority} /><StatusBadge status={u.status} /></div>
-              </a>
+              </Link>
             )) : <Empty title="No urgent complaints" />)}
             {urgentTab === "documents" && (data.expiring?.length ? data.expiring.map((d) => (
-              <a key={d.name} href={deskUrl(`re-vault-document/${d.name}`)} target="_blank" rel="noreferrer" className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
+              <Link key={d.name} to={recordUrl("RE Vault Document", d.name)} className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
                 <span className={cn("grid size-9 shrink-0 place-items-center rounded-xl", d.status === "Expired" ? "bg-red-500/15 text-red-600 dark:text-red-400" : "bg-amber-500/15 text-amber-600 dark:text-amber-400")}><FileWarning className="size-4" /></span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{d.title}</p>
                   <p className="truncate text-xs text-muted-foreground">{[d.document_type, d.authority].filter(Boolean).join(" · ")} · expires {date(d.expiry_date)}</p>
                 </div>
                 <Pill color={d.status === "Expired" ? C.red : C.amber}>{d.status}</Pill>
-              </a>
+              </Link>
             )) : <Empty title="No documents due for renewal" />)}
             {urgentTab === "approvals" && (data.approvals?.rows.length ? data.approvals.rows.map((a) => (
               <Link key={`${a.doctype}-${a.name}`} to="/re/operations?tab=approvals" className="flex items-center gap-3 py-2.5 hover:bg-accent/40">

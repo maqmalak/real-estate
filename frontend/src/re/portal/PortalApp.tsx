@@ -6,7 +6,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
 import maplibregl from "maplibre-gl";
-import { Building, ChevronLeft, Download, FileText, Home, LifeBuoy, Loader2, LogOut, MapPin, MessageCircle, Phone, Receipt, Wallet } from "lucide-react";
+import { Building, ChevronLeft, Eye, Download, FileText, Home, LifeBuoy, Loader2, LogOut, MapPin, MessageCircle, Phone, Receipt, Wallet } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, Navigate, NavLink, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -41,10 +41,28 @@ interface PortalHome {
 interface Row { label: string; due_date: string; amount: number; paid_amount: number; status: string }
 
 const TONE: Record<string, Tone> = { Paid: "green", Due: "amber", Overdue: "red", Unpaid: "amber", "Partly Paid": "orange", Open: "blue", Working: "amber", Completed: "green" };
-const docUrl = (type: string, ref: string) => `/api/method/realestate.portal.document?document_type=${encodeURIComponent(type)}&reference_name=${encodeURIComponent(ref)}`;
+/** Staff preview: /portal?as=<customer> shows that owner's portal read-only (kept for this tab while moving around the portal). */
+const PREVIEW: string | null = (() => {
+  try {
+    const q = new URLSearchParams(window.location.search).get("as");
+    if (q) sessionStorage.setItem("re-portal-as", q);
+    return q ?? sessionStorage.getItem("re-portal-as");
+  } catch {
+    return new URLSearchParams(window.location.search).get("as");
+  }
+})();
+const withPreview = (p: Record<string, string> = {}) => (PREVIEW ? { ...p, as_customer: PREVIEW } : p);
+const pget = <T,>(method: string, p: Record<string, string> = {}) => get<T>(method, withPreview(p));
+const docUrl = (type: string, ref: string) =>
+  `/api/method/realestate.portal.document?${new URLSearchParams(withPreview({ document_type: type, reference_name: ref })).toString()}`;
+
+function exitPreview(customer?: string) {
+  try { sessionStorage.removeItem("re-portal-as"); } catch { /* not stored */ }
+  window.location.assign(customer ? `/re/customers/${encodeURIComponent(customer)}` : "/re/customers");
+}
 
 function useHome() {
-  return useQuery({ queryKey: ["portal-home"], queryFn: () => get<PortalHome>("realestate.portal.home") });
+  return useQuery({ queryKey: ["portal-home"], queryFn: () => pget<PortalHome>("realestate.portal.home") });
 }
 
 function Money({ v, className = "" }: { v: number; className?: string }) {
@@ -173,7 +191,7 @@ function PlotScreen() {
   const navigate = useNavigate();
   const { data: h } = useHome();
   const p = h?.plots.find((x) => x.name === booking);
-  const { data: rows, isLoading } = useQuery({ queryKey: ["portal-schedule", booking], queryFn: () => get<Row[]>("realestate.portal.schedule", { booking }) });
+  const { data: rows, isLoading } = useQuery({ queryKey: ["portal-schedule", booking], queryFn: () => pget<Row[]>("realestate.portal.schedule", { booking }) });
   if (!p) return <Skeleton className="h-64 rounded-2xl" />;
   return (
     <div className="space-y-4">
@@ -290,7 +308,7 @@ function HelpScreen() {
   const { t } = useI18n();
   const qc = useQueryClient();
   const { data: h } = useHome();
-  const { data: types } = useQuery({ queryKey: ["portal-ctypes"], queryFn: () => get<string[]>("realestate.portal.complaint_types") });
+  const { data: types } = useQuery({ queryKey: ["portal-ctypes"], queryFn: () => pget<string[]>("realestate.portal.complaint_types") });
   const [subject, setSubject] = useState("");
   const [type, setType] = useState("Street Lights");
   const [plot, setPlot] = useState("");
@@ -312,7 +330,9 @@ function HelpScreen() {
           </div>
           <div><Label htmlFor="p-pri">{t("Priority")}</Label><Select id="p-pri" value={priority} onChange={(e) => setPriority(e.target.value)}>{["Critical", "High", "Normal"].map((x) => <option key={x} value={x}>{t(x)}</option>)}</Select></div>
           <div><Label htmlFor="p-details">{t("Details")}</Label><textarea id="p-details" className="field h-24" value={details} onChange={(e) => setDetails(e.target.value)} /></div>
-          <Button type="submit" className="w-full" disabled={submit.isPending}>{submit.isPending && <Loader2 className="animate-spin" />} {t("Submit")}</Button>
+          <Button type="submit" className="w-full" disabled={submit.isPending || Boolean(PREVIEW)} title={PREVIEW ? "Preview is read-only — the owner submits this from their own login" : undefined}>
+            {submit.isPending && <Loader2 className="animate-spin" />} {PREVIEW ? "Submit (disabled in staff preview)" : t("Submit")}
+          </Button>
         </form>
       </Section>
       <Section title={t("Your complaints")}>
@@ -331,6 +351,42 @@ function HelpScreen() {
 }
 
 // ------------------------------------------------------------------ shell
+function PreviewBanner() {
+  const { data: h } = useHome();
+  return (
+    <div className="sticky top-[61px] z-10 flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/40 bg-amber-500/15 px-4 py-2 font-sans text-xs leading-normal text-amber-900 dark:text-amber-200" dir="ltr">
+      <span><Eye className="mr-1 inline size-3.5" />Staff preview — viewing the portal as <b>{h?.customer.customer_name ?? PREVIEW}</b> (read-only)</span>
+      <button onClick={() => exitPreview(PREVIEW ?? undefined)} className="rounded-md border border-amber-600/40 bg-card px-2 py-0.5 font-semibold hover:bg-accent">Exit preview</button>
+    </div>
+  );
+}
+
+/** Staff on /portal without an owner login: pick an owner to preview their portal. */
+function OwnerPicker() {
+  const [q, setQ] = useState("");
+  const { data } = useQuery({
+    queryKey: ["portal-owner-pick", q], enabled: q.trim().length >= 2,
+    queryFn: () => get<{ name: string; customer_name: string; mobile_no: string | null; re_portal_user: string | null }[]>("frappe.client.get_list", {
+      doctype: "Customer", fields: JSON.stringify(["name", "customer_name", "mobile_no", "re_portal_user"]), limit_page_length: "8",
+      or_filters: JSON.stringify([["customer_name", "like", `%${q}%`], ["mobile_no", "like", `%${q}%`]]), filters: JSON.stringify([["disabled", "=", 0]]) }),
+  });
+  return (
+    <div className="space-y-2 text-left">
+      <Label htmlFor="pick-owner">Preview the portal as an owner</Label>
+      <Input id="pick-owner" autoFocus placeholder="Type a customer name or mobile…" value={q} onChange={(e) => setQ(e.target.value)} />
+      <div className="divide-y rounded-xl border bg-card">
+        {data?.map((c) => (
+          <a key={c.name} href={`/portal?as=${encodeURIComponent(c.name)}`} className="flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-accent">
+            <span className="min-w-0"><span className="block truncate font-medium">{c.customer_name}</span><span className="block text-xs text-muted-foreground">{c.mobile_no ?? "—"}</span></span>
+            {c.re_portal_user ? <Badge tone="green">has login</Badge> : <Badge tone="gray">no login</Badge>}
+          </a>
+        ))}
+        {q.trim().length >= 2 && data && !data.length && <p className="px-3 py-2 text-xs text-muted-foreground">No match</p>}
+      </div>
+    </div>
+  );
+}
+
 function Shell() {
   const { t, dir } = useI18n();
   const nav: [string, string, typeof Home][] = [["/portal", "Home", Home], ["/portal/payments", "Payments", Wallet], ["/portal/documents", "Documents", Receipt], ["/portal/help", "Help", LifeBuoy]];
@@ -346,6 +402,7 @@ function Shell() {
           <button onClick={() => void logout().then(() => window.location.assign("/login"))} className="rounded-lg p-2 hover:bg-accent" aria-label={t("Sign out")}><LogOut className="size-4 rtl:rotate-180" /></button>
         </div>
       </header>
+      {PREVIEW && <PreviewBanner />}
       <main className="mx-auto max-w-2xl px-4 py-4">
         <Routes>
           <Route index element={<HomeScreen />} />
@@ -373,17 +430,20 @@ function Gate() {
   const { t } = useI18n();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["portal-whoami"], retry: false, staleTime: 300_000,
-    queryFn: () => get<{ customer: string | null; is_staff: boolean }>("realestate.portal.whoami"),
+    queryFn: () => pget<{ customer: string | null; is_staff: boolean; customer_name: string | null }>("realestate.portal.whoami"),
   });
   if (isLoading) return <div className="grid min-h-screen place-items-center"><Loader2 className="size-6 animate-spin text-muted-foreground" /></div>;
   if (isError) return <Navigate to="/login" replace state={{ from: "/portal" }} />;
   if (!data?.customer)
     return (
       <div className="grid min-h-screen place-items-center p-6 text-center">
-        <div className="max-w-sm space-y-3">
+        <div className="w-full max-w-sm space-y-3">
           <p className="text-lg font-bold">{t("Owner portal")}</p>
-          <p className="text-sm text-muted-foreground">This login is not linked to a plot owner. Staff can invite an owner from the Customer record (Owner Portal Login).</p>
-          <Button asChild><Link to={data?.is_staff ? "/re" : "/login"}>{data?.is_staff ? "Open the staff app" : "Sign in"}</Link></Button>
+          <p className="text-sm text-muted-foreground">{data?.is_staff
+            ? "You are signed in as staff. Owners sign in here with the email on their customer record — pick one below to see exactly what they see."
+            : "This login is not linked to a plot owner. Staff can invite an owner from the Customer record (Owner Portal Login)."}</p>
+          {data?.is_staff && <OwnerPicker />}
+          <Button asChild variant={data?.is_staff ? "outline" : "default"}><Link to={data?.is_staff ? "/re" : "/login"}>{data?.is_staff ? "Open the staff app" : "Sign in"}</Link></Button>
         </div>
       </div>
     );

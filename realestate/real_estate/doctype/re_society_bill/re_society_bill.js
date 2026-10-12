@@ -1,5 +1,21 @@
+function re_charges_total(frm) {
+	// footer under the Charges grid: rows and total amount (updates as rows change)
+	const grid = frm.fields_dict.charges && frm.fields_dict.charges.grid;
+	if (!grid) return;
+	const rows = frm.doc.charges || [];
+	const total = rows.reduce((a, r) => a + flt(r.amount), 0);
+	let $f = grid.wrapper.find(".re-charges-total");
+	if (!$f.length) $f = $(`<div class="re-charges-total text-muted small" style="padding:6px 10px;border-top:1px solid var(--border-color);display:flex;gap:24px"></div>`).appendTo(grid.wrapper);
+	$f.html(`<span>${__("Rows")}: <b>${rows.length}</b></span><span>${__("Total Amount")}: <b class="text-body">${format_currency(total, "PKR", 0)}</b></span>`);
+}
+
+frappe.ui.form.on("RE Bill Charge", { amount: re_charges_total });
+
 frappe.ui.form.on("RE Society Bill", {
+	charges_add: re_charges_total,
+	charges_remove: re_charges_total,
 	refresh(frm) {
+		re_charges_total(frm);
 		if (frm.is_new()) return;
 		if (frm.doc.outstanding_amount > 0) {
 			frm.add_custom_button(__("Record Payment"), () => frappe.new_doc("RE Payment", {

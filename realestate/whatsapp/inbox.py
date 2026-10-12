@@ -222,6 +222,36 @@ def get_conversations(view: str = "mine", search: str | None = None, limit: int 
 								   "last_message", "last_message_at", "last_direction", "opted_out"])
 
 
+@frappe.whitelist(methods=["POST"])
+def open_conversation(phone: str, party_type: str | None = None, party: str | None = None) -> str:
+	"""The inbox chat for a phone number (created if this number has never messaged), so "WhatsApp" buttons open the team
+	inbox instead of the WhatsApp app. Only for a party the user can see."""
+	from realestate.whatsapp.api import _guard
+
+	_guard()
+	if not phone_key(phone):
+		frappe.throw(_("No mobile number"))
+	if not (party_type and party):
+		party_type, party = find_party(phone)
+	if party_type and party and not frappe.has_permission(party_type, "read", party):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+	profile = profile_for(phone)
+	if frappe.db.exists("RE Conversation", profile):
+		conv = frappe.get_doc("RE Conversation", profile)
+		if party and not conv.party:
+			conv.party_type, conv.party, conv.contact_name = party_type, party, party_name(party_type, party)
+			conv.save(ignore_permissions=True)
+	else:
+		conv = frappe.get_doc({"doctype": "RE Conversation", "whatsapp_profile": profile, "phone": profile_phone(profile) or phone,
+							   "party_type": party_type, "party": party, "status": "Open",
+							   "contact_name": party_name(party_type, party) if party else phone,
+							   "agent": (party_agent(party_type, party) if party else None) or frappe.session.user})
+		conv.insert(ignore_permissions=True)
+	if conv.status != "Open":
+		conv.db_set("status", "Open")
+	return conv.name
+
+
 @frappe.whitelist()
 def get_counts() -> dict:
 	user = frappe.session.user

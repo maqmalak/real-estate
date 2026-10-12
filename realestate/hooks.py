@@ -64,6 +64,7 @@ scheduler_events = {
 		"realestate.tasks.phase_b_daily",
 		"realestate.maintenance.generate_planned_tasks",
 		"realestate.maintenance.mark_overdue",
+		"realestate.demo.daily.scheduled",  # demo only: a live day of activity (no-op unless mock mode + demo project)
 	],
 }
 
@@ -96,6 +97,10 @@ jinja = {
 		"realestate.documents.plot_svg",
 		"realestate.documents.verify_url",
 		"realestate.documents.society_dues",
+		"realestate.doc_ur.ur",
+		"realestate.doc_ur.ur_date",
+		"realestate.doc_ur.ur_money",
+		"realestate.doc_ur.ur_ltr",
 	],
 }
 

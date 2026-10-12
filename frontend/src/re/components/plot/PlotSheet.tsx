@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/re/components/ui/tab
 import { get } from "@/re/lib/api";
 import { area, date, metres, money } from "@/re/lib/format";
 import type { PlotDetail } from "@/re/lib/types";
-import { deskUrl } from "@/re/lib/utils";
+import { newUrl, recordUrl } from "@/re/lib/utils";
 import { useAuth } from "@/re/providers/auth";
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -61,16 +61,16 @@ export function PlotSheet({ plot, onClose }: { plot: string | undefined; onClose
           <PlotPhotos plot={p.name} photos={data.photos ?? []} sitePlanSvg={data.site_plan_svg ?? ""} csrf={boot?.csrf_token ?? ""} canUpload={Boolean(boot?.is_staff)} />
           <div className="flex flex-wrap gap-2">
             {p.status === "Available" && (
-              <Button asChild><a href={deskUrl(`re-booking/new?plot=${p.name}`)} target="_blank" rel="noreferrer"><ClipboardList /> Book plot</a></Button>
+              <Button asChild><Link to={newUrl("RE Booking", { plot: p.name })}><ClipboardList /> Book plot</Link></Button>
             )}
-            <Button asChild variant="outline"><a href={deskUrl(`re-site-visit/new?interested_plot=${p.name}&interested_block=${encodeURIComponent(p.block)}`)} target="_blank" rel="noreferrer"><CalendarPlus /> Schedule site visit</a></Button>
+            <Button asChild variant="outline"><Link to={newUrl("RE Site Visit", { interested_plot: p.name, interested_block: p.block })}><CalendarPlus /> Schedule site visit</Link></Button>
             {b && b.outstanding_amount > 0 && (
-              <Button asChild variant="success"><a href={deskUrl(`re-payment/new?payment_against=Booking&booking=${b.name}&customer=${encodeURIComponent(p.customer ?? "")}`)} target="_blank" rel="noreferrer"><HandCoins /> Receive payment</a></Button>
+              <Button asChild variant="success"><Link to={newUrl("RE Payment", { payment_against: "Booking", booking: b.name, customer: p.customer })}><HandCoins /> Receive payment</Link></Button>
             )}
             {b && b.outstanding_amount > 0 && <RemindButton type={b.overdue_amount > 0 ? "Overdue Notice" : "Installment Reminder"} doctype="RE Booking" name={b.name}
               label={b.overdue_amount > 0 ? "Overdue notice" : "Reminder"} />}
             <PlotStatusActions plot={p.name} status={p.status} booking={b?.name} bookingStatus={b?.status} possessionDate={b?.possession_date} />
-            <Button asChild variant="ghost"><a href={deskUrl(`re-plot/${p.name}`)} target="_blank" rel="noreferrer"><ExternalLink /> Desk</a></Button>
+            <Button asChild variant="ghost"><Link to={recordUrl("RE Plot", p.name)}><ExternalLink /> Plot record</Link></Button>
           </div>
           {p.status === "Hold" && p.hold_reason && <p className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-sm">On hold: {p.hold_reason}</p>}
           {b?.possession_date && <p className="rounded-lg border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-sm">Possession handed over on {date(b.possession_date)}</p>}
@@ -127,7 +127,7 @@ export function PlotSheet({ plot, onClose }: { plot: string | undefined; onClose
                     <p className="text-xs uppercase text-muted-foreground">Owner</p>
                     <div className="flex items-center justify-between gap-2">
                       <Link className="font-semibold hover:underline" to={`/re/customers/${encodeURIComponent(data.owner.name)}`}>{data.owner.customer_name}</Link>
-                      <CallButtons phone={data.owner.mobile_no} />
+                      <CallButtons phone={data.owner.mobile_no} partyType="Customer" party={data.owner.name} />
                     </div>
                     <p className="text-sm text-muted-foreground">{data.owner.mobile_no ?? "No mobile"}</p>
                   </div>
@@ -164,7 +164,7 @@ export function PlotSheet({ plot, onClose }: { plot: string | undefined; onClose
             <TabsContent value="maintenance">
               {data.tasks.length ? (
                 <Table head={["Task", "Priority", "Status", "Raised"]}
-                  rows={data.tasks.map((t) => [<a key="t" className="hover:underline" href={deskUrl(`task/${t.name}`)} target="_blank" rel="noreferrer">{t.subject}</a>,
+                  rows={data.tasks.map((t) => [<Link key="t" className="hover:underline" to={recordUrl("Task", t.name)}>{t.subject}</Link>,
                     <StatusBadge key="p" status={t.priority} />, <StatusBadge key="s" status={t.status} />, date(t.creation)])} />
               ) : <p className="text-sm text-muted-foreground">No maintenance on this plot.</p>}
             </TabsContent>

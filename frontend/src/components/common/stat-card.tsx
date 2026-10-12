@@ -26,12 +26,30 @@ export interface StatCardProps {
   /** Highlights the card as the currently applied filter (only meaningful with `onClick`). */
   active?: boolean;
   /** "sm": compact card (document page headers) — smaller value text so long names fit. */
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "compact";
 }
 
 /** Compact KPI card used across CRM list pages. */
 export function StatCard({ label, value, icon, tone = "primary", valueSuffix, onClick, active, size = "md" }: StatCardProps) {
   const sm = size === "sm";
+  if (size === "compact") {
+    // one line: icon · label · value — for list pages where the KPIs sit above a board or table
+    return (
+      <Card
+        {...(onClick ? { role: "button" as const, tabIndex: 0, "aria-pressed": !!active, onClick,
+          onKeyDown: (e: KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } } } : {})}
+        className={cn("flex min-w-0 items-center gap-2.5 px-3 py-2", onClick && "hover-lift cursor-pointer select-none", active && "border-primary ring-2 ring-primary/40")}
+      >
+        <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg [&_svg]:h-4 [&_svg]:w-4", STAT_TONES[tone])}>{icon}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[11px] font-medium text-slate-600 dark:text-slate-300">{label}</span>
+          <span className="flex items-baseline gap-1 text-lg font-bold leading-tight tabular-nums">
+            <span className="truncate">{value}</span>{valueSuffix && <span className="text-xs font-medium text-muted-foreground">{valueSuffix}</span>}
+          </span>
+        </span>
+      </Card>
+    );
+  }
   const interactive = onClick
     ? {
         role: "button" as const,

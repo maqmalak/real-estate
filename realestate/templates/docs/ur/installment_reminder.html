@@ -1,0 +1,28 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}
+<div class="re-doc"><h2>قسط کی یاد دہانی</h2><div class="sub">{{ ur_date(frappe.utils.nowdate()) }}</div>
+<p>محترم / محترمہ {{ cust.customer_name }}،</p><p>آپ کو یاد دلایا جاتا ہے کہ پلاٹ <b>{{ ur_ltr(doc.plot) }}</b> ({{ ur(doc.plot_size) }}، {{ ur(doc.block) }}) کی درج ذیل رقم واجب الادا ہے:</p>
+<table><tr><th>اگلی قسط</th><td>{{ ur_money(doc.next_due_amount) }} — تاریخِ ادائیگی {{ ur_date(doc.next_due_date) }}</td></tr>
+{% if doc.overdue_amount %}<tr><th>پہلے سے زائد المیعاد</th><td class="red">{{ ur_money(doc.overdue_amount) }} — {{ ur_date(doc.overdue_since) }} سے</td></tr>{% endif %}
+<tr><th>کل بقایا</th><td>{{ ur_money(doc.outstanding_amount) }}</td></tr></table>
+<p>براہِ کرم ہمارے دفتر میں یا بینک ٹرانسفر کے ذریعے بکنگ نمبر {{ ur_ltr(doc.name) }} کے حوالے سے ادائیگی کریں۔ اگر آپ ادائیگی کر چکے ہیں تو اس خط کو نظر انداز کریں۔</p><table class="sign"><tr><td>گاہک</td><td class="gap"></td><td>برائے زرمین ڈویلپرز (پرائیویٹ) لمیٹڈ<br><span class="muted">مجاز دستخط کنندہ</span></td></tr></table></div>

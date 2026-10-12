@@ -13,8 +13,18 @@ PORTAL_DOCS = {"Payment Schedule", "Customer Account Statement", "Allotment Lett
 			   "No Demand Certificate", "Site Plan"}
 
 
-def _customer(required=True):
+STAFF = {"System Manager", "Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Recovery Officer", "Society Manager", "Projects User"}
+
+
+def _customer(required=True, as_customer=None):
+	"""The owner this call is for: the customer linked to this login, or — for staff previewing the portal — `as_customer`
+	(read-only; only a customer the staff member may read)."""
 	user = frappe.session.user
+	if as_customer:
+		if not (set(frappe.get_roles()) & STAFF) or not frappe.has_permission("Customer", "read", as_customer):
+			frappe.throw(_("Not permitted to preview this owner's portal"), frappe.PermissionError)
+		frappe.flags.re_portal_preview = True
+		return as_customer
 	customer = frappe.db.get_value("Customer", {"re_portal_user": user}, "name") if user != "Guest" else None
 	if not customer and required:
 		frappe.throw(_("This login is not linked to a plot owner"), frappe.PermissionError)
@@ -22,17 +32,17 @@ def _customer(required=True):
 
 
 @frappe.whitelist(methods=["GET"])
-def whoami() -> dict:
-	customer = _customer(required=False)
-	staff = bool(set(frappe.get_roles()) & {"System Manager", "Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Recovery Officer",
-											 "Society Manager", "Projects User"})
-	return {"customer": customer, "is_staff": staff, "customer_name": frappe.db.get_value("Customer", customer, "customer_name") if customer else None}
+def whoami(as_customer: str | None = None) -> dict:
+	customer = _customer(required=False, as_customer=as_customer)
+	staff = bool(set(frappe.get_roles()) & STAFF)
+	return {"customer": customer, "is_staff": staff, "preview": bool(as_customer),
+			"customer_name": frappe.db.get_value("Customer", customer, "customer_name") if customer else None}
 
 
 @frappe.whitelist(methods=["GET"])
-def home() -> dict:
+def home(as_customer: str | None = None) -> dict:
 	"""Everything the owner home screen shows, in one call."""
-	customer = _customer()
+	customer = _customer(as_customer=as_customer)
 	c = frappe.db.get_value("Customer", customer, ["customer_name", "mobile_no", "email_id", "account_manager"], as_dict=True)
 	bookings = frappe.get_all("RE Booking", {"customer": customer, "docstatus": 1}, ["name", "plot", "plot_size", "block", "status", "net_price", "paid_amount",
 																					  "outstanding_amount", "overdue_amount", "next_due_date", "next_due_amount",
@@ -64,8 +74,8 @@ def home() -> dict:
 
 
 @frappe.whitelist(methods=["GET"])
-def schedule(booking: str) -> list[dict]:
-	customer = _customer()
+def schedule(booking: str, as_customer: str | None = None) -> list[dict]:
+	customer = _customer(as_customer=as_customer)
 	b = frappe.get_doc("RE Booking", booking)
 	if b.customer != customer:
 		frappe.throw(_("Not your booking"), frappe.PermissionError)
@@ -80,11 +90,11 @@ def _owned(doctype, name, customer):
 
 
 @frappe.whitelist(methods=["GET", "POST"])
-def document(document_type: str, reference_name: str):
+def document(document_type: str, reference_name: str, as_customer: str | None = None):
 	"""Generate (as the system, after checking ownership) and stream an owner's document PDF."""
 	from realestate.documents import DOCUMENTS, generate
 
-	customer = _customer()
+	customer = _customer(as_customer=as_customer)
 	if document_type not in PORTAL_DOCS:
 		frappe.throw(_("Not available in the portal"))
 	doctype = DOCUMENTS[document_type][0]
@@ -92,7 +102,7 @@ def document(document_type: str, reference_name: str):
 		frappe.throw(_("Not your document"), frappe.PermissionError)
 	user = frappe.session.user
 	with as_system():
-		r = generate(document_type, reference_name, remarks=f"Downloaded by owner ({user})")
+		r = generate(document_type, reference_name, remarks=f"Portal preview by staff ({user})" if as_customer else f"Downloaded by owner ({user})")
 		content = frappe.get_doc("File", {"file_url": r["file_url"]}).get_content()
 	frappe.local.response.filename = f"{document_type} - {reference_name}.pdf"
 	frappe.local.response.filecontent = content
@@ -122,8 +132,8 @@ def complaint(subject: str, maintenance_type: str, plot: str | None = None, desc
 
 
 @frappe.whitelist(methods=["GET"])
-def complaint_types() -> list[str]:
-	_customer()
+def complaint_types(as_customer: str | None = None) -> list[str]:
+	_customer(as_customer=as_customer)
 	return frappe.get_all("Task Type", pluck="name", order_by="name")
 
 

@@ -1,0 +1,27 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set cust = frappe.get_doc("Customer", doc.customer) if doc.customer else None -%}{%- set size = frappe.get_doc("RE Plot Size", doc.plot_size) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>سائٹ پلان</h2><div class="sub">پلاٹ {{ ur_ltr(doc.name) }} · {{ ur(doc.block) }} · زرمین گارڈنز</div>
+<div style="text-align:center">{{ plot_svg(doc.name) }}</div>
+<table><tr><th>پلاٹ</th><td>{{ ur_ltr(doc.name) }} ({{ ur(doc.plot_type) }})</td></tr><tr><th>سائز</th><td>{{ ur(doc.plot_size) }} — {{ doc.area_marla }} مرلہ{% if size.width_ft %} · تقریباً {{ ur_ltr((size.width_ft|round|int)|string + " × " + (size.depth_ft|round|int)|string + " ft") }}{% endif %}</td></tr>
+<tr><th>گلی</th><td>{{ doc.street or "" }}</td></tr><tr><th>محلِ وقوع</th><td>{{ ur_ltr("%.6f N, %.6f E"|format(doc.centre_lat or 0, doc.centre_lng or 0)) }}</td></tr>
+{% if cust %}<tr><th>الاٹی</th><td>{{ cust.customer_name }}</td></tr>{% endif %}</table>
+<p class="muted">پیمائش تخمینی ہے؛ موقع پر کی گئی حد بندی حتمی ہوگی۔</p></div>

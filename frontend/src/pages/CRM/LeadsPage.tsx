@@ -91,56 +91,49 @@ function LeadTargetWidget() {
   });
 
   return (
-    <Card className="p-4">
+    <Card className="relative flex min-w-0 flex-col justify-center gap-1 overflow-hidden px-3 py-2" title={`Lead target · ${monthLabel} — click the target to edit`}>
+      <div className="pointer-events-none absolute -right-6 -top-6 size-16 rounded-full bg-primary/10 blur-xl" />
       <div className="flex items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5 text-sm font-medium">
-          <Target className="h-4 w-4 text-primary" /> Lead Target — {monthLabel}
+        <span className="flex min-w-0 items-center gap-1 truncate text-[11px] font-medium text-slate-600 dark:text-slate-300">
+          <Target className="h-3.5 w-3.5 shrink-0 text-primary" /> Target · {monthLabel}
         </span>
+        <span className={`rounded-full px-1.5 py-px text-[10px] font-bold tabular-nums ${pct >= 100 ? "bg-emerald-500/15 text-emerald-700" : "bg-primary/10 text-primary"}`}>{pct}%</span>
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-4">
-        <div>
-          <p className="text-xs text-muted-foreground">Target</p>
-          {editing ? (
-            <input
-              ref={inputRef}
-              type="number"
-              min={1}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={commit}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") commit();
-                if (e.key === "Escape") {
-                  setDraft(String(target));
-                  setEditing(false);
-                }
-              }}
-              className="w-20 rounded border border-input bg-transparent text-xl font-bold tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
+      <div className="flex items-baseline gap-1 text-lg font-bold leading-tight tabular-nums">
+        <span>{achievedCount}</span>
+        <span className="text-xs font-medium text-muted-foreground">of</span>
+        {editing ? (
+          <input
+          ref={inputRef}
+          type="number"
+          min={1}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") {
+          setDraft(String(target));
+          setEditing(false);
+          }
+          }}
+          className="w-16 rounded border border-input bg-transparent text-lg font-bold tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          />
           ) : (
-            <button
-              className="group flex items-center gap-1.5 text-xl font-bold tabular-nums"
-              onClick={() => {
-                setDraft(String(target));
-                setEditing(true);
-              }}
-              title="Edit target"
-            >
-              {target}
-              <Pencil className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
-          )}
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">Achieved</p>
-          <p className="text-xl font-bold tabular-nums">{achievedCount}</p>
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">Achieved %</p>
-          <p className={`text-xl font-bold tabular-nums ${pct >= 100 ? "text-emerald-600" : ""}`}>{pct}%</p>
-        </div>
+          <button
+          className="group flex items-center gap-1.5 text-lg font-bold tabular-nums"
+          onClick={() => {
+          setDraft(String(target));
+          setEditing(true);
+          }}
+          title="Edit target"
+          >
+          {target}
+          <Pencil className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+          </button>
+)}
       </div>
-      <Progress value={pct} className="mt-3" />
+      <Progress value={pct} className="h-1.5" />
     </Card>
   );
 }
@@ -391,18 +384,17 @@ export function LeadsPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
         {/* Clicking a card filters the List and the Pipeline to it; clicking it again (or Total) releases it. */}
-        <StatCard label="Total" value={stats.total} icon={<Users className="h-4 w-4" />} tone="primary" onClick={cardFilter.clear} />
-        <StatCard label="New" value={stats.new} icon={<Rocket className="h-4 w-4" />} tone="sky" onClick={() => cardFilter.toggle("new")} active={cardFilter.active === "new"} />
-        <StatCard label="Active" value={stats.active} icon={<TrendingUp className="h-4 w-4" />} tone="amber" onClick={() => cardFilter.toggle("active")} active={cardFilter.active === "active"} />
-        <StatCard label="Qualified" value={stats.qualified} icon={<Check className="h-4 w-4" />} tone="indigo" onClick={() => cardFilter.toggle("qualified")} active={cardFilter.active === "qualified"} />
-        <StatCard label="Converted" value={stats.converted} icon={<Handshake className="h-4 w-4" />} tone="emerald" onClick={() => cardFilter.toggle("converted")} active={cardFilter.active === "converted"} />
+        <StatCard size="compact" label="Total" value={stats.total} icon={<Users className="h-4 w-4" />} tone="primary" onClick={cardFilter.clear} />
+        <StatCard size="compact" label="New" value={stats.new} icon={<Rocket className="h-4 w-4" />} tone="sky" onClick={() => cardFilter.toggle("new")} active={cardFilter.active === "new"} />
+        <StatCard size="compact" label="Active" value={stats.active} icon={<TrendingUp className="h-4 w-4" />} tone="amber" onClick={() => cardFilter.toggle("active")} active={cardFilter.active === "active"} />
+        <StatCard size="compact" label="Qualified" value={stats.qualified} icon={<Check className="h-4 w-4" />} tone="indigo" onClick={() => cardFilter.toggle("qualified")} active={cardFilter.active === "qualified"} />
+        <StatCard size="compact" label="Converted" value={stats.converted} icon={<Handshake className="h-4 w-4" />} tone="emerald" onClick={() => cardFilter.toggle("converted")} active={cardFilter.active === "converted"} />
+        <LeadTargetWidget />
       </div>
 
       <ActiveCardFilter label={cardFilter.active ? LEAD_CARD_LABELS[cardFilter.active] : null} onClear={cardFilter.clear} />
-
-      <LeadTargetWidget />
 
       {view === "list" ? (
         <FrappeDataTable<CrmLead>
@@ -482,7 +474,7 @@ export function LeadsPage() {
               <RecordId name={r.name} className="block text-[10px]" />
               <div className="flex min-w-0 items-center gap-2">
                 <Avatar name={leadDisplayName(r)} src={r.image} size="sm" className={avatarTone(leadDisplayName(r))} />
-                <p className="min-w-0 flex-1 truncate text-sm font-medium">{leadDisplayName(r)}</p>
+                <p className="min-w-0 flex-1 truncate text-sm font-semibold">{leadDisplayName(r)}</p>
                 <div draggable={false} onClick={(e) => e.stopPropagation()} onDragStart={(e) => e.preventDefault()}>
                   <DropdownMenu
                     trigger={

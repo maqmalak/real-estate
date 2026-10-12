@@ -20,7 +20,7 @@ import { Dialog } from "@/re/components/ui/sheet";
 import { Empty, Skeleton } from "@/re/components/ui/skeleton";
 import { get, getList, post } from "@/re/lib/api";
 import { date, money, todayISO } from "@/re/lib/format";
-import { cn } from "@/re/lib/utils";
+import { cn, recordUrl } from "@/re/lib/utils";
 
 // ------------------------------------------------------------------ types
 interface Overview {
@@ -511,10 +511,10 @@ function RecoveryTab({ onWaive }: { onWaive: (s: Recovery["surcharges"][number])
           <CardHeader><CardTitle>Recovery notices (ERPNext Dunning)</CardTitle><CardDescription>Unresolved — resolved automatically when the customer pays</CardDescription></CardHeader>
           <CardContent className="max-h-[440px] divide-y overflow-y-auto">
             {!data.dunnings.length ? <Empty title="No open dunnings" /> : data.dunnings.map((d) => (
-              <a key={d.name} href={`/desk/dunning/${d.name}`} target="_blank" rel="noreferrer" className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-accent/40">
+              <Link key={d.name} to={recordUrl("Customer", d.customer)} title="Open the customer (dues, receipts, chat)" className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-accent/40">
                 <div><p className="font-medium">{d.customer_name}</p><p className="text-xs text-muted-foreground">{d.name} · {date(d.posting_date)}</p></div>
                 <p className="font-semibold text-red-600 dark:text-red-400">{money(d.total_outstanding)}</p>
-              </a>
+              </Link>
             ))}
           </CardContent>
         </Card>

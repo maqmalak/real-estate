@@ -1,14 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Columns3, Download, ExternalLink, Plus } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { StatusBadge } from "@/re/components/ui/badge";
 import { Button } from "@/re/components/ui/button";
 import { Input, Label, Select } from "@/re/components/ui/input";
 import { Empty, Skeleton } from "@/re/components/ui/skeleton";
 import { getList, type Filter } from "@/re/lib/api";
 import { date, dateTime, money } from "@/re/lib/format";
-import { cn, deskUrl, slug } from "@/re/lib/utils";
+import { cn, deskUrl, newUrl, recordUrl, slug } from "@/re/lib/utils";
 
 type Cell = "text" | "money" | "date" | "datetime" | "status" | "progress";
 type Row = Record<string, string | number | null>;
@@ -108,7 +108,7 @@ function ListPage({ cfg }: { cfg: ListConfig }) {
     const [cur, dir] = sort.split(" ");
     setSort(cur === key && dir === "desc" ? `${key} asc` : `${key} desc`);
   };
-  const open = (row: Row) => (cfg.open ? navigate(cfg.open(row)) : window.open(deskUrl(`${slug(cfg.doctype)}/${encodeURIComponent(String(row.name))}`), "_blank"));
+  const open = (row: Row) => (cfg.open ? navigate(cfg.open(row)) : navigate(recordUrl(cfg.doctype, String(row.name))));
 
   return (
     <div className="space-y-3 p-4 sm:p-6">
@@ -117,7 +117,7 @@ function ListPage({ cfg }: { cfg: ListConfig }) {
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowCols((s) => !s)}><Columns3 /> Columns</Button>
           <Button variant="outline" size="sm" onClick={() => downloadCsv(`${slug(cfg.title)}.csv`, rows, cols.map((c) => c.key))}><Download /> CSV</Button>
-          {cfg.newDesk && <Button size="sm" asChild><a href={deskUrl(`${cfg.newDesk}/new`)} target="_blank" rel="noreferrer"><Plus /> New</a></Button>}
+          {cfg.newDesk && <Button size="sm" asChild><Link to={newUrl(cfg.doctype)}><Plus /> New</Link></Button>}
           <Button size="sm" variant="ghost" asChild><a href={deskUrl(slug(cfg.doctype))} target="_blank" rel="noreferrer"><ExternalLink /> Desk</a></Button>
         </div>
       </div>

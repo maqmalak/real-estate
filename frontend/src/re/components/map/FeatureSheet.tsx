@@ -11,7 +11,8 @@ import { Sheet } from "@/re/components/ui/sheet";
 import { Skeleton } from "@/re/components/ui/skeleton";
 import { get, post } from "@/re/lib/api";
 import { date, money } from "@/re/lib/format";
-import { deskUrl } from "@/re/lib/utils";
+import { Link } from "react-router-dom";
+import { recordUrl } from "@/re/lib/utils";
 
 interface Detail {
   feature: { name: string; feature_name: string; feature_type: string; category: string; asset_status: string | null; completion_pct: number;
@@ -62,7 +63,7 @@ export function FeatureSheet({ name, onClose }: { name: string | undefined; onCl
           {data.asset && (
             <div className="rounded-xl border p-3 text-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">ERPNext asset</p>
-              <a className="font-semibold text-primary hover:underline" href={deskUrl(`asset/${data.asset.name}`)} target="_blank" rel="noreferrer">{data.asset.asset_name}</a>
+              <Link className="font-semibold text-primary hover:underline" to={recordUrl("Asset", data.asset.name)}>{data.asset.asset_name}</Link>
               <p className="text-muted-foreground">{data.asset.asset_category} · {data.asset.status} · {money(data.asset.net_purchase_amount)} · bought {date(data.asset.purchase_date)}</p>
             </div>
           )}
@@ -89,7 +90,7 @@ export function FeatureSheet({ name, onClose }: { name: string | undefined; onCl
               <Button type="submit" size="sm" disabled={save.isPending}>{save.isPending ? <Loader2 className="animate-spin" /> : <Save />} Save</Button>
             </form>
           )}
-          <Button asChild variant="outline" size="sm"><a href={deskUrl(`re-map-feature/${d.name}`)} target="_blank" rel="noreferrer"><ExternalLink /> Open in desk</a></Button>
+          <Button asChild variant="outline" size="sm"><Link to={recordUrl("RE Map Feature", d.name)}><ExternalLink /> Open record</Link></Button>
         </div>
       )}
     </Sheet>

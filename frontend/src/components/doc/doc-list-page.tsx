@@ -51,7 +51,9 @@ function DocListPageInner({ config }: { config: DocConfig }) {
   const [to, setTo] = useState("");
   const [extra, setExtra] = useState<Record<string, string>>(() => {
     const q = new URLSearchParams(window.location.search);
-    return Object.fromEntries((config.filters ?? []).flatMap((f) => (q.get(f.field) ? [[f.field, q.get(f.field) as string]] : [])));
+    // ?field=value for a configured filter, or for any field of the doctype (links such as "Bookings for this plot")
+    const keys = new Set([...(config.filters ?? []).map((f) => f.field), ...config.fields.map((f) => f.fieldname)]);
+    return Object.fromEntries([...q.entries()].filter(([k, v]) => v && keys.has(k) && k !== "status"));
   });
   const [pendingDelete, setPendingDelete] = useState<Doc | null>(null);
 

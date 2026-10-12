@@ -192,6 +192,14 @@ def _asset(company, re_project, item, name, amount, day, feature=None):
 		"purchase_date": day, "available_for_use_date": day, "net_purchase_amount": amount, "purchase_amount": amount,
 		"calculate_depreciation": 0, "cost_center": acc(company, "ZG Common Infrastructure"), "re_project": re_project, "re_map_feature": feature,
 	})
+	from realestate.demo.depreciation import asset_finance_book, setup_categories
+
+	category = frappe.db.get_value("Item", item, "asset_category")
+	fb = asset_finance_book(category, day, amount)
+	if fb:  # straight-line depreciation by category (land is not depreciated)
+		setup_categories()
+		asset.calculate_depreciation = 1
+		asset.set("finance_books", [fb])
 	asset.insert(ignore_permissions=True)
 	asset.submit()
 	if feature:

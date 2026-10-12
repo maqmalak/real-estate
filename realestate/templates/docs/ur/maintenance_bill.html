@@ -1,0 +1,26 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>مینٹیننس بل</h2><div class="sub">{{ doc.bill_month_label }} · بل {{ ur_ltr(doc.name) }}</div>
+<table><tr><th>مالک</th><td>{{ cust.customer_name }}</td></tr><tr><th>پلاٹ</th><td>{{ ur_ltr(doc.plot) }} · {{ ur(doc.block) }}</td></tr><tr><th>آخری تاریخ</th><td>{{ ur_date(doc.due_date) }}</td></tr></table>
+<table class="grid"><tr><th>مد</th><th>رقم</th></tr>{% for c in doc.charges %}<tr><td>{{ ur(c.charge) }}</td><td class="num">{{ ur_money(c.amount) }}</td></tr>{% endfor %}
+<tr><th>اس ماہ</th><th class="num">{{ ur_money(doc.total_amount) }}</th></tr>{% if doc.arrears %}<tr><td>بقایا جات (سابقہ بل)</td><td class="num red">{{ ur_money(doc.arrears) }}</td></tr>{% endif %}
+<tr><th>ادا شدہ</th><td class="num">{{ ur_money(doc.paid_amount) }}</td></tr><tr><th>قابلِ ادا</th><th class="num">{{ ur_money(doc.total_payable or doc.outstanding_amount) }}</th></tr></table>
+<p class="muted">براہِ کرم آخری تاریخ تک ادائیگی کریں۔ آخری تاریخ کے بعد لیٹ سرچارج لاگو ہو سکتا ہے۔</p></div>

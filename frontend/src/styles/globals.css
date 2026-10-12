@@ -15,12 +15,12 @@
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 20% 36%; /* ~slate-600: secondary text readable (was 47%) */
     --accent: 210 40% 96%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 216 22% 83%;
+    --border: 215 24% 78%; /* card and table edges visible on the light background (was 83%) */
     /* inputs: own surface + a clearly visible border (requested: visible fields in light and dark) */
     --input: 215 16% 62%;
     --input-bg: 0 0% 100%;

@@ -12,10 +12,14 @@ import { slugOf, type Enhancer } from "./meta/buildConfig";
 import { PlanPreview } from "./components/record/PlanPreview";
 import { PlanCards, PlanUsage } from "./components/record/PlanInsights";
 import { CommissionPay } from "./components/record/CommissionPay";
+import { openGenerateDocs } from "./components/record/GenerateDocs";
 import { ProjectCards, ProjectProfile } from "./components/record/ProjectProfile";
 import { BlockCards, BlockGauge, BlockProfile, BlockStock } from "./components/record/BlockProfile";
 import { PlotInsights } from "./components/record/PlotInsights";
 import { SizeInsights } from "./components/record/SizeInsights";
+import { SocietyInsights } from "./components/record/SocietyInsights";
+import { BillBreakup } from "./components/record/BillBreakup";
+import { ChargeHeadCell, ChargeHeadInsights, FeatureCell, InfrastructureInsights, MaintenancePlanInsights, PlanCell } from "./components/record/OpsInsights";
 import { AreaMap } from "./components/map/AreaMap";
 import { LocationCapture } from "./components/map/LocationCapture";
 import { ImportPreview } from "./components/map/ImportPreview";
@@ -80,21 +84,13 @@ const sendActions = (doctype: string, items: [string, ((c: ExtraContext) => bool
     },
   }));
 
-const docActions = (types: string[]): FormAction[] =>
-  types.map((t) => ({
-    label: `Generate ${t}`,
-    icon: FileText,
-    run: async (c: ExtraContext) => {
-      try {
-        const r = await postCall<{ file_url: string; version: number }>("realestate.documents.generate", { document_type: t, reference_name: c.name });
-        toast.success(`${t} v${r.version} generated`);
-        window.open(r.file_url, "_blank");
-        c.reload();
-      } catch (e) {
-        toast.error(humanizeError(e));
-      }
-    },
-  }));
+/** One "Generate document…" entry: a dialog to pick the document and English / Urdu, with earlier versions. */
+const docActions = (doctype: string, types: string[]): FormAction[] => (types.length ? [{
+  label: "Generate Letters & forms (English / اردو)…",  // shown under "Documents" without the verb
+  icon: FileText,
+  show: (c: ExtraContext) => !c.isNew,
+  run: (c: ExtraContext) => openGenerateDocs({ doctype, name: c.name ?? "", types, reload: c.reload }),
+}] : []);
 
 const open = (url: string) => () => {
   window.open(url, "_blank");
@@ -137,13 +133,25 @@ const workflowActions = (doctype: string): FormAction[] => {
   ];
 };
 const wf = (doctype: string, icon: LucideIcon, subtitle: string, docs: string[] = []): Enhancer => ({
-  icon, subtitle, extend: extend(() => ({ actions: [...workflowActions(doctype), ...docActions(docs)], summary: (v) => [{ label: "Approval", value: String(v.workflow_state ?? "Draft"), tone: v.workflow_state === "Approved" ? "emerald" : v.workflow_state === "Rejected" ? "rose" : "amber" }] })),
+  icon, subtitle, extend: extend(() => ({ actions: [...workflowActions(doctype), ...docActions(doctype, docs)], summary: (v) => [{ label: "Approval", value: String(v.workflow_state ?? "Draft"), tone: v.workflow_state === "Approved" ? "emerald" : v.workflow_state === "Rejected" ? "rose" : "amber" }] })),
 });
 
 export const ENHANCERS: Record<string, Enhancer> = {
   "RE Map Feature": {
     icon: MapPinned,
-    extend: extend(() => ({
+    subtitle: "Infrastructure on the scheme map — build-out, network lengths, cost, assets and upkeep",
+    extend: extend((c) => ({
+      listHeaderExtra: <InfrastructureInsights />,
+      topFilters: { searchLabel: "Feature name", fields: [{ field: "category", label: "Category" }, { field: "asset_status", label: "Status" }] },
+      listFields: Array.from(new Set([...c.listFields, "feature_name", "feature_type", "category", "contractor", "asset_status"])),
+      columns: [
+        c.columns[0],
+        { key: "feature_type", label: "Type", render: (r: Record<string, unknown>) => <span className="flex flex-col leading-tight"><span>{String(r.feature_type ?? "")}</span><span className="text-[10px] text-muted-foreground">{String(r.category ?? "")}</span></span> },
+        { key: "__progress", label: "Progress", sortable: false, render: (r: Record<string, unknown>) => <FeatureCell name={String(r.name)} part="progress" /> },
+        { key: "__size", label: "Length / area", sortable: false, render: (r: Record<string, unknown>) => <FeatureCell name={String(r.name)} part="size" /> },
+        { key: "contractor", label: "Contractor", render: (r: Record<string, unknown>) => <span className="text-xs">{String(r.contractor ?? "—")}</span> },
+        { key: "__upkeep", label: "Asset · upkeep", sortable: false, align: "right" as const, render: (r: Record<string, unknown>) => <FeatureCell name={String(r.name)} part="upkeep" /> },
+      ],
       tabPanels: { Details: { after: (ctx: ExtraContext) => (
         <LocationCapture mode="shape" values={ctx.values} patch={ctx.patch} readOnly={ctx.readOnly} geoField="geojson" shapes={["Point", "LineString", "Polygon"]} title="Feature location" />
       ) } },
@@ -234,7 +242,7 @@ export const ENHANCERS: Record<string, Enhancer> = {
         { label: "Cancel booking & refund…", icon: Ban, show: (x) => x.docstatus === 1 && x.values.status !== "Cancelled", run: (x) => go(`/re/operations?tab=cancellations&wizard=cancel&booking=${encodeURIComponent(x.name ?? "")}`)() },
         ...sendActions("RE Booking", [["Installment Reminder", (c) => c.docstatus === 1 && Number(c.values.outstanding_amount) > 0],
           ["Overdue Notice", (c) => c.docstatus === 1 && Number(c.values.overdue_amount) > 0], ["Booking Confirmation"]]),
-        ...docActions(["Allotment Letter", "Payment Schedule", "Booking Application Form", "Sale Agreement", "Installment Reminder", "Final Notice",
+        ...docActions("RE Booking", ["Allotment Letter", "Payment Schedule", "Booking Application Form", "Sale Agreement", "Installment Reminder", "Final Notice",
           "No Demand Certificate", "Possession Letter", "Cancellation Letter"]),
       ],
     })),
@@ -248,12 +256,33 @@ export const ENHANCERS: Record<string, Enhancer> = {
         { label: "Open Payment Entry", icon: Receipt, show: (x) => Boolean(x.values.payment_entry), run: (x) => go(`/accounting/payment-entries/${encodeURIComponent(String(x.values.payment_entry))}`)() },
         { label: "Print receipt", icon: FileText, show: (x) => x.docstatus === 1, run: (x) => open(`/printview?doctype=RE%20Payment&name=${encodeURIComponent(x.name ?? "")}&format=RE%20Payment%20Receipt`)() },
         ...sendActions("RE Payment", [["Payment Receipt"]]),
+        ...docActions("RE Payment", ["Payment Receipt"]),
       ],
     })),
   },
   "RE Society Bill": {
     icon: Receipt,
-    extend: extend(() => ({
+    subtitle: "Monthly society bills — billing, collection, arrears by age, blocks and defaulters",
+    extend: extend((c) => ({
+      topFilters: { searchLabel: "Plot # (e.g. A-003)", status: true, fields: [{ field: "block", label: "Block" }] },
+      listHeaderExtra: <SocietyInsights />,
+      listFields: Array.from(new Set([...c.listFields, "customer_name", "plot", "bill_month_label", "billing_month", "total_amount", "arrears", "paid_amount", "outstanding_amount", "status"])),
+      // one row per bill: owner, plot, month, the charges that make up the bill, then the money
+      columns: [
+        c.columns[0],
+        { key: "plot", label: "Plot", render: (r: Record<string, unknown>) => <span className="font-medium">{String(r.plot ?? "")}</span> },
+        { key: "billing_month", label: "Month", render: (r: Record<string, unknown>) => String(r.bill_month_label ?? r.billing_month ?? "") },
+        { key: "__charges", label: "Charges breakup", sortable: false, render: (r: Record<string, unknown>) => <BillBreakup name={String(r.name)} /> },
+        { key: "total_amount", label: "Bill", align: "right" as const, getValue: (r: Record<string, unknown>) => Number(r.total_amount ?? 0),
+          render: (r: Record<string, unknown>) => (
+            <span className="flex flex-col items-end leading-tight"><span className="font-semibold tabular-nums">{money(Number(r.total_amount ?? 0))}</span>
+              {Number(r.arrears) > 0 && Number(r.outstanding_amount) > 0 && <span className="text-[10px] text-red-600 dark:text-red-400" title="Unpaid earlier bills when this bill was issued">+ arrears {money(Number(r.arrears))}</span>}</span>) },
+        { key: "paid_amount", label: "Paid", align: "right" as const, getValue: (r: Record<string, unknown>) => Number(r.paid_amount ?? 0),
+          render: (r: Record<string, unknown>) => <span className="tabular-nums text-emerald-700 dark:text-emerald-400">{money(Number(r.paid_amount ?? 0))}</span> },
+        { key: "outstanding_amount", label: "Outstanding", align: "right" as const, getValue: (r: Record<string, unknown>) => Number(r.outstanding_amount ?? 0),
+          render: (r: Record<string, unknown>) => <span className={Number(r.outstanding_amount) > 0 ? "font-semibold tabular-nums text-red-600 dark:text-red-400" : "tabular-nums text-muted-foreground"}>{money(Number(r.outstanding_amount ?? 0))}</span> },
+        ...c.columns.filter((x) => x.key === "status"),
+      ],
       summary: (v) => [
         { label: "This month", value: money(v.total_amount), tone: "indigo" },
         { label: "Arrears", value: money(v.arrears), tone: Number(v.arrears) > 0 ? "rose" : "sky" },
@@ -263,7 +292,7 @@ export const ENHANCERS: Record<string, Enhancer> = {
         { label: "Record payment", icon: Wallet, group: "create", show: (x) => Number(x.values.outstanding_amount) > 0,
           run: (x) => go(`${docBase("RE Payment")}/new?payment_against=Society%20Bill&society_bill=${encodeURIComponent(x.name ?? "")}&customer=${encodeURIComponent(String(x.values.customer ?? ""))}`)() },
         ...sendActions("RE Society Bill", [["Society Bill", (c) => !c.isNew]]),
-        ...docActions(["Maintenance Bill"]),
+        ...docActions("RE Society Bill", ["Maintenance Bill"]),
       ],
     })),
   },
@@ -285,7 +314,7 @@ export const ENHANCERS: Record<string, Enhancer> = {
       actions: [
         { label: "Show on map", icon: Map, run: (x) => go(`/re/plots/${encodeURIComponent(x.name ?? "")}`)() },
         { label: "Book this plot", icon: ClipboardList, show: (x) => x.values.status === "Available", run: (x) => go(`${docBase("RE Booking")}/new?plot=${encodeURIComponent(x.name ?? "")}`)() },
-        ...docActions(["Site Plan", "NOC for Construction"]),
+        ...docActions("RE Plot", ["Site Plan", "NOC for Construction"]),
       ],
     })),
   },
@@ -325,5 +354,38 @@ export const ENHANCERS: Record<string, Enhancer> = {
     })),
   },
 
-  "RE Maintenance Plan": { icon: Wrench, extend: extend(() => ({ actions: [{ label: "Create task now", icon: Wrench, run: run("RE Maintenance Plan", "create_task_now", "Task created") }] })) },
+  "RE Maintenance Plan": {
+    icon: Wrench,
+    subtitle: "Planned upkeep — what is due, who does it and how reliably it gets done",
+    extend: extend((c) => ({
+      listHeaderExtra: <MaintenancePlanInsights />,
+      listFields: Array.from(new Set([...c.listFields, "title", "maintenance_type", "frequency", "next_due", "enabled"])),
+      columns: [
+        c.columns[0],
+        { key: "maintenance_type", label: "Type", render: (r: Record<string, unknown>) => <span className="inline-flex rounded-md border bg-muted/40 px-1.5 py-0.5 text-xs">{String(r.maintenance_type ?? "")}</span> },
+        { key: "__who", label: "Assigned · frequency", sortable: false, render: (r: Record<string, unknown>) => <PlanCell name={String(r.name)} part="who" /> },
+        { key: "next_due", label: "Next due", render: (r: Record<string, unknown>) => <PlanCell name={String(r.name)} part="due" /> },
+        { key: "__rel", label: "Reliability (6 m)", sortable: false, render: (r: Record<string, unknown>) => <PlanCell name={String(r.name)} part="reliability" /> },
+        { key: "__last", label: "Last job", sortable: false, render: (r: Record<string, unknown>) => <PlanCell name={String(r.name)} part="last" /> },
+      ],
+      actions: [{ label: "Create task now", icon: Wrench, run: run("RE Maintenance Plan", "create_task_now", "Task created") }],
+    })),
+  },
+  "RE Charge Head": {
+    icon: HandCoins,
+    subtitle: "Society charge heads — rates, what each plot size pays, and what each head brings in",
+    extend: extend((c) => ({
+      listHeaderExtra: <ChargeHeadInsights />,
+      listFields: Array.from(new Set([...c.listFields, "applies_to", "rate_type", "enabled", "sequence"])),
+      columns: [
+        c.columns[0],
+        { key: "__rate", label: "Rate", sortable: false, render: (r: Record<string, unknown>) => <ChargeHeadCell name={String(r.name)} part="rate" /> },
+        { key: "applies_to", label: "Applies to", render: (r: Record<string, unknown>) => <span className="text-xs">{String(r.applies_to ?? "")}</span> },
+        { key: "__share", label: "Share of billing", sortable: false, render: (r: Record<string, unknown>) => <ChargeHeadCell name={String(r.name)} part="share" /> },
+        { key: "__trend", label: "12-month trend", sortable: false, render: (r: Record<string, unknown>) => <ChargeHeadCell name={String(r.name)} part="trend" /> },
+        { key: "__billed", label: "This month", sortable: false, align: "right" as const, render: (r: Record<string, unknown>) => <ChargeHeadCell name={String(r.name)} part="billed" /> },
+        { key: "enabled", label: "Active", render: (r: Record<string, unknown>) => (Number(r.enabled) ? <span className="text-xs font-semibold text-emerald-600">Active</span> : <span className="text-xs text-muted-foreground">Off</span>) },
+      ],
+    })),
+  },
 };

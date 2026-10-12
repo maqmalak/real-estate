@@ -37,8 +37,14 @@ DOCUMENTS = {
 }
 
 
-def print_format_name(document_type):
-	return "RE Payment Receipt" if document_type == "Payment Receipt" else f"RE {document_type}"
+LANGUAGES = {"en": "English", "ur": "اردو"}
+# Urdu print formats: templates/docs/ur/<template>.html (the receipt's Urdu version lives there too)
+UR_TEMPLATES = {**{d: t for d, (_dt, t) in DOCUMENTS.items() if t}, "Payment Receipt": "payment_receipt"}
+
+
+def print_format_name(document_type, language="en"):
+	base = "RE Payment Receipt" if document_type == "Payment Receipt" else f"RE {document_type}"
+	return f"{base} (Urdu)" if language == "ur" and document_type in UR_TEMPLATES else base
 
 
 def setup():
@@ -59,6 +65,16 @@ def setup():
 				   "standard": "No", "disabled": 0, "html": _read(f"docs/{template}.html")})
 		pf.flags.ignore_permissions = True
 		pf.save()
+	for document_type, template in UR_TEMPLATES.items():
+		html = _read(f"docs/ur/{template}.html")
+		if not html:
+			continue
+		name = print_format_name(document_type, "ur")
+		pf = frappe.get_doc("Print Format", name) if frappe.db.exists("Print Format", name) else frappe.new_doc("Print Format")
+		pf.update({"name": name, "doc_type": DOCUMENTS[document_type][0], "module": "Real Estate", "print_format_type": "Jinja", "custom_format": 1,
+				   "standard": "No", "disabled": 0, "html": html})
+		pf.flags.ignore_permissions = True
+		pf.save()
 	frappe.db.commit()
 
 
@@ -76,8 +92,28 @@ def qr_svg(text, scale=3):
 	return "data:image/svg+xml;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
+def app_url(path=""):
+	"""Address of the React app: `re_app_url` in site config, else this site's URL on the React dev port
+	(`re_frontend_dev_port`), else the site URL itself (production serves the app on the same host)."""
+	from urllib.parse import urlsplit, urlunsplit
+
+	base = frappe.conf.get("re_app_url")
+	if not base:
+		base = frappe.utils.get_url()
+		port = frappe.conf.get("re_frontend_dev_port")
+		if port:
+			u = urlsplit(base)
+			base = urlunsplit((u.scheme, f"{u.hostname}:{port}", "", "", ""))
+	return base.rstrip("/") + path
+
+
 def verify_url(doctype, name):
-	return frappe.utils.get_url(f"/desk/{frappe.scrub(doctype).replace('_', '-')}/{name}")
+	"""QR on printed documents: opens the record in the React app (not the ERPNext desk)."""
+	from urllib.parse import quote
+
+	slug = doctype.lower().replace(" ", "-")
+	path = f"/re/customers/{quote(name)}" if doctype == "Customer" else f"/re/d/{slug}/{quote(name)}"
+	return app_url(path)
 
 
 def plot_svg(plot, width=520, height=360):
@@ -132,8 +168,13 @@ def society_dues(customer):
 
 # ---------------------------------------------------------------- generate
 @frappe.whitelist()
-def generate(document_type: str, reference_name: str, reference_doctype: str | None = None, remarks: str | None = None) -> dict:
-	"""Render the document to PDF on the letterhead, store it as a new version and attach it to the source record."""
+def generate(document_type: str, reference_name: str, reference_doctype: str | None = None, remarks: str | None = None,
+			 language: str = "en") -> dict:
+	"""Render the document to PDF on the letterhead (English, or Urdu right-to-left), store it as a new version and attach
+	it to the source record."""
+	language = language if language in LANGUAGES else "en"
+	if language == "ur" and document_type not in UR_TEMPLATES:
+		frappe.throw(_("{0} is not available in Urdu yet").format(document_type))
 	if document_type not in DOCUMENTS:
 		frappe.throw(_("Unknown document type {0}").format(document_type))
 	doctype = DOCUMENTS[document_type][0]
@@ -142,21 +183,21 @@ def generate(document_type: str, reference_name: str, reference_doctype: str | N
 	src = frappe.get_doc(doctype, reference_name)
 	src.check_permission("read")
 	_guard(document_type, src)
-	pdf = frappe.get_print(doctype, reference_name, print_format=print_format_name(document_type), as_pdf=True, letterhead=LETTER_HEAD)
+	pdf = frappe.get_print(doctype, reference_name, print_format=print_format_name(document_type, language), as_pdf=True, letterhead=LETTER_HEAD)
 	version = frappe.db.count("RE Generated Document", {"document_type": document_type, "reference_name": reference_name}) + 1
 	customer = src.name if doctype == "Customer" else src.get("customer") or (
 		src.get("to_customer") if document_type == "Transfer Letter" else src.get("from_customer"))
 	plot = src.name if doctype == "RE Plot" else src.get("plot")
 	gen = frappe.get_doc({
 		"doctype": "RE Generated Document", "document_type": document_type, "reference_doctype": doctype, "reference_name": reference_name,
-		"version": version, "customer": customer, "plot": plot, "issued_on": now_datetime(), "issued_by": frappe.session.user,
-		"print_format": print_format_name(document_type), "remarks": remarks,
+		"version": version, "language": language, "customer": customer, "plot": plot, "issued_on": now_datetime(), "issued_by": frappe.session.user,
+		"print_format": print_format_name(document_type, language), "remarks": remarks,
 	}).insert(ignore_permissions=True)
-	file_name = f"{document_type} - {reference_name} - v{version}.pdf".replace("/", "-")
+	file_name = f"{document_type}{' (Urdu)' if language == 'ur' else ''} - {reference_name} - v{version}.pdf".replace("/", "-")
 	f = frappe.get_doc({"doctype": "File", "file_name": file_name, "attached_to_doctype": doctype, "attached_to_name": reference_name,
 						"is_private": 1, "content": pdf}).insert(ignore_permissions=True)
 	gen.db_set("file", f.file_url)
-	return {"name": gen.name, "file_url": f.file_url, "version": version}
+	return {"name": gen.name, "file_url": f.file_url, "version": version, "language": language}
 
 
 def _guard(document_type, src):
@@ -182,7 +223,7 @@ def available(doctype: str, name: str) -> list[dict]:
 		if dt != doctype:
 			continue
 		versions = frappe.get_all("RE Generated Document", {"document_type": document_type, "reference_name": name},
-								  ["name", "version", "issued_on", "issued_by", "file"], order_by="version desc")
-		out.append({"document_type": document_type, "versions": versions})
+								  ["name", "version", "language", "issued_on", "issued_by", "file"], order_by="version desc")
+		out.append({"document_type": document_type, "versions": versions, "languages": ["en", "ur"] if document_type in UR_TEMPLATES else ["en"]})
 	return out
 

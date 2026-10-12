@@ -30,6 +30,8 @@ export const DOC_ROUTES: Record<string, string> = {
   "RE Reminder Log": "/re/d/re-reminder-log/",
   "RE Generated Document": "/re/d/re-generated-document/",
   "RE Vault Document": "/re/d/re-vault-document/",
+  "RE Re-allotment": "/re/d/re-re-allotment/",
+  "RE Settings": "/re/d/re-settings/",
   // Buying / import
   "Material Request": "/import/material-requests/",
   "Request for Quotation": "/import/rfqs/",
@@ -135,8 +137,13 @@ export const DOC_ROUTES: Record<string, string> = {
 export const slug = (doctype: string) => doctype.toLowerCase().replace(/ /g, "-");
 
 /** React route for a record, or the desk URL (external) when the app has no screen for it. */
+/** Doctypes the app shows as a list or feed rather than one page per record. */
+const LIST_ONLY: Record<string, string> = { "CRM Task": "/crm/tasks", "CRM Call Log": "/crm/call-logs", "WhatsApp Message": "/re/inbox", "RE Conversation": "/re/inbox" };
+
 export function docUrl(doctype: string, name: string): { href: string; external: boolean } {
-  const base = DOC_ROUTES[doctype];
+  if (LIST_ONLY[doctype]) return { href: LIST_ONLY[doctype], external: false };
+  // every real-estate doctype has a generated list / form under /re/d/<slug>
+  const base = DOC_ROUTES[doctype] ?? (doctype.startsWith("RE ") ? `/re/d/${slug(doctype)}/` : undefined);
   return base ? { href: `${base}${encodeURIComponent(name)}`, external: false } : { href: deskUrl(doctype, name), external: true };
 }
 

@@ -1,0 +1,34 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set booking = frappe.get_doc("RE Booking", doc.booking) if doc.booking else None -%}
+{%- set bill = frappe.get_doc("RE Society Bill", doc.society_bill) if doc.society_bill else None -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>رسیدِ ادائیگی</h2><div class="sub">نمبر {{ ur_ltr(doc.name) }} · {{ ur_date(doc.posting_date) }}</div>
+<table><tr><th>وصول کنندہ از</th><td>{{ doc.customer_name }}</td></tr>
+<tr><th>پلاٹ</th><td>{{ ur_ltr(doc.plot) }}{% if booking %} · {{ ur(booking.plot_size) }} · {{ ur(booking.block) }}{% endif %}</td></tr>
+<tr><th>بابت</th><td>{{ ur(doc.payment_against) }}: {{ ur_ltr(doc.booking or doc.society_bill or doc.surcharge) }}{% if bill %} ({{ bill.bill_month_label }}){% endif %}</td></tr>
+<tr><th>طریقۂ ادائیگی</th><td>{{ ur(doc.mode_of_payment) }}{% if doc.reference_no %} · حوالہ {{ ur_ltr(doc.reference_no) }}{% endif %}</td></tr>
+<tr><th>رقم</th><td style="font-size:18px;font-weight:bold">{{ ur_money(doc.amount) }}</td></tr></table>
+{% if doc.allocations %}<table class="grid"><tr><th>قسط</th><th>تاریخِ ادائیگی</th><th>مختص رقم</th></tr>
+{% for a in doc.allocations %}<tr><td>{{ ur(a.label) }}</td><td>{{ ur_date(a.due_date) }}</td><td class="num">{{ ur_money(a.allocated_amount) }}</td></tr>{% endfor %}</table>{% endif %}
+{% if booking %}<table class="grid"><tr><th>خالص قیمت</th><th>اب تک ادا شدہ</th><th>بقایا</th><th>اگلی قسط</th></tr>
+<tr><td class="num">{{ ur_money(booking.net_price) }}</td><td class="num">{{ ur_money(booking.paid_amount) }}</td><td class="num">{{ ur_money(booking.outstanding_amount) }}</td>
+<td>{% if booking.next_due_date %}{{ ur_date(booking.next_due_date) }} · {{ ur_money(booking.next_due_amount) }}{% else %}—{% endif %}</td></tr></table>{% endif %}
+<p class="muted" style="margin-top:18px">یہ کمپیوٹر سے تیار کردہ رسید ہے۔ وصول کنندہ: {{ frappe.db.get_value("User", doc.received_by, "full_name") if doc.received_by else "" }}۔</p></div>

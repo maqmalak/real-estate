@@ -9,7 +9,8 @@ import { Empty, Skeleton } from "@/re/components/ui/skeleton";
 import { getCount, getList, post, type Filter } from "@/re/lib/api";
 import { dateTime } from "@/re/lib/format";
 import type { Communication, FileRow, ToDoRow, Version } from "@/re/lib/types";
-import { deskUrl, slug } from "@/re/lib/utils";
+import { Link } from "react-router-dom";
+import { listUrl } from "@/re/lib/utils";
 
 export interface Connection {
   label: string;
@@ -27,11 +28,11 @@ export function ConnectionsTab({ name, connections }: { name: string; connection
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       {connections.map((c, i) => (
-        <a key={c.label} href={deskUrl(`${slug(c.doctype)}?${c.field}=${encodeURIComponent(c.value ?? name)}`)} target="_blank" rel="noreferrer"
+        <Link key={c.label} to={listUrl(c.doctype, { [c.field]: c.value ?? name })}
           className="flex items-center justify-between rounded-md border-[1.5px] border-input bg-input-bg px-3 py-2 text-sm hover:border-primary">
           <span>{c.label}</span>
           <span className="flex items-center gap-2 font-semibold">{data?.[i] ?? 0}<ExternalLink className="size-3.5 text-muted-foreground" /></span>
-        </a>
+        </Link>
       ))}
     </div>
   );

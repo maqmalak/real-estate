@@ -1,0 +1,28 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>ادائیگی کا شیڈول</h2><div class="sub">بکنگ {{ ur_ltr(doc.name) }} · {{ ur(doc.payment_plan) }}</div><table>
+<tr><th>گاہک</th><td>{{ cust.customer_name }}</td></tr><tr><th>موبائل</th><td>{{ ur_ltr(cust.mobile_no or doc.mobile_no) }}</td></tr>
+<tr><th>پلاٹ</th><td>{{ ur_ltr(doc.plot) }} · {{ ur(doc.plot_size) }} · {{ ur(doc.block) }}{% if plot.street %} · {{ plot.street }}{% endif %}</td></tr></table><table class="grid"><tr><th>#</th><th>قسط</th><th>تاریخِ ادائیگی</th><th>رقم</th><th>ادا شدہ</th><th>کیفیت</th></tr>
+{% for r in doc.installments %}<tr><td>{{ loop.index }}</td><td>{{ ur(r.label) }}</td><td>{{ ur_date(r.due_date) }}</td><td class="num">{{ ur_money(r.amount) }}</td><td class="num">{{ ur_money(r.paid_amount) }}</td><td>{{ ur(r.status) }}</td></tr>{% endfor %}
+<tr><th colspan="3">کل</th><th class="num">{{ ur_money(doc.net_price) }}</th><th class="num">{{ ur_money(doc.paid_amount) }}</th><th></th></tr></table>
+<div class="box">بقایا: <b>{{ ur_money(doc.outstanding_amount) }}</b>{% if doc.overdue_amount %} · <span class="red">زائد المیعاد {{ ur_money(doc.overdue_amount) }}</span>{% endif %}{% if doc.next_due_date %} · اگلی قسط {{ ur_date(doc.next_due_date) }} ({{ ur_money(doc.next_due_amount) }}){% endif %}</div></div>

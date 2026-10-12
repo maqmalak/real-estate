@@ -455,3 +455,48 @@ realestate.add_party_buttons = (frm, party_type, party) => {
 	frm.add_custom_button(__("Log Call"), async () => realestate.log_call_dialog(await frappe.xcall("realestate.whatsapp.api.get_context", { doctype: frm.doctype, name: frm.docname })), group);
 	frm.add_custom_button(__("Schedule Site Visit"), () => frappe.new_doc("RE Site Visit", { party_type, party, mobile_no: frm.doc.mobile_no }), group);
 };
+
+// ------------------------------------------------------------------ documents (English / Urdu)
+realestate.generate_document = (frm) => {
+	frappe.xcall("realestate.documents.available", { doctype: frm.doctype, name: frm.doc.name }).then((docs) => {
+		if (!docs.length) return frappe.msgprint(__("No documents for this record"));
+		const label = (v) => `v${v.version} · ${v.language === "ur" ? "اردو" : "English"} · ${frappe.datetime.str_to_user(v.issued_on)}`;
+		const d = new frappe.ui.Dialog({
+			title: __("Generate document"),
+			fields: [
+				{ fieldname: "document_type", label: __("Document"), fieldtype: "Select", reqd: 1, options: docs.map((x) => x.document_type).join("\n"),
+					default: docs[0].document_type, onchange: () => refresh() },
+				{ fieldname: "language", label: __("Language"), fieldtype: "Select", reqd: 1, options: [{ value: "en", label: "English" }, { value: "ur", label: "اردو (Urdu)" }],
+					default: localStorage.getItem("re-doc-lang") === "ur" ? "ur" : "en" },
+				{ fieldname: "versions", fieldtype: "HTML" },
+			],
+			primary_action_label: __("Generate PDF"),
+			primary_action: (v) => {
+				localStorage.setItem("re-doc-lang", v.language);
+				d.hide();
+				frappe.xcall("realestate.documents.generate", { document_type: v.document_type, reference_name: frm.doc.name, language: v.language }).then((r) => {
+					frappe.show_alert({ message: __("{0} v{1} generated", [v.document_type, r.version]), indicator: "green" });
+					window.open(r.file_url, "_blank");
+					frm.reload_doc();
+				});
+			},
+		});
+		const refresh = () => {
+			const cur = docs.find((x) => x.document_type === d.get_value("document_type"));
+			if (cur && !cur.languages.includes("ur")) d.set_value("language", "en");
+			const rows = (cur?.versions || []).map((v) => `<li>${v.file ? `<a href="${v.file}" target="_blank">${frappe.utils.escape_html(label(v))}</a>` : frappe.utils.escape_html(label(v))}</li>`).join("");
+			d.fields_dict.versions.$wrapper.html(rows ? `<div class="text-muted small">${__("Earlier versions")}</div><ul class="small">${rows}</ul>` : "");
+		};
+		d.show();
+		refresh();
+	});
+};
+
+["RE Booking", "RE Plot", "RE Society Bill", "RE Payment", "RE Plot Transfer", "Customer"].forEach((dt) => {
+	frappe.ui.form.on(dt, {
+		refresh(frm) {
+			if (frm.is_new()) return;
+			frm.add_custom_button(__("Generate document"), () => realestate.generate_document(frm), __("Documents"));
+		},
+	});
+});

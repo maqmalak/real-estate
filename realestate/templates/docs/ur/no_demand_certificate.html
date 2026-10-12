@@ -1,0 +1,25 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set plot = frappe.get_doc("RE Plot", doc.plot) -%}
+{%- set cust = frappe.get_doc("Customer", doc.customer) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>نو ڈیمانڈ سرٹیفکیٹ</h2><div class="sub">این ڈی سی · {{ ur_date(frappe.utils.nowdate()) }}</div>
+<p>تصدیق کی جاتی ہے کہ <b>{{ cust.customer_name }}</b>{% if cust.re_cnic %}، شناختی کارڈ {{ ur_ltr(cust.re_cnic) }}{% endif %}، الاٹی پلاٹ <b>{{ ur_ltr(doc.plot) }}</b> ({{ ur(doc.plot_size) }}، {{ ur(doc.block) }})، زرمین گارڈنز ہاؤسنگ اسکیم، نے پوری قیمت {{ ur_money(doc.net_price) }} ادا کر دی ہے اور آج کی تاریخ تک مذکورہ پلاٹ کے ذمے کوئی واجبات — اقساط یا سوسائٹی چارجز — باقی نہیں۔</p>
+<p>یہ سرٹیفکیٹ الاٹی کی درخواست پر منتقلی / ریکارڈ کے لیے جاری کیا جاتا ہے۔</p><table class="sign"><tr><td>شعبہ اکاؤنٹس</td><td class="gap"></td><td>برائے زرمین ڈویلپرز (پرائیویٹ) لمیٹڈ<br><span class="muted">مجاز دستخط کنندہ</span></td></tr></table></div>

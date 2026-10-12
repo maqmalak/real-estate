@@ -786,3 +786,267 @@ def quick_entry_meta(doctype: str) -> dict:
 	if not fields and not reason:
 		reason = "no quick-entry fields"
 	return {"doctype": doctype, "eligible": reason is None, "reason": reason, "label": _(doctype.replace("RE ", "")), "fields": fields[:12]}
+
+
+# ---------------------------------------------------------------- customer insights
+@frappe.whitelist(methods=["GET"])
+def customer_profile(customer: str) -> dict:
+	"""One buyer at a glance (React customer page): money position, how punctually they pay (each receipt's allocation
+	against its installment's due date), payments vs dues by month, what falls due next, how and for what they pay,
+	society account, contact history (calls, WhatsApp, promises) and complaints — plus a payer segment and highlights."""
+	_staff()
+	frappe.get_doc("Customer", customer).check_permission("read")
+	today = getdate(nowdate())
+	bookings = _sql("""select name, plot, status, net_price, paid_amount, outstanding_amount, overdue_amount, overdue_since, next_due_date,
+		booking_date, payment_plan from `tabRE Booking` where customer=%s and docstatus=1 and ifnull(cancellation,'')='' order by booking_date""", customer)
+	names = [b.name for b in bookings] or [""]
+	inst = _sql("""select parent booking, label, due_date, amount, ifnull(paid_amount, 0) paid from `tabRE Installment`
+		where parenttype='RE Booking' and parent in %s order by due_date""", names)
+	alloc = _sql("""select a.due_date, a.allocated_amount amt, p.posting_date, datediff(p.posting_date, a.due_date) late
+		from `tabRE Payment Allocation` a join `tabRE Payment` p on p.name=a.parent
+		where p.customer=%s and p.docstatus=1 and p.payment_against='Booking' and a.due_date is not null""", customer)
+	pays = _sql("""select posting_date, amount, mode_of_payment, payment_against from `tabRE Payment` where customer=%s and docstatus=1
+		order by posting_date""", customer)
+
+	# money position
+	net = sum(flt(b.net_price) for b in bookings)
+	paid = sum(flt(b.paid_amount) for b in bookings)
+	overdue = sum(flt(b.overdue_amount) for b in bookings)
+	due_to_date = sum(flt(r.amount) for r in inst if getdate(r.due_date) <= today)
+	upcoming = [r for r in inst if flt(r.amount) - flt(r.paid) > 1 and getdate(r.due_date) > today]
+	nxt = upcoming[0] if upcoming else None
+	oldest = min((getdate(b.overdue_since) for b in bookings if b.overdue_since and flt(b.overdue_amount) > 0), default=None)
+
+	# punctuality: allocated money by how late it came; unpaid past-due money counts as missed
+	bands = {"Early / on time": 0.0, "1-15 days late": 0.0, "16-45 days late": 0.0, "45+ days late": 0.0}
+	for a in alloc:
+		late = cint(a.late)
+		bands["Early / on time" if late <= 3 else "1-15 days late" if late <= 15 else "16-45 days late" if late <= 45 else "45+ days late"] += flt(a.amt)
+	missed = sum(max(0, flt(r.amount) - flt(r.paid)) for r in inst if getdate(r.due_date) < today)
+	allocated = sum(bands.values())
+	score = round(bands["Early / on time"] * 100 / (allocated + missed), 1) if allocated + missed else None
+	late_rows = [a for a in alloc if cint(a.late) > 3]
+	early_rows = [a for a in alloc if cint(a.late) < 0]
+	wavg = lambda rows, sign: round(sum(sign * cint(a.late) * flt(a.amt) for a in rows) / sum(flt(a.amt) for a in rows), 1) if rows and sum(flt(a.amt) for a in rows) else 0  # noqa: E731
+	avg_late, early = wavg(late_rows, 1), wavg(early_rows, -1)
+
+	# monthly payments vs dues (from the first booking, max 36 months)
+	start = get_first_day(min([getdate(b.booking_date) for b in bookings] or [today]))
+	start = max(start, get_first_day(add_months(today, -35)))
+	months, m = [], start
+	while m <= get_first_day(today):
+		months.append(m)
+		m = add_months(m, 1)
+	key = lambda d: str(getdate(d))[:7]  # noqa: E731
+	series = {str(mm)[:7]: {"month": str(mm)[:7], "due": 0.0, "paid": 0.0, "society": 0.0} for mm in months}
+	for r in inst:
+		if key(r.due_date) in series:
+			series[key(r.due_date)]["due"] += flt(r.amount)
+	for p in pays:
+		k = key(p.posting_date)
+		if k in series:
+			series[k]["paid" if p.payment_against == "Booking" else "society"] += flt(p.amount)
+	cum_due = cum_paid = 0.0
+	monthly = []
+	for row in series.values():
+		cum_due += row["due"]
+		cum_paid += row["paid"]
+		monthly.append({**row, "cover": round(min(cum_paid, cum_due) * 100 / cum_due, 1) if cum_due else None})
+
+	# next 12 months
+	ahead = {}
+	for r in upcoming:
+		if getdate(r.due_date) <= add_months(today, 12):
+			ahead[key(r.due_date)] = ahead.get(key(r.due_date), 0) + flt(r.amount) - flt(r.paid)
+
+	modes, purposes = {}, {}
+	for p in pays:
+		modes[p.mode_of_payment or "Other"] = modes.get(p.mode_of_payment or "Other", 0) + flt(p.amount)
+		label = {"Booking": "Plot installments", "Society Bill": "Society bills", "Surcharge": "Late surcharges"}.get(p.payment_against, p.payment_against)
+		purposes[label] = purposes.get(label, 0) + flt(p.amount)
+
+	society = _sql("""select count(*) bills, sum(total_amount) billed, sum(paid_amount) paid, sum(outstanding_amount) outstanding,
+		sum(outstanding_amount > 0 and due_date < %s) overdue_bills from `tabRE Society Bill` where customer=%s and docstatus<2""", today, customer)[0]
+	surcharge = _sql("""select count(*) n, sum(amount) amount, sum(waived_amount) waived, sum(outstanding_amount) outstanding
+		from `tabRE Surcharge` where customer=%s""", customer)[0]
+
+	# contact history
+	calls = _sql("""select type, status, re_outcome, start_time, re_promised_amount, re_promised_date from `tabCRM Call Log`
+		where reference_doctype='Customer' and reference_docname=%s order by start_time""", customer)
+	promises = [c for c in calls if c.re_promised_date and getdate(c.re_promised_date) <= today]
+	kept = sum(1 for c in promises if any(getdate(c.start_time) <= getdate(p.posting_date) <= add_days(c.re_promised_date, 3) for p in pays))
+	profile = frappe.db.get_value("RE Conversation", {"party_type": "Customer", "party": customer}, "whatsapp_profile")
+	wa = {r.direction: r.n for r in _sql("select direction, count(*) n from `tabWhatsApp Message` where `to`=%s group by direction", profile)} if profile else {}
+	tasks = _sql("""select status, creation, completed_on from `tabTask` where re_customer=%s""", customer)
+	done = [t for t in tasks if t.status == "Completed" and t.completed_on]
+	resolve = round(sum((getdate(t.completed_on) - getdate(t.creation)).days for t in done) / len(done), 1) if done else None
+	last_contact = max([c.start_time for c in calls] + [frappe.db.get_value("RE Conversation", profile, "last_message_at")] if profile else [c.start_time for c in calls], default=None)
+
+	# segment
+	days_over = (today - oldest).days if oldest else 0
+	if overdue <= 0 and (score is None or score >= 85):
+		segment = ("Excellent payer", "good")
+	elif overdue <= 0:
+		segment = ("Good payer", "good")
+	elif days_over > 60 or (score is not None and score < 50):
+		segment = ("At risk", "bad")
+	else:
+		segment = ("Watch", "warn")
+
+	rs = lambda v: frappe.utils.fmt_money(flt(v), precision=0, currency="PKR")  # noqa: E731
+	hl = []
+	if score is not None:
+		bits = [f"late payments came {avg_late:.0f} days after the due date on average"] if late_rows else ["no payment came late"]
+		if early > 0.5:
+			bits.append(f"early ones {early:.0f} days ahead")
+		if missed:
+			bits.append(f"{rs(missed)} of past dues still unpaid")
+		hl.append({"tone": "good" if score >= 85 else "warn" if score >= 60 else "bad", "text": f"{score:.0f}% of the money due came on time — " + "; ".join(bits) + "."})
+	if overdue > 0:
+		hl.append({"tone": "bad", "text": f"{rs(overdue)} overdue for {days_over} days (since {frappe.utils.formatdate(oldest)})."})
+	if nxt:
+		hl.append({"tone": "info", "text": f"Next: {rs(flt(nxt.amount) - flt(nxt.paid))} {nxt.label} on {frappe.utils.formatdate(nxt.due_date)} ({(getdate(nxt.due_date) - today).days} days)."})
+	if promises:
+		hl.append({"tone": "good" if kept >= len(promises) / 2 else "warn", "text": f"Kept {kept} of {len(promises)} payment promises made on calls."})
+	if flt(society.outstanding) > 0:
+		hl.append({"tone": "warn", "text": f"Society account: {rs(society.outstanding)} outstanding on {cint(society.overdue_bills)} overdue bill(s)."})
+	if flt(surcharge.amount):
+		hl.append({"tone": "warn" if flt(surcharge.outstanding) else "info", "text": f"Late surcharges {rs(surcharge.amount)} so far" + (f", {rs(surcharge.waived)} waived" if flt(surcharge.waived) else "") + "."})
+	if net and paid >= net - 1:
+		hl.append({"tone": "good", "text": "All plots fully paid."})
+
+	return {
+		"segment": {"label": segment[0], "tone": segment[1]},
+		"money": {"net": net, "paid": paid, "outstanding": max(0, net - paid), "overdue": overdue, "due_to_date": due_to_date,
+				  "paid_pct": round(paid * 100 / net, 1) if net else 0, "cover_pct": round(min(paid, due_to_date) * 100 / due_to_date, 1) if due_to_date else 100,
+				  "plots": len(bookings), "days_overdue": days_over,
+				  "next": {"amount": flt(nxt.amount) - flt(nxt.paid), "date": nxt.due_date, "label": nxt.label, "booking": nxt.booking} if nxt else None,
+				  "remaining_installments": len(upcoming), "last_payment": pays[-1].posting_date if pays else None,
+				  "lifetime_paid": sum(flt(p.amount) for p in pays)},
+		"punctuality": {"score": score, "avg_days_late": avg_late, "avg_days_early": early,
+						"bands": [{"name": k, "value": v} for k, v in bands.items()] + [{"name": "Missed (still unpaid)", "value": missed}]},
+		"monthly": monthly,
+		"ahead": [{"month": k, "amount": v} for k, v in sorted(ahead.items())],
+		"modes": [{"name": k, "value": v} for k, v in sorted(modes.items(), key=lambda x: -x[1])],
+		"purposes": [{"name": k, "value": v} for k, v in sorted(purposes.items(), key=lambda x: -x[1])],
+		"society": {k: flt(v) for k, v in society.items()}, "surcharge": {k: flt(v) for k, v in surcharge.items()},
+		"contact": {"calls": len(calls), "answered": sum(1 for c in calls if c.status == "Completed"), "incoming": sum(1 for c in calls if c.type == "Incoming"),
+					"wa_in": cint(wa.get("Incoming")), "wa_out": cint(wa.get("Outgoing")), "promises": len(promises), "kept": kept,
+					"last_contact": last_contact},
+		"complaints": {"total": len(tasks), "open": sum(1 for t in tasks if t.status not in ("Completed", "Cancelled")), "resolved": len(done), "avg_days": resolve},
+		"highlights": hl,
+	}
+
+
+# ---------------------------------------------------------------- society bills insights
+@frappe.whitelist(methods=["GET"])
+def society_overview(block: str | None = None) -> dict:
+	"""Society billing at a glance (React society-bill list): this month billed / collected / rate, outstanding and how old
+	it is, 12-month billed vs collected trend, cash received by month, blocks ranked by collection, charge-head mix,
+	statuses, and the owners furthest behind."""
+	_staff()
+	today = getdate(nowdate())
+	this_month = get_first_day(today)
+	start = add_months(this_month, -11)
+	bf = " and b.block=%(block)s" if block else ""
+	args = {"block": block, "start": start, "today": today, "this_month": this_month}
+	live = "b.docstatus < 2"
+
+	monthly = {str(add_months(start, i))[:7]: {"month": str(add_months(start, i))[:7], "billed": 0.0, "collected": 0.0, "outstanding": 0.0, "bills": 0, "cash": 0.0}
+			   for i in range(12)}
+	rows = frappe.db.sql(f"""select date_format(b.billing_month, '%%Y-%%m') m, count(*) n, sum(b.total_amount) billed,
+			sum(least(b.paid_amount, b.total_amount)) collected, sum(b.outstanding_amount) outstanding
+			from `tabRE Society Bill` b where {live} and b.billing_month >= %(start)s{bf} group by m""", args, as_dict=True)
+	for r in rows:
+		if r.m in monthly:
+			monthly[r.m].update({"billed": flt(r.billed), "collected": flt(r.collected), "outstanding": flt(r.outstanding), "bills": r.n})
+	cash = frappe.db.sql(f"""select date_format(p.posting_date, '%%Y-%%m') m, sum(p.amount) amt from `tabRE Payment` p
+			join `tabRE Society Bill` b on b.name = p.society_bill
+			where p.docstatus=1 and p.payment_against='Society Bill' and p.posting_date >= %(start)s{bf} group by m""", args, as_dict=True)
+	for r in cash:
+		if r.m in monthly:
+			monthly[r.m]["cash"] = flt(r.amt)
+	series = []
+	for r in monthly.values():
+		series.append({**r, "rate": round(r["collected"] * 100 / r["billed"], 1) if r["billed"] else None})
+	cur = monthly[str(this_month)[:7]]
+	prev = monthly[str(add_months(this_month, -1))[:7]]
+
+	tot = frappe.db.sql(f"""select count(*) bills, sum(b.outstanding_amount) outstanding, sum(b.outstanding_amount > 0) open_bills,
+			sum(b.outstanding_amount > 0 and b.due_date < %(today)s) overdue_bills,
+			sum(case when b.outstanding_amount > 0 and b.due_date < %(today)s then b.outstanding_amount else 0 end) overdue,
+			count(distinct case when b.outstanding_amount > 0 then b.customer end) owners_due, count(distinct b.plot) plots
+			from `tabRE Society Bill` b where {live}{bf}""", args, as_dict=True)[0]
+	aging = frappe.db.sql(f"""select
+			sum(case when datediff(%(today)s, b.due_date) <= 0 then b.outstanding_amount else 0 end) not_due,
+			sum(case when datediff(%(today)s, b.due_date) between 1 and 30 then b.outstanding_amount else 0 end) d30,
+			sum(case when datediff(%(today)s, b.due_date) between 31 and 60 then b.outstanding_amount else 0 end) d60,
+			sum(case when datediff(%(today)s, b.due_date) between 61 and 90 then b.outstanding_amount else 0 end) d90,
+			sum(case when datediff(%(today)s, b.due_date) > 90 then b.outstanding_amount else 0 end) d90p
+			from `tabRE Society Bill` b where {live} and b.outstanding_amount > 0{bf}""", args, as_dict=True)[0]
+	blocks = frappe.db.sql(f"""select b.block, count(distinct b.plot) plots, sum(b.total_amount) billed, sum(least(b.paid_amount, b.total_amount)) collected,
+			sum(b.outstanding_amount) outstanding, sum(b.outstanding_amount > 0 and b.due_date < %(today)s) overdue_bills
+			from `tabRE Society Bill` b where {live} and b.billing_month >= %(start)s group by b.block order by b.block""", args, as_dict=True)
+	for b in blocks:
+		b.rate = round(flt(b.collected) * 100 / flt(b.billed), 1) if flt(b.billed) else 0
+	heads = frappe.db.sql(f"""select c.charge name, sum(c.amount) value from `tabRE Bill Charge` c join `tabRE Society Bill` b on b.name = c.parent
+			where {live} and b.billing_month >= %(start)s{bf} group by c.charge order by value desc""", args, as_dict=True)
+	statuses = frappe.db.sql(f"""select b.status name, count(*) value from `tabRE Society Bill` b where {live} and b.billing_month = %(this_month)s{bf}
+			group by b.status order by value desc""", args, as_dict=True)
+	defaulters = frappe.db.sql(f"""select b.customer, b.customer_name, group_concat(distinct b.plot order by b.plot separator ', ') plots,
+			count(*) months, sum(b.outstanding_amount) outstanding, min(b.due_date) oldest,
+			(select max(p.posting_date) from `tabRE Payment` p where p.customer = b.customer and p.payment_against = 'Society Bill' and p.docstatus = 1) last_paid
+			from `tabRE Society Bill` b where {live} and b.outstanding_amount > 0 and b.due_date < %(today)s{bf}
+			group by b.customer, b.customer_name order by outstanding desc limit 12""", args, as_dict=True)
+	chronic = frappe.db.sql(f"""select count(*) from (select b.customer from `tabRE Society Bill` b where {live} and b.outstanding_amount > 0
+			and b.due_date < %(today)s{bf} group by b.customer having count(*) >= 3) x""", args)[0][0]
+
+	rs = lambda v: frappe.utils.fmt_money(flt(v), precision=0, currency="PKR")  # noqa: E731
+	rate_now = round(cur["collected"] * 100 / cur["billed"], 1) if cur["billed"] else 0
+	rate_prev = round(prev["collected"] * 100 / prev["billed"], 1) if prev["billed"] else 0
+	last3 = [r for r in series[-4:-1] if r["billed"]]
+	rate3 = round(sum(r["collected"] for r in last3) * 100 / sum(r["billed"] for r in last3), 1) if last3 else 0
+	hl = []
+	if last3:
+		hl.append({"tone": "good" if rate3 >= 85 else "warn" if rate3 >= 70 else "bad", "text": f"Last 3 months: {rate3:.0f}% of society bills collected."})
+	if flt(aging.d90p):
+		hl.append({"tone": "bad", "text": f"{rs(aging.d90p)} is more than 90 days past due — hardest to recover."})
+	if chronic:
+		hl.append({"tone": "warn", "text": f"{chronic} owner(s) have 3 or more unpaid bills — candidates for a recovery call or notice."})
+	if blocks:
+		best = max(blocks, key=lambda b: b.rate)
+		worst = min(blocks, key=lambda b: b.rate)
+		if best.block != worst.block:
+			hl.append({"tone": "info", "text": f"{best.block} collects best ({best.rate:.0f}%); {worst.block} lags at {worst.rate:.0f}%."})
+	if heads:
+		top = heads[0]
+		share = flt(top.value) * 100 / sum(flt(h.value) for h in heads)
+		hl.append({"tone": "info", "text": f"{top.name} is the largest charge head — {share:.0f}% of billing over 12 months."})
+
+	return {
+		"kpis": {"billed": cur["billed"], "collected": cur["collected"], "rate": rate_now, "rate_prev": rate_prev, "bills": cur["bills"],
+				 "billed_prev": prev["billed"], "cash_month": cur["cash"], "cash_prev": prev["cash"],
+				 "outstanding": flt(tot.outstanding), "open_bills": cint(tot.open_bills), "overdue": flt(tot.overdue), "overdue_bills": cint(tot.overdue_bills),
+				 "owners_due": cint(tot.owners_due), "plots": cint(tot.plots), "chronic": cint(chronic), "rate3": rate3},
+		"monthly": series,
+		"aging": [{"name": "Not yet due (age 0 days)", "value": flt(aging.not_due)}, {"name": "Age 1–30 days overdue", "value": flt(aging.d30)},
+				  {"name": "Age 31–60 days overdue", "value": flt(aging.d60)}, {"name": "Age 61–90 days overdue", "value": flt(aging.d90)},
+				  {"name": "Age 90+ days overdue", "value": flt(aging.d90p)}],
+		"blocks": blocks, "heads": heads, "statuses": statuses, "defaulters": defaulters, "highlights": hl,
+		"block_options": frappe.get_all("RE Block", pluck="name", order_by="name"),
+	}
+
+
+@frappe.whitelist(methods=["GET"])
+def bill_charges(names: str) -> dict:
+	"""Charge breakup for a page of society bills (list view): {bill: [[charge, amount], …]} — only bills the user may read."""
+	_staff()
+	import json
+
+	wanted = [n for n in (json.loads(names) if isinstance(names, str) else names)][:200]
+	allowed = set(frappe.get_list("RE Society Bill", {"name": ("in", wanted)}, pluck="name", limit=len(wanted) or 1))
+	out = {n: [] for n in allowed}
+	for r in frappe.get_all("RE Bill Charge", {"parenttype": "RE Society Bill", "parent": ("in", list(allowed) or [""])},
+							["parent", "charge", "amount"], order_by="parent, idx"):
+		out[r.parent].append([r.charge, flt(r.amount)])
+	return out

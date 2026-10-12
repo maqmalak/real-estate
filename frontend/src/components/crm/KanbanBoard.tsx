@@ -104,7 +104,7 @@ export function KanbanBoard<T extends Record<string, any>>({
           <div
             key={col.value}
             className={cn(
-              "flex w-72 shrink-0 flex-col rounded-lg border border-border bg-muted/30 transition-colors",
+              "flex w-72 shrink-0 flex-col rounded-xl border border-slate-300/80 bg-slate-100/80 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-900/60",
               isOver && "border-primary bg-primary/5",
             )}
             onDragOver={(e) => {
@@ -117,7 +117,7 @@ export function KanbanBoard<T extends Record<string, any>>({
               handleDrop(col.value);
             }}
           >
-            <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
+            <div className="flex items-center justify-between gap-2 rounded-t-xl border-b border-slate-300/80 bg-card px-3 py-2.5 dark:border-slate-700">
               <div className="flex items-center gap-2">
                 <span
                   className={cn("h-2 w-2 rounded-full", statusDotClass(col.title || col.value))}
@@ -151,7 +151,9 @@ export function KanbanBoard<T extends Record<string, any>>({
                       onDragEnd={() => setDraggingKey(null)}
                       onClick={() => onCardClick?.(row)}
                       className={cn(
-                        "cursor-grab rounded-md border border-border bg-background p-3 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing",
+                        "cursor-grab rounded-lg border border-slate-300 bg-card p-3 text-foreground shadow-[0_1px_3px_rgb(15_23_42/0.10)] transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:cursor-grabbing dark:border-slate-600",
+                        // secondary lines (email, phone, owner) readable rather than faint
+                        "[&_.text-muted-foreground]:text-slate-600 dark:[&_.text-muted-foreground]:text-slate-300",
                         onCardClick && "cursor-pointer",
                         draggingKey === key && "opacity-50",
                       )}

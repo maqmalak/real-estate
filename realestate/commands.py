@@ -32,6 +32,17 @@ def reset_demo(context):
 	_run(context, reset)
 
 
+@click.command("re-daily-data")
+@click.option("--days", default=1, help="Generate the last N days, oldest first (default: today only)")
+@click.option("--force", is_flag=True, help="Run a day again even if it was already generated")
+@pass_context
+def daily_data(context, days=1, force=False):
+	"Add a live day of activity to the demo: leads, visits, follow-ups, bookings, receipts, operations, society jobs, stock"
+	from realestate.demo.daily import catch_up
+
+	_run(context, lambda: catch_up(days, force))
+
+
 @click.command("re-acceptance")
 @click.option("--verbose", is_flag=True, help="Show the evidence lines for every check")
 @pass_context
@@ -63,4 +74,4 @@ def acceptance(context, verbose=False):
 	sys.exit(1 if failed else 0)
 
 
-commands = [seed_demo, reset_demo, acceptance]
+commands = [seed_demo, reset_demo, daily_data, acceptance]

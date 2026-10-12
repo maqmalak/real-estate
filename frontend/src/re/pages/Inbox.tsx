@@ -20,7 +20,7 @@ import { get, post } from "@/re/lib/api";
 import { upload } from "@/re/components/record/RecordTabs";
 import { useAuth } from "@/re/providers/auth";
 import { dateTime, time } from "@/re/lib/format";
-import { cn, deskUrl, slug } from "@/re/lib/utils";
+import { cn, recordUrl } from "@/re/lib/utils";
 
 interface Conversation {
   name: string; contact_name: string; phone: string; party_type: string | null; party: string | null; agent: string | null; status: string;
@@ -167,7 +167,7 @@ function Thread({ conv, agents }: { conv: Conversation; agents: { name: string; 
           <p className="truncate font-semibold">{conv.contact_name}</p>
           <p className="truncate text-xs text-muted-foreground">
             {conv.phone}
-            {conv.party && <> · {conv.party_type}: {partyUrl ? <Link className="text-primary hover:underline" to={partyUrl}>{conv.party}</Link> : <a className="text-primary hover:underline" href={conv.party_type === "CRM Lead" ? `/crm/leads/${encodeURIComponent(conv.party)}` : deskUrl(`${slug(conv.party_type!)}/${encodeURIComponent(conv.party)}`)}>{conv.party}</a>}</>}
+            {conv.party && <> · {conv.party_type}: {partyUrl ? <Link className="text-primary hover:underline" to={partyUrl}>{conv.party}</Link> : <Link className="text-primary hover:underline" to={recordUrl(conv.party_type!, conv.party)}>{conv.party}</Link>}</>}
           </p>
         </div>
         <Select aria-label="Assigned agent" className="h-9 w-44" value={conv.agent ?? ""} onChange={(e) => update.mutate({ agent: e.target.value })}>

@@ -57,8 +57,9 @@ const SEARCH_DOCTYPES: Record<string, { titleField: string }> = {
 
 type Kind = "page" | "doctype" | "report" | "record";
 const KIND_LABEL: Record<Kind, string> = { page: "Pages", doctype: "DocTypes", report: "Reports", record: "Records" };
-const deskReport = (r: { name: string; type?: string; ref_doctype?: string }) =>
-  r.type === "Report Builder" && r.ref_doctype
+const deskReport = (r: { name: string; type?: string; ref_doctype?: string; module?: string }) =>
+  r.module === "Real Estate" ? `/re/reports?r=${encodeURIComponent(r.name)}`
+  : r.type === "Report Builder" && r.ref_doctype
     ? `/desk/${slug(r.ref_doctype)}/view/report/${encodeURIComponent(r.name)}`
     : `/desk/query-report/${encodeURIComponent(r.name)}`;
 const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -170,7 +171,8 @@ export function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => 
     const m = (meta as unknown as { message?: { doctypes: { name: string; module: string; single: number }[]; reports: { name: string; type: string; ref_doctype?: string; module?: string }[] } })?.message;
     const doctypeHits: SearchHit[] = (m?.doctypes ?? []).map((d) => {
       const base = DOC_ROUTES[d.name];
-      const react = base && !d.single ? base.replace(/\/$/, "") : null;
+      const re = d.name.startsWith("RE ") ? `/re/d/${slug(d.name)}` : null;  // real-estate doctypes: generated list / form
+      const react = base && !d.single ? base.replace(/\/$/, "") : re;
       return { kind: "doctype", doctype: d.module, name: d.name, label: d.single ? `${d.name} (settings)` : `${d.name} list`,
         route: react ?? `/desk/${slug(d.name)}`, external: !react };
     });
@@ -180,7 +182,7 @@ export function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => 
     const reportHits: SearchHit[] = [
       ...catalogHits.slice(0, 6).map((r) => ({ kind: "report" as const, doctype: "Report", name: r.report, label: r.title, route: r.to ?? `/reports/run/${r.key}` })),
       ...(m?.reports ?? []).filter((r) => !catalogNames.has(r.name)).map((r) => ({
-        kind: "report" as const, doctype: r.type ?? "Report", name: r.name, label: r.name, route: deskReport(r), external: true })),
+        kind: "report" as const, doctype: r.type ?? "Report", name: r.name, label: r.name, route: deskReport(r), external: !deskReport(r).startsWith("/re/") })),
     ].slice(0, 8);
 
     const recordHits: SearchHit[] = [];

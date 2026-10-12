@@ -17,7 +17,7 @@ import { GlossyIcon } from "@/components/ui/app-icon";
 import { Skeleton } from "@/re/components/ui/skeleton";
 import { get } from "@/re/lib/api";
 import { date, money, num, todayISO } from "@/re/lib/format";
-import { cn } from "@/re/lib/utils";
+import { cn, recordUrl } from "@/re/lib/utils";
 import { useTheme } from "@/re/providers/theme";
 
 interface Head {
@@ -45,7 +45,7 @@ const LINKS = [
   { label: "Purchase Invoices", to: "/purchase/invoices", icon: FileText, hue: "rose" },
   { label: "Stock Entries", to: "/inventory/stock-entries", icon: Package, hue: "cyan" },
   { label: "Projects", to: "/projects", icon: HardHat, hue: "emerald" },
-  { label: "Assets", to: "/assets", icon: Boxes, hue: "stone" },
+  { label: "Assets", to: "/re/assets", icon: Boxes, hue: "stone" },
   { label: "Budgets", to: "/desk/budget", icon: Target, hue: "violet", desk: true },
 ];
 const CAT = [C.teal, C.violet, C.amber, C.sky, C.rose, C.emerald];
@@ -308,22 +308,22 @@ export function DevelopmentPage() {
           <ul className="divide-y">
             {d.requests.map((r) => (
               <li key={r.name}>
-                <a href={`/desk/material-request/${encodeURIComponent(r.name)}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 py-2.5 hover:text-primary">
+                <Link to={recordUrl("Material Request", r.name)} className="flex items-center gap-3 py-2.5 hover:text-primary">
                   <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400"><ClipboardList className="size-4" /></span>
                   <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{r.name}</span>
                     <span className="block text-[11px] text-muted-foreground">{r.material_request_type} · {r.status} · {num(r.items)} item{r.items === 1 ? "" : "s"}{r.schedule_date ? ` · needed ${date(r.schedule_date)}` : ""}</span></span>
                   <b className="text-sm tabular-nums">{money(r.amount, { compact: true })}</b>
-                </a>
+                </Link>
               </li>
             ))}
             {d.orders.map((o) => (
               <li key={o.name}>
-                <a href={`/desk/purchase-order/${encodeURIComponent(o.name)}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 py-2.5 hover:text-primary">
+                <Link to={recordUrl("Purchase Order", o.name)} className="flex items-center gap-3 py-2.5 hover:text-primary">
                   <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400"><ShoppingCart className="size-4" /></span>
                   <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{o.supplier}</span>
                     <span className="block text-[11px] text-muted-foreground">{o.name} · {n0(o.per_received).toFixed(0)}% received · {n0(o.per_billed).toFixed(0)}% billed</span></span>
                   <b className="text-sm tabular-nums">{money(o.amount, { compact: true })}</b>
-                </a>
+                </Link>
               </li>
             ))}
             {!d.requests.length && !d.orders.length && <li className="py-2 text-sm text-muted-foreground">Nothing pending.</li>}

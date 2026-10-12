@@ -58,14 +58,29 @@ export async function get<T>(method: string, params: Params = {}): Promise<T> {
   return (await handle<{ message: T }>(res)).message;
 }
 
-/** POST a whitelisted method. */
+/** Fresh CSRF token from the session (after a code reload, a new login in another tab, or a session rotation). */
+async function refreshCsrf(): Promise<void> {
+  const b = await get<{ csrf_token?: string }>("realestate.spa.boot");
+  csrfToken = b.csrf_token ?? "";
+}
+
+/** POST a whitelisted method. A missing or stale CSRF token is refreshed once and the call retried. */
 export async function post<T>(method: string, params: Params = {}): Promise<T> {
-  const res = await fetch(`/api/method/${method}`, {
+  if (!csrfToken) await refreshCsrf().catch(() => undefined);
+  const send = () => fetch(`/api/method/${method}`, {
     method: "POST",
     credentials: "include",
     headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded", "X-Frappe-CSRF-Token": csrfToken },
     body: serialize(params),
   });
+  let res = await send();
+  if (res.status === 400 || res.status === 403) {
+    const body = (await res.clone().json().catch(() => null)) as { exc_type?: string } | null;
+    if (body?.exc_type === "CSRFTokenError") {
+      await refreshCsrf();
+      res = await send();
+    }
+  }
   return (await handle<{ message: T }>(res)).message;
 }
 
