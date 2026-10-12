@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+ <Document>
+  <name>Zarmeen Gardens Phase 2 - E Block plots</name>
+  <Placemark>
+   <name>E-001</name>
+   <ExtendedData><Data name="plot_no"><value>E-001</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20255,31.3606,0 74.202632,31.3606,0 74.202632,31.36075,0 74.20255,31.36075,0 74.20255,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-002</name>
+   <ExtendedData><Data name="plot_no"><value>E-002</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202632,31.3606,0 74.202714,31.3606,0 74.202714,31.36075,0 74.202632,31.36075,0 74.202632,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-003</name>
+   <ExtendedData><Data name="plot_no"><value>E-003</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202714,31.3606,0 74.202796,31.3606,0 74.202796,31.36075,0 74.202714,31.36075,0 74.202714,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-004</name>
+   <ExtendedData><Data name="plot_no"><value>E-004</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202796,31.3606,0 74.202878,31.3606,0 74.202878,31.36075,0 74.202796,31.36075,0 74.202796,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-005</name>
+   <ExtendedData><Data name="plot_no"><value>E-005</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202878,31.3606,0 74.20296,31.3606,0 74.20296,31.36075,0 74.202878,31.36075,0 74.202878,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-006</name>
+   <ExtendedData><Data name="plot_no"><value>E-006</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20296,31.3606,0 74.203042,31.3606,0 74.203042,31.36075,0 74.20296,31.36075,0 74.20296,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-007</name>
+   <ExtendedData><Data name="plot_no"><value>E-007</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203042,31.3606,0 74.203124,31.3606,0 74.203124,31.36075,0 74.203042,31.36075,0 74.203042,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-008</name>
+   <ExtendedData><Data name="plot_no"><value>E-008</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203124,31.3606,0 74.203206,31.3606,0 74.203206,31.36075,0 74.203124,31.36075,0 74.203124,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-009</name>
+   <ExtendedData><Data name="plot_no"><value>E-009</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203206,31.3606,0 74.203288,31.3606,0 74.203288,31.36075,0 74.203206,31.36075,0 74.203206,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-010</name>
+   <ExtendedData><Data name="plot_no"><value>E-010</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203288,31.3606,0 74.20337,31.3606,0 74.20337,31.36075,0 74.203288,31.36075,0 74.203288,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-011</name>
+   <ExtendedData><Data name="plot_no"><value>E-011</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20337,31.3606,0 74.203452,31.3606,0 74.203452,31.36075,0 74.20337,31.36075,0 74.20337,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-012</name>
+   <ExtendedData><Data name="plot_no"><value>E-012</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203452,31.3606,0 74.203534,31.3606,0 74.203534,31.36075,0 74.203452,31.36075,0 74.203452,31.3606,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-013</name>
+   <ExtendedData><Data name="plot_no"><value>E-013</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20255,31.36045,0 74.202632,31.36045,0 74.202632,31.3606,0 74.20255,31.3606,0 74.20255,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-014</name>
+   <ExtendedData><Data name="plot_no"><value>E-014</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202632,31.36045,0 74.202714,31.36045,0 74.202714,31.3606,0 74.202632,31.3606,0 74.202632,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-015</name>
+   <ExtendedData><Data name="plot_no"><value>E-015</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202714,31.36045,0 74.202796,31.36045,0 74.202796,31.3606,0 74.202714,31.3606,0 74.202714,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-016</name>
+   <ExtendedData><Data name="plot_no"><value>E-016</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202796,31.36045,0 74.202878,31.36045,0 74.202878,31.3606,0 74.202796,31.3606,0 74.202796,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-017</name>
+   <ExtendedData><Data name="plot_no"><value>E-017</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202878,31.36045,0 74.20296,31.36045,0 74.20296,31.3606,0 74.202878,31.3606,0 74.202878,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-018</name>
+   <ExtendedData><Data name="plot_no"><value>E-018</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20296,31.36045,0 74.203042,31.36045,0 74.203042,31.3606,0 74.20296,31.3606,0 74.20296,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-019</name>
+   <ExtendedData><Data name="plot_no"><value>E-019</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203042,31.36045,0 74.203124,31.36045,0 74.203124,31.3606,0 74.203042,31.3606,0 74.203042,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-020</name>
+   <ExtendedData><Data name="plot_no"><value>E-020</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203124,31.36045,0 74.203206,31.36045,0 74.203206,31.3606,0 74.203124,31.3606,0 74.203124,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-021</name>
+   <ExtendedData><Data name="plot_no"><value>E-021</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203206,31.36045,0 74.203288,31.36045,0 74.203288,31.3606,0 74.203206,31.3606,0 74.203206,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-022</name>
+   <ExtendedData><Data name="plot_no"><value>E-022</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203288,31.36045,0 74.20337,31.36045,0 74.20337,31.3606,0 74.203288,31.3606,0 74.203288,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-023</name>
+   <ExtendedData><Data name="plot_no"><value>E-023</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20337,31.36045,0 74.203452,31.36045,0 74.203452,31.3606,0 74.20337,31.3606,0 74.20337,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-024</name>
+   <ExtendedData><Data name="plot_no"><value>E-024</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>5 Marla</value></Data><Data name="street"><value>E-Block Street 1</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203452,31.36045,0 74.203534,31.36045,0 74.203534,31.3606,0 74.203452,31.3606,0 74.203452,31.36045,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-025</name>
+   <ExtendedData><Data name="plot_no"><value>E-025</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20255,31.36005,0 74.202664,31.36005,0 74.202664,31.36026,0 74.20255,31.36026,0 74.20255,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-026</name>
+   <ExtendedData><Data name="plot_no"><value>E-026</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202664,31.36005,0 74.202778,31.36005,0 74.202778,31.36026,0 74.202664,31.36026,0 74.202664,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-027</name>
+   <ExtendedData><Data name="plot_no"><value>E-027</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202778,31.36005,0 74.202892,31.36005,0 74.202892,31.36026,0 74.202778,31.36026,0 74.202778,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-028</name>
+   <ExtendedData><Data name="plot_no"><value>E-028</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202892,31.36005,0 74.203006,31.36005,0 74.203006,31.36026,0 74.202892,31.36026,0 74.202892,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-029</name>
+   <ExtendedData><Data name="plot_no"><value>E-029</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203006,31.36005,0 74.20312,31.36005,0 74.20312,31.36026,0 74.203006,31.36026,0 74.203006,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-030</name>
+   <ExtendedData><Data name="plot_no"><value>E-030</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20312,31.36005,0 74.203234,31.36005,0 74.203234,31.36026,0 74.20312,31.36026,0 74.20312,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-031</name>
+   <ExtendedData><Data name="plot_no"><value>E-031</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203234,31.36005,0 74.203348,31.36005,0 74.203348,31.36026,0 74.203234,31.36026,0 74.203234,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-032</name>
+   <ExtendedData><Data name="plot_no"><value>E-032</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203348,31.36005,0 74.203462,31.36005,0 74.203462,31.36026,0 74.203348,31.36026,0 74.203348,31.36005,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-033</name>
+   <ExtendedData><Data name="plot_no"><value>E-033</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20255,31.35984,0 74.202664,31.35984,0 74.202664,31.36005,0 74.20255,31.36005,0 74.20255,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-034</name>
+   <ExtendedData><Data name="plot_no"><value>E-034</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202664,31.35984,0 74.202778,31.35984,0 74.202778,31.36005,0 74.202664,31.36005,0 74.202664,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-035</name>
+   <ExtendedData><Data name="plot_no"><value>E-035</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202778,31.35984,0 74.202892,31.35984,0 74.202892,31.36005,0 74.202778,31.36005,0 74.202778,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-036</name>
+   <ExtendedData><Data name="plot_no"><value>E-036</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.202892,31.35984,0 74.203006,31.35984,0 74.203006,31.36005,0 74.202892,31.36005,0 74.202892,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-037</name>
+   <ExtendedData><Data name="plot_no"><value>E-037</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203006,31.35984,0 74.20312,31.35984,0 74.20312,31.36005,0 74.203006,31.36005,0 74.203006,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-038</name>
+   <ExtendedData><Data name="plot_no"><value>E-038</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.20312,31.35984,0 74.203234,31.35984,0 74.203234,31.36005,0 74.20312,31.36005,0 74.20312,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-039</name>
+   <ExtendedData><Data name="plot_no"><value>E-039</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203234,31.35984,0 74.203348,31.35984,0 74.203348,31.36005,0 74.203234,31.36005,0 74.203234,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+   <name>E-040</name>
+   <ExtendedData><Data name="plot_no"><value>E-040</value></Data><Data name="block"><value>E</value></Data>
+    <Data name="size"><value>10 Marla</value></Data><Data name="street"><value>E-Block Street 2</value></Data></ExtendedData>
+   <Polygon><outerBoundaryIs><LinearRing><coordinates>74.203348,31.35984,0 74.203462,31.35984,0 74.203462,31.36005,0 74.203348,31.36005,0 74.203348,31.35984,0</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+ </Document>
+</kml>

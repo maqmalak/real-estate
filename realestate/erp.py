@@ -233,7 +233,9 @@ def booking_invoice(booking):
 		return booking.sales_invoice
 	company = frappe.db.get_value("RE Project", booking.project, "company") or frappe.db.get_single_value("RE Settings", "company")
 	block = frappe.db.get_value("RE Plot", booking.plot, "block")
-	si = frappe.get_doc({
+	from realestate.terms import apply_to_invoice
+
+	si = frappe.get_doc(apply_to_invoice({
 		"doctype": "Sales Invoice", "customer": booking.customer, "company": company, "posting_date": booking.booking_date,
 		"set_posting_time": 1, "due_date": max(r.due_date for r in booking.installments), "cost_center": block_cost_center(company, block),
 		"remarks": _("Plot {0} — booking {1}").format(booking.plot, booking.name), "re_booking": booking.name, "re_plot": booking.plot,
@@ -241,7 +243,7 @@ def booking_invoice(booking):
 				   "description": _("Plot {0}, {1}, {2}").format(booking.plot, booking.plot_size, block),
 				   "cost_center": block_cost_center(company, block)}],
 		"payment_schedule": _schedule(booking),
-	})
+	}, booking))
 	si.flags.ignore_permissions = True
 	si.insert()
 	si.submit()
@@ -396,6 +398,12 @@ def sales_invoice(company, customer, posting_date, lines, cost_center=None, rema
 	}))
 
 
+def _terms_fields(booking):
+	from realestate.terms import apply_to_invoice
+
+	return {k: v for k, v in apply_to_invoice({}, booking).items()}
+
+
 def credit_note(invoice, amount, posting_date, remarks, own_outstanding=0):
 	"""Return (credit note) against an invoice for `amount`. By default it reduces that invoice's outstanding (amount must not
 	exceed it); with own_outstanding=1 the credit stays on the note itself, to be refunded with a Payment Entry against it."""
@@ -452,7 +460,8 @@ def transfer_post(t, booking):
 		out["new_invoice"] = sales_invoice(company, t.to_customer, t.transfer_date,
 										   [(plot_item(company, booking.plot_size), balance, f"Plot {t.plot} — balance taken over from {t.from_customer_name}")],
 										   cost_center=block_cost_center(company, block), remarks=f"Plot {t.plot} transfer {t.name}",
-										   due_date=max(r["due_date"] for r in schedule), schedule=schedule, re_booking=booking.name, re_plot=t.plot)
+										   due_date=max(r["due_date"] for r in schedule), schedule=schedule, re_booking=booking.name, re_plot=t.plot,
+										   **_terms_fields(booking))
 	return out
 
 

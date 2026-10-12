@@ -1,0 +1,127 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "E Block Street 1",
+    "type": "Street"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      74.20245,
+      31.360355
+     ],
+     [
+      74.20392,
+      31.360355
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "E Block Street 2",
+    "type": "Street"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      74.20245,
+      31.35979
+     ],
+     [
+      74.20392,
+      31.35979
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "E Block Park",
+    "type": "Park"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       74.20362,
+       31.35984
+      ],
+      [
+       74.20389,
+       31.35984
+      ],
+      [
+       74.20389,
+       31.36026
+      ],
+      [
+       74.20362,
+       31.36026
+      ],
+      [
+       74.20362,
+       31.35984
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "Phase 2 Water Supply Line",
+    "type": "Water Supply Line"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      74.2024,
+      31.3597
+     ],
+     [
+      74.2024,
+      31.36088
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "E Block Transformer",
+    "type": "Transformer"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     74.20375,
+     31.36068
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "E Block Garbage Point",
+    "type": "Garbage Point"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     74.2038,
+     31.36045
+    ]
+   }
+  }
+ ]
+}

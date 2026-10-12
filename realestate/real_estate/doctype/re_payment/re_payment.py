@@ -55,6 +55,10 @@ class REPayment(Document):
 
 		self._apply(1)
 		self.db_set("payment_entry", payment_entry(self))
+		if self.booking:
+			from realestate.commissions import refresh_for_booking
+
+			refresh_for_booking(self.booking)  # commissions turn Payable as soon as the threshold is reached
 		if self.send_receipt:
 			from realestate.whatsapp.channel import notify
 
@@ -66,6 +70,10 @@ class REPayment(Document):
 
 		cancel("Payment Entry", self.payment_entry)
 		self._apply(-1)
+		if self.booking:
+			from realestate.commissions import refresh_for_booking
+
+			refresh_for_booking(self.booking)
 
 	def _apply(self, sign):
 		if self.payment_against == "Surcharge":

@@ -1,0 +1,40 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "E Block",
+    "code": "E",
+    "type": "Residential"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       74.20245,
+       31.35975
+      ],
+      [
+       74.20392,
+       31.35975
+      ],
+      [
+       74.20392,
+       31.36082
+      ],
+      [
+       74.20245,
+       31.36082
+      ],
+      [
+       74.20245,
+       31.35975
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

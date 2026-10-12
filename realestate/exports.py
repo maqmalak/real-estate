@@ -31,6 +31,27 @@ REPORTS = {
 	"Missed Follow-ups": ("CRM", []),
 }
 MAX_PREVIEW = 300
+DESCRIPTIONS = {
+	"Collection Summary": "Money received by month and mode, against what was due",
+	"Installment Dues": "Every installment due — paid, partly paid or overdue — by booking",
+	"Plot Inventory": "All plots with block, size, status, price and owner",
+	"Recovery Promised vs Received": "Promise-to-pay calls and what actually came in",
+	"Sales by Block": "Bookings, value and collections for each block",
+	"Receivables Aging": "Overdue installments bucketed by days late",
+	"Commission Report": "Agent and dealer commissions — accrued, payable and paid",
+	"Society Bill Status": "Monthly society bills — billed, paid and outstanding",
+	"Society Defaulters": "Owners behind on society bills for N months or more",
+	"Society Dues by Charge Head": "Outstanding society dues split by charge head",
+	"Society Income vs Expense": "Society income against running costs by month",
+	"Maintenance Tasks": "Maintenance and complaint tasks by type, block, assignee or source",
+	"Development Budget vs Actual": "Each development head — budget, spent, committed and payable",
+	"Development Cost and Profitability": "Development cost against plot sales — margin by head",
+	"Lead Conversion": "Leads through the pipeline to deals and bookings",
+	"Leads by Source": "Where leads come from and how they convert",
+	"Agent Activity": "Calls, visits, chats and bookings per agent",
+	"Agent Response Time": "How fast agents answer WhatsApp conversations",
+	"Missed Follow-ups": "Follow-ups that passed their due date without action",
+}
 
 
 def _filters(report, raw):
@@ -57,6 +78,7 @@ def _run(report, filters):
 	if report not in REPORTS:
 		frappe.throw(_("Unknown report {0}").format(report))
 	result = run(report, filters=filters, ignore_prepared_report=True)
+	frappe.local.re_report_extras = {"chart": result.get("chart"), "summary": result.get("report_summary"), "message": result.get("message")}
 	columns = []
 	for c in result.get("columns") or []:
 		if isinstance(c, str):  # "Label:Type/Options:Width"
@@ -85,7 +107,7 @@ def catalogue() -> list[dict]:
 			continue
 		if not frappe.get_doc("Report", name).is_permitted():
 			continue
-		out.append({"name": name, "group": group, "filters": accepted})
+		out.append({"name": name, "group": group, "filters": accepted, "description": DESCRIPTIONS.get(name, "")})
 	return out
 
 
@@ -93,7 +115,12 @@ def catalogue() -> list[dict]:
 def preview(report: str, filters: str | None = None) -> dict:
 	f = _filters(report, filters)
 	columns, rows = _run(report, f)
-	return {"columns": columns, "rows": rows[:MAX_PREVIEW], "total": len(rows), "filters": f}
+	extras = getattr(frappe.local, "re_report_extras", {}) or {}
+	summary = [{"label": cstr(x.get("label")), "value": x.get("value"), "datatype": x.get("datatype"), "indicator": x.get("indicator")}
+			   for x in (extras.get("summary") or []) if isinstance(x, dict)]
+	return {"columns": columns, "rows": rows[:MAX_PREVIEW], "total": len(rows), "filters": f, "summary": summary,
+			"chart": extras.get("chart"), "message": cstr(extras.get("message") or "") or None,
+			"blocks": frappe.get_all("RE Block", pluck="name", order_by="name") if "block" in REPORTS[report][1] else []}
 
 
 def _cell(value, fieldtype, for_pdf=False):

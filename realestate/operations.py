@@ -156,12 +156,13 @@ def commissions() -> dict:
 
 
 @frappe.whitelist()
-def pay_commissions(names: str, mode_of_payment: str = "Bank Transfer") -> int:
-	paid = 0
+def pay_commissions(names: str, mode_of_payment: str = "Bank Transfer", posting_date: str | None = None, reference_no: str | None = None,
+					reference_date: str | None = None) -> dict:
+	"""Pay several Payable commissions — one Payment Entry each; returns the vouchers made."""
+	vouchers = []
 	for name in json.loads(names) if isinstance(names, str) else names:
-		frappe.get_doc("RE Commission", name).pay(mode_of_payment)
-		paid += 1
-	return paid
+		vouchers.append(frappe.get_doc("RE Commission", name).pay(mode_of_payment, posting_date, reference_no, reference_date))
+	return {"paid": len(vouchers), "vouchers": vouchers}
 
 
 @frappe.whitelist(methods=["GET"])

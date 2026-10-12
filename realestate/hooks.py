@@ -48,6 +48,8 @@ doc_events = {
 		"Sales Invoice", "Payment Entry", "Journal Entry", "Purchase Invoice", "Purchase Receipt", "Purchase Order", "Stock Entry",
 		"Dunning", "Asset", "RE Booking", "RE Payment", "RE Plot Transfer", "RE Booking Cancellation", "RE Plot Merge",
 		"RE Surcharge Waiver", "RE Re-allotment")},
+	# keeps the audit guard above; cancelling a commission's Payment Entry makes the commission payable again
+	"Payment Entry": {"on_trash": "realestate.audit.keep_financial_records", "on_cancel": "realestate.commissions.on_payment_entry_cancel"},
 }
 
 scheduler_events = {
@@ -98,3 +100,6 @@ jinja = {
 }
 
 export_python_type_annotations = True
+
+# React "Connections" tab: add schema-discovered links (RE DocTypes have no desk dashboard definitions) — this site only
+override_whitelisted_methods = {"mm_core.connections.get_connections": "realestate.connections.get_connections"}

@@ -89,6 +89,9 @@ class REMapImport(Document):
 			exists = frappe.db.exists("RE Plot", plot_no)
 			doc = frappe.get_doc("RE Plot", plot_no) if exists else frappe.new_doc("RE Plot")
 			doc.update({"plot_no": plot_no, "project": self.project, "block": block, "geojson": json.dumps(f["geometry"])})
+			street = self._prop(f, "street")
+			if street:
+				doc.street = street
 			if not exists or doc.status == "Available":
 				doc.plot_size = size
 			doc.save()

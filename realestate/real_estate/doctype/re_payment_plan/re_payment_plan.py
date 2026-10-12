@@ -19,6 +19,12 @@ class REPaymentPlan(Document):
 		if flt(self.balloon_percent) and not self.balloon_frequency:
 			frappe.throw(_("Choose a balloon frequency"))
 
+	def on_update(self):
+		# keep the matching ERPNext Payment Terms Template in step with the plan
+		from realestate.terms import sync_plan_template
+
+		sync_plan_template(self.name)
+
 	def to_plan(self) -> Plan:
 		return Plan(
 			installments=cint(self.installments), period_months=PERIOD_MONTHS.get(self.frequency, 1),

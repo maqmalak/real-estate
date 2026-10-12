@@ -172,6 +172,9 @@ def setup():
 	from realestate import documents
 
 	documents.setup()
+	from realestate import commissions
+
+	commissions.setup()  # party-wise commission payable, payment voucher print format
 	from realestate.desk import setup_desk
 
 	setup_desk()

@@ -163,6 +163,12 @@ def _sidebar():
 		("Link", "Dashboard", "Dashboard", "Real Estate", "chart"),
 		("Link", "Site Map", "Page", "re-site-map", "map"),
 		("Link", "WhatsApp Inbox", "Page", "re-inbox", "message-circle"),
+		("Section Break", "Setup", None, None, "settings"),
+		("Link", "RE Settings", "DocType", "RE Settings", "settings"),
+		("Link", "Project", "DocType", "RE Project", "building"),
+		("Link", "Map Import", "DocType", "RE Map Import", "upload"),
+		("Link", "Payment Plans", "DocType", "RE Payment Plan", "calendar"),
+		("Link", "Quick Replies", "DocType", "RE Quick Reply", "zap"),
 		("Section Break", "Land & Sales", None, None, "layers"),
 		("Link", "Plots", "DocType", "RE Plot", "grid"),
 		("Link", "Blocks", "DocType", "RE Block", "square"),
@@ -200,14 +206,7 @@ def _sidebar():
 		("Link", "Maintenance Plans", "DocType", "RE Maintenance Plan", "calendar-clock"),
 		("Link", "Projects", "DocType", "Project", "folder"),
 		("Section Break", "Reports", None, None, "sheet"),
-	] + [("Link", r, "Report", r, "") for _m, rs in REPORTS for r in rs] + [
-		("Section Break", "Setup", None, None, "settings"),
-		("Link", "RE Settings", "DocType", "RE Settings", "settings"),
-		("Link", "Project", "DocType", "RE Project", "building"),
-		("Link", "Map Import", "DocType", "RE Map Import", "upload"),
-		("Link", "Payment Plans", "DocType", "RE Payment Plan", "calendar"),
-		("Link", "Quick Replies", "DocType", "RE Quick Reply", "zap"),
-	]
+	] + [("Link", r, "Report", r, "") for _m, rs in REPORTS for r in rs]
 	sb = frappe.get_doc("Workspace Sidebar", "Real Estate") if frappe.db.exists("Workspace Sidebar", "Real Estate") else frappe.new_doc("Workspace Sidebar")
 	sb.update({"title": "Real Estate", "header_icon": "home", "app": "realestate", "module": "Real Estate"})
 	sb.items = []
@@ -215,7 +214,7 @@ def _sidebar():
 	for kind, label, link_type, target, icon in items:
 		if kind == "Section Break":
 			in_section = True
-			sb.append("items", {"type": kind, "label": label, "icon": icon, "indent": 1, "collapsible": 1, "keep_closed": label in ("Reports", "Setup")})
+			sb.append("items", {"type": kind, "label": label, "icon": icon, "indent": 1, "collapsible": 1, "keep_closed": label == "Reports"})
 			continue
 		row = {"type": "Link", "label": label, "link_type": link_type, "link_to": target, "icon": icon, "child": int(in_section)}
 		if link_type == "URL":

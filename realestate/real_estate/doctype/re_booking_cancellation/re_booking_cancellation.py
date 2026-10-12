@@ -41,8 +41,10 @@ class REBookingCancellation(Document):
 			plot.status = "Available"
 			plot.flags.ignore_permissions = True
 			plot.save()
+		from realestate.commissions import reverse
+
 		for c in frappe.get_all("RE Commission", {"booking": b.name, "status": ("in", ["Accrued", "Payable"])}, pluck="name"):
-			frappe.db.set_value("RE Commission", c, "status", "Cancelled")
+			reverse(frappe.get_doc("RE Commission", c))  # also cancels the accrual journal
 		b.add_comment("Info", _("Booking cancelled: deduction {0}, refund {1} ({2})").format(self.deduction_amount, self.refund_amount, self.name))
 
 	def on_cancel(self):

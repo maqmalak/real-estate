@@ -1,6 +1,7 @@
 frappe.ui.form.on("RE Booking", {
 	setup(frm) {
-		frm.set_query("plot", () => ({ filters: { status: ["in", ["Available", "Reserved"]] } }));
+		// status, block, size, price, street and premium tags in the dropdown; only plots that can be booked
+		frm.set_query("plot", () => ({ query: "realestate.queries.plot_query", filters: { status: ["Available", "Reserved"] } }));
 	},
 	refresh(frm) {
 		if (frm.doc.docstatus === 0 && frm.doc.payment_plan) {
@@ -33,9 +34,11 @@ frappe.ui.form.on("RE Booking", {
 		frm.page.set_indicator(frm.doc.possession_date ? __("Possession Given") : __(frm.doc.status), frm.doc.possession_date ? "blue" : colors[frm.doc.status] || "blue");
 	},
 	plot(frm) {
-		if (!frm.doc.plot) return;
+		if (!frm.doc.plot) { re_booking_plot_card(frm); return; }
 		frappe.db.get_value("RE Plot", frm.doc.plot, "list_price").then((r) => frm.set_value("total_price", r.message.list_price));
+		re_booking_plot_card(frm);
 	},
+	onload_post_render(frm) { re_booking_plot_card(frm); },
 	customer(frm) {
 		if (!frm.doc.customer) return;
 		frappe.db.get_value("Customer", frm.doc.customer, ["mobile_no", "account_manager"]).then((r) => {
@@ -48,3 +51,29 @@ frappe.ui.form.on("RE Booking", {
 	discount: (frm) => frm.doc.payment_plan && frm.call("make_schedule").then(() => frm.refresh_field("installments")),
 	first_due_date: (frm) => frm.doc.payment_plan && frm.call("make_schedule").then(() => frm.refresh_field("installments")),
 });
+
+// The chosen plot at a glance under the Plot field: status, block, size, area, price, street and premium tags.
+function re_booking_plot_card(frm) {
+	const wrap = frm.fields_dict.plot && frm.fields_dict.plot.$wrapper;
+	if (!wrap) return;
+	wrap.find(".re-plot-card").remove();
+	if (!frm.doc.plot) return;
+	frappe.db.get_value("RE Plot", frm.doc.plot, ["status", "block", "plot_size", "area_marla", "list_price", "street", "is_corner",
+		"is_park_facing", "is_boulevard_facing", "customer_name", "payment_status"]).then(({ message: p }) => {
+		if (!p) return;
+		const tone = { Available: "green", Reserved: "purple", Hold: "orange", Booked: "blue", Sold: "blue", "Possession Given": "cyan", Blocked: "gray" }[p.status] || "gray";
+		const tags = [["Corner", p.is_corner], ["Park facing", p.is_park_facing], ["Boulevard", p.is_boulevard_facing]].filter((t) => t[1])
+			.map((t) => `<span class="indicator-pill yellow" style="margin-left:4px">${__(t[0])}</span>`).join("");
+		const bookable = ["Available", "Reserved"].includes(p.status) || frm.doc.docstatus > 0;
+		const e = frappe.utils.escape_html;
+		wrap.find(".re-plot-card").remove();
+		wrap.append(`<div class="re-plot-card" style="margin-top:8px;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--subtle-fg)">
+			<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+				<span class="indicator-pill ${tone}">${__(p.status)}</span>${tags}
+				<b style="margin-left:auto">${format_currency(p.list_price, "PKR", 0)}</b>
+			</div>
+			<div class="text-muted" style="font-size:12px;margin-top:6px">${e(p.block || "")} · ${e(p.plot_size || "")} · ${p.area_marla || 0} marla${p.street ? " · " + e(p.street) : ""}</div>
+			${bookable ? "" : `<div style="color:var(--red-600);font-size:12px;margin-top:6px">${__("This plot is {0}{1} — choose an available plot.", [__(p.status), p.customer_name ? " (" + e(p.customer_name) + ")" : ""])}</div>`}
+		</div>`);
+	});
+}

@@ -17,7 +17,8 @@ def get_map_data(project: str | None = None) -> dict:
 	frappe.get_doc("RE Project", project).check_permission("read")
 	p = frappe.db.get_value("RE Project", project, ["name", "centre_lat", "centre_lng", "default_zoom", "boundary_geojson",
 													 "total_area_kanal", "boundary_area_kanal"], as_dict=True)
-	plots = frappe.get_all("RE Plot", {"project": project}, ["name", "block", "plot_size", "status", "payment_status", "customer_name",
+	# merged-away plots (merged_into set) are replaced by the merged plot — leave them off the map
+	plots = frappe.get_all("RE Plot", {"project": project, "merged_into": ("is", "not set")}, ["name", "block", "plot_size", "status", "payment_status", "customer_name",
 															 "list_price", "geojson", "street", "is_corner", "is_park_facing",
 															 "is_boulevard_facing", "booking"], limit=0)
 	overdue = {b.name: b for b in frappe.get_all("RE Booking", {"docstatus": 1, "project": project},

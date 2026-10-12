@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt, nowdate
+from frappe.utils import flt
 
 from realestate.calc import commission, commission_status
 
@@ -15,13 +15,9 @@ class RECommission(Document):
 		self.beneficiary = frappe.utils.get_fullname(self.agent) if self.beneficiary_type == "Agent" else self.sales_partner
 
 	def after_insert(self):
-		from realestate.erp import acc, journal
+		from realestate.commissions import accrue
 
-		company = frappe.db.get_single_value("RE Settings", "company")
-		self.db_set("accrual_entry", journal(company, frappe.db.get_value("RE Booking", self.booking, "booking_date") or nowdate(),
-											 f"Commission accrued {self.name} — {self.beneficiary}, booking {self.booking}",
-											 [(acc(company, "Commission on Sales"), self.amount, 0, acc(company, "ZG Common Infrastructure")),
-											  (acc(company, "Commissions Payable"), 0, self.amount, acc(company, "ZG Common Infrastructure"))]))
+		accrue(self)
 		self.update_status()
 
 	def update_status(self):
@@ -34,18 +30,21 @@ class RECommission(Document):
 			self.db_set("status", status)
 
 	@frappe.whitelist()
-	def pay(self, mode_of_payment: str = "Bank Transfer", posting_date: str | None = None):
+	def pay(self, mode_of_payment: str = "Bank Transfer", posting_date: str | None = None, reference_no: str | None = None,
+			reference_date: str | None = None):
+		"""Pay a Payable commission with a Payment Entry (printable as the Commission Payment Voucher)."""
 		frappe.only_for(("System Manager", "Accounts User", "Accounts Manager", "Sales Manager"))
 		self.update_status()
 		if self.status != "Payable":
 			frappe.throw(_("Commission is {0}, not payable yet").format(self.status))
-		from realestate.erp import acc, journal
+		from realestate.commissions import pay
 
-		company = frappe.db.get_single_value("RE Settings", "company")
-		account = frappe.db.get_value("Mode of Payment Account", {"parent": mode_of_payment, "company": company}, "default_account")
-		day = posting_date or nowdate()
-		je = journal(company, day, f"Commission paid {self.name} — {self.beneficiary}",
-					 [(acc(company, "Commissions Payable"), self.amount, 0, acc(company, "ZG Common Infrastructure")),
-					  (account, 0, self.amount, acc(company, "ZG Common Infrastructure"))])
-		self.db_set({"payment_entry": je, "status": "Paid", "paid_on": day, "payment_mode": mode_of_payment})
-		return je
+		return pay(self, mode_of_payment, posting_date, reference_no, reference_date)
+
+	@frappe.whitelist()
+	def cancel_commission(self):
+		"""Cancel an unpaid commission and reverse its accrual journal."""
+		frappe.only_for(("System Manager", "Accounts Manager", "Sales Manager"))
+		from realestate.commissions import reverse
+
+		reverse(self)
