@@ -1,0 +1,7 @@
+.DS_Store
+*.pyc
+*.egg-info
+__pycache__/
+node_modules/
+# The React app lives in its own repo (react-realestate)
+frontend/
