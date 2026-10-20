@@ -1,0 +1,9 @@
+{
+  "name": "realestate-videos",
+  "private": true,
+  "description": "Scripted screen recordings of the real-estate app (Playwright + system Chrome)",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
+}

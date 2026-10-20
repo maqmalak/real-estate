@@ -109,8 +109,15 @@ export function ReportsPage() {
   const chart = useMemo((): { rows: Record<string, string | number>[]; series: string[]; type: string; fromTable: boolean } | null => {
     const rc = data?.chart?.data;
     if (rc?.labels?.length) {
-      const series = (rc.datasets ?? []).map((d, k) => d.name ?? `Series ${k + 1}`);
-      return { rows: rc.labels.map((l, i) => Object.fromEntries([["label", l], ...(rc.datasets ?? []).map((d, k) => [series[k], Number(d.values?.[i] ?? 0)])])),
+      // some reports send one dataset per document (Accounts Receivable: ~1,600) — keep the 8 largest, fold the rest into "Other"
+      const all = (rc.datasets ?? []).map((d, k) => ({ name: d.name ?? `Series ${k + 1}`, values: rc.labels!.map((_, i) => Number(d.values?.[i] ?? 0)) }));
+      const ranked = [...all].sort((a, b) => b.values.reduce((x, v) => x + Math.abs(v), 0) - a.values.reduce((x, v) => x + Math.abs(v), 0));
+      // more than 12 datasets (unnamed, one per document) read best as one total per label; otherwise top 8 + "Other"
+      const keep = all.length > 12 ? [{ name: "Total", values: rc.labels.map((_, i) => all.reduce((x, d) => x + d.values[i], 0)) }] : ranked.slice(0, 8);
+      const rest = all.length > 12 ? [] : ranked.slice(8);
+      if (rest.length) keep.push({ name: `Other (${rest.length})`, values: rc.labels.map((_, i) => rest.reduce((x, d) => x + d.values[i], 0)) });
+      const series = keep.map((d) => d.name);
+      return { rows: rc.labels.map((l, i) => Object.fromEntries([["label", l], ...keep.map((d) => [d.name, d.values[i]])])),
         series, type: data?.chart?.type ?? "bar", fromTable: false };
     }
     const labelCol = cols.find((c) => !NUMERIC.has(c.fieldtype));

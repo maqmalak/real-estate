@@ -206,7 +206,7 @@ def _guard(document_type, src):
 			frappe.throw(_("NDC can only be issued when the booking and society bills are fully paid"))
 	if document_type == "Possession Letter" and src.outstanding_amount > 0.5:
 		frappe.throw(_("Possession is given only after the plot is fully paid"))
-	if document_type == "Cancellation Letter" and src.docstatus != 2:
+	if document_type == "Cancellation Letter" and src.docstatus != 2 and src.status != "Cancelled":
 		frappe.throw(_("Cancel the booking first"))
 	if document_type == "Transfer Letter" and src.docstatus != 1:
 		frappe.throw(_("The transfer letter is issued once the transfer is approved"))

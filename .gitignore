@@ -10,3 +10,7 @@ frontend/*.tsbuildinfo
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+# generated recordings (re-record with node tools/videos/record.mjs)
+tools/videos/out/
+docs/fsd/videos/
+tools/docs-book/out/

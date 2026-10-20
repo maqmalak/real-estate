@@ -31,6 +31,12 @@ def _same(old, new) -> bool:
 		return cstr(old) == cstr(new)
 
 
+def _plain(value):
+	"""Values as text: HTML fields (e.g. the tax breakup table) without their markup."""
+	text = cstr(value)
+	return " ".join(strip_html(text).split()) if "<" in text else text
+
+
 def _version_block(meta, v):
 	try:
 		data = json.loads(v.data or "{}")
@@ -44,7 +50,7 @@ def _version_block(meta, v):
 			continue
 		if field in ("modified", "modified_by") or _same(old, new):
 			continue
-		changes.append({"field": _label(meta, field), "old": cstr(old)[:140], "new": cstr(new)[:140]})
+		changes.append({"field": _label(meta, field), "old": _plain(old)[:140], "new": _plain(new)[:140]})
 	for table, rows in data.get("added") or []:
 		changes.append({"field": _label(meta, table), "old": "", "new": _("{0} row(s) added").format(len(rows) if isinstance(rows, list) else 1)})
 	for table, rows in data.get("removed") or []:

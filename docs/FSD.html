@@ -1,0 +1,578 @@
+<title>Zarmeen Gardens FSD</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+/* Layout: a specification binder — fixed contents rail on wide screens, one reading column, wide diagrams and tables scroll in their own frames */
+:root {
+  --bg: #f6f8f7; --paper: #ffffff; --ink: #14201e; --muted: #51625f; --line: #d5dfdc;
+  --accent: #0f766e; --accent-soft: #e2f1ee; --warn: #9a5b06; --code: #eef3f1;
+  --display: "IBM Plex Serif", Georgia, serif; --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1513; --paper: #131e1c; --ink: #e3ece9; --muted: #9fb3ae; --line: #284039; --accent: #4fc7b6; --accent-soft: #163a35; --warn: #e2a84b; --code: #1a2826; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d1513; --paper: #131e1c; --ink: #e3ece9; --muted: #9fb3ae; --line: #284039; --accent: #4fc7b6; --accent-soft: #163a35; --warn: #e2a84b; --code: #1a2826; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 15px/1.65 var(--body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+@media (max-width: 900px) { .wrap { grid-template-columns: minmax(0, 1fr); } nav.toc { position: static !important; max-height: none !important; } }
+nav.toc { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); align-self: start; max-height: calc(100vh - 32px); overflow: auto; font-size: 13px; }
+nav.toc p { font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: s; }
+nav.toc a { display: block; padding: 4px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); outline: none; }
+main { min-width: 0; }
+header.cover { border-bottom: 2px solid var(--ink); padding-bottom: 20px; margin-bottom: 28px; }
+.eyebrow { font: 600 11px/1.2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 600 clamp(28px, 4vw, 40px)/1.15 var(--display); margin: 6px 0 8px; text-wrap: balance; }
+h2 { font: 600 24px/1.25 var(--display); margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); text-wrap: balance; scroll-margin-top: 16px; }
+h3 { font: 600 17px/1.35 var(--body); margin: 28px 0 8px; }
+p, li { max-width: 72ch; }
+.lead { color: var(--muted); font-size: 16px; max-width: 70ch; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--paper); margin-top: 16px; }
+.meta div { padding: 10px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.meta dt { font: 600 11px/1.3 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.meta dd { margin: 2px 0 0; font-weight: 500; }
+code, .id { font-family: var(--mono); font-size: 12.5px; background: var(--code); padding: 1px 5px; border-radius: 4px; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+th { font: 600 11px/1.3 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--code); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dfd { border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 16px; overflow-x: auto; margin: 12px 0 6px; }
+.dfd pre.mermaid { margin: 0; min-width: 760px; background: transparent; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12.5px; color: var(--muted); margin: 6px 0 16px; }
+.legend b { color: var(--ink); font-weight: 600; }
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; max-width: 78ch; }
+.note.warn { border-color: var(--warn); }
+.formula { font-family: var(--mono); font-size: 13px; background: var(--code); border-radius: 8px; padding: 10px 14px; overflow-x: auto; white-space: pre; }
+.pill { display: inline-block; font: 600 11px/1.6 var(--body); padding: 0 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+ol.steps { padding-left: 22px; }
+ol.steps li { margin: 6px 0; }
+a { color: var(--accent); }
+.dl { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 12px; }
+.vid { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper); min-width: 0; }
+.vid video { display: block; width: 100%; aspect-ratio: 16 / 10; background: #0b1211; max-width: 100%; }
+.vid figcaption { padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.vid figcaption b { color: var(--ink); font-size: 14px; }
+@media (max-width: 420px) { .vids { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <p>Contents</p>
+  <ol>
+    <li><a href="#control">1. Document control</a></li>
+    <li><a href="#scope">2. Purpose and scope</a></li>
+    <li><a href="#roles">3. Users and roles</a></li>
+    <li><a href="#dfd0">4. DFD Level 0 (context)</a></li>
+    <li><a href="#dfd1">5. DFD Level 1</a></li>
+    <li><a href="#fr">6. Functional requirements</a></li>
+    <li><a href="#rules">7. Business rules</a></li>
+    <li><a href="#states">8. Status models</a></li>
+    <li><a href="#jobs">9. Scheduled jobs</a></li>
+    <li><a href="#reports">10. Reports and dashboards</a></li>
+    <li><a href="#integrations">11. Integrations</a></li>
+    <li><a href="#security">12. Security and audit</a></li>
+    <li><a href="#nfr">13. Non-functional requirements</a></li>
+    <li><a href="#setup">14. Project and site setup</a></li>
+    <li><a href="#acceptance">15. Acceptance criteria</a></li>
+    <li><a href="#videos">16. Video library</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="cover">
+  <div class="eyebrow">Functional Specification Document</div>
+  <h1>Zarmeen Gardens Housing Scheme — Real Estate &amp; Society ERP</h1>
+  <p class="lead">How the system sells plots, collects installments, runs post-sale operations, bills and maintains the society, controls development cost, and reports — on Frappe / ERPNext v16 with a React front end, a desk, an owner portal and WhatsApp.</p>
+  <dl class="meta">
+    <div><dt>Product</dt><dd>Real Estate app (<code>realestate</code>)</dd></div>
+    <div><dt>Version</dt><dd>1.0 — as built</dd></div>
+    <div><dt>Date</dt><dd>20 October 2026</dd></div>
+    <div><dt>Platform</dt><dd>Frappe / ERPNext v16, Frappe CRM, WhatsApp</dd></div>
+    <div><dt>Site</dt><dd><code>realestate</code></dd></div>
+    <div><dt>Status</dt><dd>All phases built, acceptance 10 / 10</dd></div>
+  </dl>
+</header>
+
+<h2 id="control">1. Document control</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Audience</td><td>Management, sales, accounts, recovery, society and project staff; implementers and testers.</td></tr>
+    <tr><td>Applications</td><td>Staff app (React) at <code>/re</code> · ERPNext desk (Real Estate and Society Operations workspaces) · Owner portal at <code>/portal</code> (English / اردو).</td></tr>
+    <tr><td>Demo data</td><td>Fictional “Zarmeen Gardens Housing Scheme”, 400 Kanal, 4 blocks, about 351 plots, 120+ bookings, regenerated with <code>bench --site realestate re-reset-demo</code> and advanced daily with <code>re-daily-data</code>.</td></tr>
+    <tr><td>Related</td><td>Build plan and phase log: <code>apps/realestate/docs/PLAN.md</code>. Unit tests: <code>realestate.tests.test_calc</code>, <code>test_geometry</code>.</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="scope">2. Purpose and scope</h2>
+<p>The system runs a private housing scheme end to end. Every money movement posts to standard ERPNext documents (Sales Invoice, Payment Entry, Journal Entry, Purchase Invoice, Stock Entry, Asset), so the general ledger is the single source of truth and the real-estate screens add the plot, booking and society context around it.</p>
+<div class="tbl"><table>
+  <thead><tr><th>In scope</th><th>Out of scope (this release)</th></tr></thead>
+  <tbody><tr>
+    <td>Land and map (boundary, blocks, plots, infrastructure, KML / GeoJSON import) · CRM and WhatsApp · booking and payment plans · installments, receipts and recovery · transfers, cancellations, re-allotments, merges, surcharge waivers · agent and dealer commissions · society billing and collection · maintenance and complaints · development cost, procurement, stock and assets with depreciation · documents in English and Urdu · reports, dashboards and the owner portal.</td>
+    <td>Online card payments for owners · construction (building) management after possession · live WhatsApp Business account (runs in mock mode until credentials are supplied) · Google Maps (supported, needs an API key).</td>
+  </tr></tbody>
+</table></div>
+
+<h2 id="roles">3. Users and roles</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Role</th><th>Does</th><th>Sees</th></tr></thead>
+  <tbody>
+    <tr><td>System Manager (Admin)</td><td>Setup, settings, users, imports, acceptance checks.</td><td>Everything.</td></tr>
+    <tr><td>Sales Manager</td><td>Bookings, discounts above the limit, approvals for transfers, cancellations, re-allotments and merges, owner-portal invites.</td><td>All sales, CRM and collections.</td></tr>
+    <tr><td>Sales Agent</td><td>Leads, deals, site visits, bookings, receipts, WhatsApp chats; raises transfer / cancellation / re-allotment requests.</td><td>Only their own leads, deals, customers, bookings, receipts, visits, chats and commissions.</td></tr>
+    <tr><td>Accounts User / Manager</td><td>Receipts, invoices, refunds, commission payouts, supplier payments, period reports.</td><td>All financial documents.</td></tr>
+    <tr><td>Recovery Officer</td><td>Recovery calls, promises to pay, dunning notices, surcharge waivers (request).</td><td>Overdue bookings, society defaulters.</td></tr>
+    <tr><td>Society Manager</td><td>Society bills, bulk collection, charge heads, maintenance plans, infrastructure, plot merges.</td><td>Society, maintenance and map.</td></tr>
+    <tr><td>Projects User / Manager</td><td>Development projects, budgets, material requests, maintenance tasks.</td><td>Development and maintenance.</td></tr>
+    <tr><td>Plot owner (Customer)</td><td>Views plots, schedule, bills and receipts; downloads own documents; raises complaints.</td><td>Only their own records, through the portal API.</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="dfd0">4. DFD Level 0 — context diagram</h2>
+<p>The whole system as one process and the outside parties that send data to it or receive data from it.</p>
+<div class="dfd"><pre class="mermaid">
+flowchart LR
+  P(("0<br/>Zarmeen Gardens<br/>Real Estate &amp; Society ERP"))
+  E1["Prospect / Buyer"]
+  E2["Plot Owner"]
+  E3["Sales Agent / Dealer"]
+  E4["Management<br/>(Sales Manager, Admin)"]
+  E5["Accounts &amp; Recovery"]
+  E6["Society Manager &amp; Technicians"]
+  E7["Suppliers &amp; Contractors"]
+  E8["Utilities &amp; Authorities"]
+  E9["WhatsApp Cloud API / SMS / Email"]
+  E10["Bank"]
+
+  E1 -- "enquiry, CNIC, nominee, plot choice, payments" --> P
+  P -- "prices, payment plan, allotment letter, schedule, receipts" --> E1
+  E2 -- "installments, society payments, complaints, transfer requests" --> P
+  P -- "bills, reminders, notices, NDC, possession letter, portal view" --> E2
+  E3 -- "leads, calls, site visits, bookings, receipts" --> P
+  P -- "follow-up tasks, own pipeline, commission statements" --> E3
+  E4 -- "prices, plans, approvals, discount decisions, setup" --> P
+  P -- "dashboards, insights, approval queue, notifications" --> E4
+  E5 -- "receipts, refunds, payouts, waivers, recovery calls" --> P
+  P -- "ledger, receivables ageing, dunning lists, reports" --> E5
+  E6 -- "charge heads, plans, job updates" --> P
+  P -- "monthly bills, defaulter lists, job queue" --> E6
+  E7 -- "quotations, goods, running bills" --> P
+  P -- "material requests, purchase orders, payments" --> E7
+  E8 -- "NOCs, demand notices" --> P
+  P -- "fees and demand payments" --> E8
+  P -- "templates, messages, call logs" --> E9
+  E9 -- "incoming messages, delivery status, opt-outs" --> P
+  E10 -- "bank statements, cheque clearance" --> P
+  P -- "deposits, payments" --> E10
+</pre></div>
+<div class="legend"><span><b>Circle</b> the system (process 0)</span><span><b>Rectangle</b> external entity</span><span><b>Arrow</b> data flow, labelled with what moves</span></div>
+
+<h2 id="dfd1">5. DFD Level 1 — main processes and data stores</h2>
+<p>Process 0 broken into its ten main processes, the data stores they share (all in the ERPNext database) and the entities from Level 0. Stores are numbered D1–D10 and referenced in the tables below.</p>
+<div class="dfd"><pre class="mermaid">
+flowchart LR
+  subgraph EXT1[" "]
+    direction TB
+    Buyer["Prospect / Buyer"]
+    Agent["Sales Agent / Dealer"]
+    Owner["Plot Owner"]
+  end
+  P1(("1.0<br/>Project &amp;<br/>land setup"))
+  P2(("2.0<br/>CRM &amp; site<br/>visits"))
+  P3(("3.0<br/>Booking &amp;<br/>schedule"))
+  P4(("4.0<br/>Collections<br/>&amp; recovery"))
+  P5(("5.0<br/>Post-sale<br/>operations"))
+  P6(("6.0<br/>Commissions"))
+  P7(("7.0<br/>Society billing<br/>&amp; maintenance"))
+  P8(("8.0<br/>Development,<br/>stock &amp; assets"))
+  P9(("9.0<br/>Documents &amp;<br/>messaging"))
+  P10(("10.0<br/>Reports &amp;<br/>dashboards"))
+
+  D1[("D1 Project, blocks,<br/>plots, map")]
+  D2[("D2 Leads, deals,<br/>calls, visits")]
+  D3[("D3 Bookings &amp;<br/>installments")]
+  D4[("D4 Receipts &amp;<br/>allocations")]
+  D5[("D5 General ledger<br/>(invoices, payments, JEs)")]
+  D6[("D6 Society bills<br/>&amp; charge heads")]
+  D7[("D7 Tasks &amp;<br/>maintenance plans")]
+  D8[("D8 Purchases, stock,<br/>assets, budgets")]
+  D9[("D9 Documents, vault,<br/>conversations")]
+  D10[("D10 Settings,<br/>plans, rates")]
+
+  Mgmt["Management"]
+  Sup["Suppliers"]
+  WA["WhatsApp / SMS"]
+
+  Mgmt -- "boundary, layout, sizes, prices" --> P1
+  P1 --> D1
+  D10 --> P1
+  Buyer -- "enquiry" --> P2
+  Agent -- "calls, visits" --> P2
+  P2 --> D2
+  D1 -- "available plots" --> P2
+  D2 -- "won deal → customer" --> P3
+  D1 -- "plot, list price" --> P3
+  D10 -- "payment plan, discount limit" --> P3
+  P3 -- "booking, schedule" --> D3
+  P3 -- "Sales Invoice" --> D5
+  P3 -- "plot status = Booked" --> D1
+  Owner -- "payment" --> P4
+  D3 -- "dues, overdue" --> P4
+  P4 -- "receipt, FIFO allocation" --> D4
+  P4 -- "Payment Entry, surcharge, dunning" --> D5
+  Owner -- "transfer / cancel request" --> P5
+  D3 -- "booking, dues" --> P5
+  P5 -- "new owner, refund, merged plot" --> D3
+  P5 -- "credit notes, fee invoice, refund" --> D5
+  P5 -- "plot status" --> D1
+  D3 -- "booking, dealer" --> P6
+  D4 -- "share paid" --> P6
+  P6 -- "accrual, payout JE / Payment Entry" --> D5
+  D1 -- "occupied plots" --> P7
+  P7 -- "monthly bills" --> D6
+  P7 -- "bill invoices, receipts" --> D5
+  Owner -- "complaint" --> P7
+  P7 -- "jobs" --> D7
+  Mgmt -- "budgets" --> P8
+  P8 -- "MR, PO, receipts, issues, assets" --> D8
+  Sup -- "goods, bills" --> P8
+  P8 -- "purchase invoices, depreciation" --> D5
+  D3 --> P9
+  D6 --> P9
+  P9 -- "PDF versions, chats" --> D9
+  P9 -- "templates, reminders" --> WA
+  WA -- "incoming messages" --> P9
+  D5 --> P10
+  D3 --> P10
+  D6 --> P10
+  D8 --> P10
+  P10 -- "insights, reports" --> Mgmt
+</pre></div>
+<div class="legend"><span><b>Circle</b> process</span><span><b>Cylinder</b> data store</span><span><b>Rectangle</b> external entity</span></div>
+
+<h3>Level 1 processes</h3>
+<div class="tbl"><table>
+  <thead><tr><th>No.</th><th>Process</th><th>Inputs</th><th>Outputs</th><th>Stores</th></tr></thead>
+  <tbody>
+    <tr><td class="n">1.0</td><td>Project &amp; land setup</td><td>Boundary and layout (draw or KML / GeoJSON import), blocks, plot sizes and prices, land-use shares</td><td>Plots with outlines, map features, land-use check (100% = boundary)</td><td>D1, D10</td></tr>
+    <tr><td class="n">2.0</td><td>CRM &amp; site visits</td><td>Enquiries (walk-in, dealer, Facebook, website, referral), calls, WhatsApp</td><td>Leads, deals (Opportunity → Site Visit → Negotiation → Booking), follow-up tasks, visit invitations</td><td>D2</td></tr>
+    <tr><td class="n">3.0</td><td>Booking &amp; schedule</td><td>Customer with CNIC and nominee, plot, price, discount, payment plan</td><td>Booking, installment schedule, Sales Invoice with payment schedule, allotment letter</td><td>D3, D5, D1</td></tr>
+    <tr><td class="n">4.0</td><td>Collections &amp; recovery</td><td>Payments (cash, bank transfer, cheque), promises to pay</td><td>Receipts allocated oldest-due first, Payment Entries, surcharges, dunning notices, reminders</td><td>D4, D5</td></tr>
+    <tr><td class="n">5.0</td><td>Post-sale operations</td><td>Transfer, cancellation, re-allotment, merge, surcharge-waiver requests</td><td>Approved changes with their accounting: fee invoice, credit notes, refund, new invoice, merged plot</td><td>D3, D5, D1</td></tr>
+    <tr><td class="n">6.0</td><td>Commissions</td><td>Bookings with agent / dealer, customer payments</td><td>Commission accrued at booking, payable after 25% paid, paid by Payment Entry with voucher</td><td>D5</td></tr>
+    <tr><td class="n">7.0</td><td>Society billing &amp; maintenance</td><td>Charge heads, occupied plots, complaints, maintenance plans</td><td>Monthly bills (with arrears), bulk collection, tasks for technicians, owner told on completion</td><td>D6, D7, D5</td></tr>
+    <tr><td class="n">8.0</td><td>Development, stock &amp; assets</td><td>Budgets per cost head, material requests, supplier goods and bills</td><td>POs, receipts into the site store, issues to projects, assets with depreciation, supplier payments</td><td>D8, D5</td></tr>
+    <tr><td class="n">9.0</td><td>Documents &amp; messaging</td><td>Booking, bill, plot, transfer and customer data</td><td>16 document types in English or Urdu (versioned PDFs), vault with expiry alerts, WhatsApp / SMS / email messages</td><td>D9</td></tr>
+    <tr><td class="n">10.0</td><td>Reports &amp; dashboards</td><td>All stores</td><td>Dashboard, insights, 21 reports (preview, chart, Excel, PDF), notifications</td><td>all</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Data stores</h3>
+<div class="tbl"><table>
+  <thead><tr><th>Store</th><th>DocTypes</th></tr></thead>
+  <tbody>
+    <tr><td class="n">D1</td><td>RE Project, RE Block, RE Plot (price history), RE Plot Size, RE Map Feature, RE Map Import, RE Land Use</td></tr>
+    <tr><td class="n">D2</td><td>CRM Lead, CRM Deal, CRM Task, CRM Call Log, RE Site Visit</td></tr>
+    <tr><td class="n">D3</td><td>RE Booking (RE Installment rows), RE Payment Plan</td></tr>
+    <tr><td class="n">D4</td><td>RE Payment (RE Payment Allocation rows)</td></tr>
+    <tr><td class="n">D5</td><td>Sales Invoice, Payment Entry, Journal Entry, Dunning, GL Entry, RE Surcharge, RE Commission</td></tr>
+    <tr><td class="n">D6</td><td>RE Society Bill (RE Bill Charge rows), RE Charge Head (RE Charge Rate rows)</td></tr>
+    <tr><td class="n">D7</td><td>Task, Project (maintenance), RE Maintenance Plan, ToDo</td></tr>
+    <tr><td class="n">D8</td><td>Material Request, Purchase Order / Receipt / Invoice, Stock Entry, Asset, Asset Depreciation Schedule, Budget, Project (cost heads)</td></tr>
+    <tr><td class="n">D9</td><td>RE Generated Document, RE Vault Document, RE Conversation, WhatsApp Message, RE Reminder Log, RE Broadcast</td></tr>
+    <tr><td class="n">D10</td><td>RE Settings, RE Payment Plan, RE Quick Reply, approval workflows</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="fr">6. Functional requirements</h2>
+<p>Each requirement names the screen in the staff app (<code>/re/…</code>) and what it posts in ERPNext. The desk offers the same documents with matching buttons.</p>
+
+<h3>6.1 Project &amp; land (process 1.0)</h3>
+<div class="tbl"><table>
+  <thead><tr><th>ID</th><th>Requirement</th><th>Screen</th></tr></thead>
+  <tbody>
+    <tr><td class="id">FR-1.1</td><td>Create a project with its boundary (drawn or imported from KML / GeoJSON), land-use shares that must total 100% of the boundary area.</td><td>Setup › Projects, Map Import</td></tr>
+    <tr><td class="id">FR-1.2</td><td>Blocks with outline, plot size and planned plot count; plots with number, size, street, corner / park / boulevard flags, outline and centre point.</td><td>Setup › Blocks, Plot Records</td></tr>
+    <tr><td class="id">FR-1.3</td><td>Plot sizes with base price and monthly maintenance; price revisions kept in each plot's price history.</td><td>Setup › Plot Sizes</td></tr>
+    <tr><td class="id">FR-1.4</td><td>Infrastructure on the map (roads, sewer, water, power, fibre, parks, gates, buildings) with status, completion %, contractor and linked asset.</td><td>Society Operations › Infrastructure</td></tr>
+    <tr><td class="id">FR-1.5</td><td>Live society map coloured by plot status or payment health; updates when a plot changes.</td><td>Overview › Society Map</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.2 CRM &amp; site visits (2.0)</h3>
+<div class="tbl"><table>
+  <thead><tr><th>ID</th><th>Requirement</th><th>Screen</th></tr></thead>
+  <tbody>
+    <tr><td class="id">FR-2.1</td><td>Leads from any source, owned by an agent; an incoming WhatsApp from an unknown number creates a lead.</td><td>CRM &amp; WhatsApp › Leads &amp; Deals</td></tr>
+    <tr><td class="id">FR-2.2</td><td>Deal pipeline Opportunity → Site Visit → Negotiation → Booking; a deal reaching Booking creates the ERPNext Customer.</td><td>Leads &amp; Deals (pipeline board)</td></tr>
+    <tr><td class="id">FR-2.3</td><td>Calls logged with outcome, promise-to-pay amount and date, next follow-up; a missed incoming call creates a follow-up task.</td><td>Inbox › Log call; Today</td></tr>
+    <tr><td class="id">FR-2.4</td><td>Site visits scheduled with a WhatsApp invitation; result recorded (completed, no show, outcome).</td><td>Site Visits, Today</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.3 Booking &amp; schedule (3.0)</h3>
+<div class="tbl"><table>
+  <thead><tr><th>ID</th><th>Requirement</th><th>Posting</th></tr></thead>
+  <tbody>
+    <tr><td class="id">FR-3.1</td><td>A booking needs a customer with CNIC and nominee, an available plot, price, discount and payment plan. Picking the plot fills block, size and price.</td><td>—</td></tr>
+    <tr><td class="id">FR-3.2</td><td>Discounts above <code>max_discount_percent</code> (5%) wait for Sales Manager approval.</td><td>—</td></tr>
+    <tr><td class="id">FR-3.3</td><td>On submit: installment schedule from the plan (booking amount, down payment, monthly / quarterly installments, balloons, development charges, possession share); plot becomes Booked.</td><td>Sales Invoice with payment schedule = installments; plan's Payment Terms Template; filled-in Terms and Conditions</td></tr>
+    <tr><td class="id">FR-3.4</td><td>Allotment letter, payment schedule, application form and sale agreement generated on the letterhead, in English or Urdu.</td><td>RE Generated Document (versioned PDF)</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.4 Collections &amp; recovery (4.0)</h3>
+<div class="tbl"><table>
+  <thead><tr><th>ID</th><th>Requirement</th><th>Posting</th></tr></thead>
+  <tbody>
+    <tr><td class="id">FR-4.1</td><td>Receipts against a booking, society bill or surcharge (cash, bank transfer, cheque, reference); booking receipts allocated to installments oldest due first.</td><td>Payment Entry against the Sales Invoice</td></tr>
+    <tr><td class="id">FR-4.2</td><td>Installment status moves with the calendar: Unpaid → Due (within 7 days) → Overdue; booking shows overdue amount and since when.</td><td>—</td></tr>
+    <tr><td class="id">FR-4.3</td><td>Late-payment surcharge each month after the grace period (rules in §7).</td><td>Sales Invoice (Late Payment Surcharge income)</td></tr>
+    <tr><td class="id">FR-4.4</td><td>Recovery: overdue list, recovery calls with promises, final notice, dunning.</td><td>Dunning</td></tr>
+    <tr><td class="id">FR-4.5</td><td>Reminders 3 days before a due date and overdue notices every 7 days on WhatsApp, with SMS / email fallback.</td><td>RE Reminder Log</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.5 Post-sale operations (5.0) — all go through approval</h3>
+<div class="tbl"><table>
+  <thead><tr><th>ID</th><th>Operation</th><th>Rule</th><th>Posting on approval</th></tr></thead>
+  <tbody>
+    <tr><td class="id">FR-5.1</td><td>Plot transfer</td><td>No overdue installments and no society dues; transfer fee Rs 50,000.</td><td>Fee Sales Invoice; Credit Note closing the seller's balance; new Sales Invoice with the remaining installments for the buyer; transfer letter</td></tr>
+    <tr><td class="id">FR-5.2</td><td>Booking cancellation</td><td>Deduction 10% of price, never more than what was paid; reason recorded.</td><td>Credit Notes, refund Payment Entry (Pay), plot released, unpaid commissions cancelled; cancellation letter</td></tr>
+    <tr><td class="id">FR-5.3</td><td>Re-allotment</td><td>A plot released by an approved cancellation, to a new buyer; fee Rs 25,000.</td><td>New booking and its invoice; fee invoice</td></tr>
+    <tr><td class="id">FR-5.4</td><td>Plot merge</td><td>Adjacent available plots; combined outline, area and price; source plots retired.</td><td>New plot record</td></tr>
+    <tr><td class="id">FR-5.5</td><td>Surcharge waiver</td><td>Part or all of a surcharge with a reason.</td><td>Credit Note against the surcharge invoice</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.6 Commissions (6.0)</h3>
+<p><span class="id">FR-6.1</span> Agent 1% and dealer 2% of the net price accrue at booking (party-wise payable). <span class="id">FR-6.2</span> A commission becomes payable when the customer has paid 25% of the price. <span class="id">FR-6.3</span> Accounts pay one or many commissions with date, mode and reference; a Payment Entry and a printable commission voucher are produced; cancelling the payment reverses it.</p>
+
+<h3>6.7 Society billing &amp; maintenance (7.0)</h3>
+<div class="tbl"><table>
+  <thead><tr><th>ID</th><th>Requirement</th><th>Screen / posting</th></tr></thead>
+  <tbody>
+    <tr><td class="id">FR-7.1</td><td>Charge heads: fixed, per marla or by plot size, for all plots or residential / commercial only.</td><td>Society Operations › Charge Heads</td></tr>
+    <tr><td class="id">FR-7.2</td><td>Monthly bill per occupied plot on day 1, due in 15 days, with unpaid earlier bills carried as arrears.</td><td>Sales Invoice, one line per charge head</td></tr>
+    <tr><td class="id">FR-7.3</td><td>Bulk collection screen: pick owners or a block, record many payments at once.</td><td>Society Operations › Bulk Collection</td></tr>
+    <tr><td class="id">FR-7.4</td><td>Complaints from the portal, WhatsApp or staff become Tasks with priority, due date and assignee; the owner is told on WhatsApp when done.</td><td>Task in the maintenance project, ToDo</td></tr>
+    <tr><td class="id">FR-7.5</td><td>Maintenance plans (daily to yearly) create tasks ahead of their due date.</td><td>Maintenance Plans</td></tr>
+  </tbody>
+</table></div>
+
+<h3>6.8 Development, stock &amp; assets (8.0)</h3>
+<p><span class="id">FR-8.1</span> Each development cost head (roads, sewerage, water, electrification, street lights, boundary wall, parks, public buildings, NOCs, land) is an ERPNext Project with a Budget. <span class="id">FR-8.2</span> Material Request → Purchase Order → Purchase Receipt into the site store → Purchase Invoice; Stock Entry (Material Issue) charges the head. <span class="id">FR-8.3</span> Contractor running bills, NOC fees and demand notices as Purchase Invoices. <span class="id">FR-8.4</span> Fixed assets (land, buildings, transformers, generators, machinery, tools) linked to map features, depreciated straight line by category (buildings 20 years, transformers 15, generators and machinery 10, tools 5; land not depreciated).</p>
+
+<h3>6.9 Documents &amp; messaging (9.0)</h3>
+<p><span class="id">FR-9.1</span> Sixteen document types on the letterhead with a QR verification code, generated as numbered versions in <b>English or Urdu</b> (right-to-left): application form, allotment letter, payment schedule, installment reminder, final notice, cancellation letter, NDC, possession letter, sale agreement, site plan, construction NOC, maintenance bill, account statement, transfer application, transfer letter, payment receipt. <span class="id">FR-9.2</span> Document vault (approvals, NOCs, registry, insurance) with expiry alerts. <span class="id">FR-9.3</span> Shared WhatsApp inbox (mine, unassigned, unread, resolved), templates, quick replies, location pins, opt-out keywords (STOP, BAND KARO), broadcasts with a rate limit.</p>
+
+<h3>6.10 Reports, dashboards &amp; portal (10.0)</h3>
+<p><span class="id">FR-10.1</span> Dashboard, Today (visits and follow-ups), insights, customer 360 with payer segment, society, charge-head, maintenance, infrastructure and asset insights. <span class="id">FR-10.2</span> Report centre with preview, chart (bar, line, area, pie, donut, trend), Excel and PDF. <span class="id">FR-10.3</span> Owner portal in English / اردو with plots on the map, schedule, bills, receipts, own document downloads and complaints; staff can preview it as an owner, read-only.</p>
+
+<h2 id="rules">7. Business rules and calculations</h2>
+<p>All money maths lives in one module (<code>realestate/calc.py</code>) with unit tests; values in brackets are the current settings in RE Settings.</p>
+<h3>Installment schedule</h3>
+<div class="formula">net = list price − discount
+fixed parts (booking, down payment, balloons, development, possession) = net × their % , rounded to Rs 1,000
+each installment = (net − fixed parts) ÷ n , rounded to Rs 1,000 ; the last installment absorbs the difference
+Σ schedule = net   (always exact)</div>
+<h3>Receipt allocation</h3>
+<div class="formula">a receipt pays unpaid rows oldest due date first ; it may not exceed the total outstanding</div>
+<h3>Late-payment surcharge</h3>
+<div class="formula">if days_late &gt; grace (15):
+  surcharge = max(minimum (Rs 500), overdue × rate (2% per month))  capped at overdue × cap (10%)
+one surcharge per booking per month</div>
+<h3>Cancellation</h3>
+<div class="formula">deduction = min(net × deduction % (10%), amount paid)
+refund    = amount paid − deduction</div>
+<h3>Commission</h3>
+<div class="formula">commission = net × rate (agent 1%, dealer 2%)
+status: Accrued → Payable when paid ≥ net × 25% → Paid</div>
+<h3>Society bill</h3>
+<div class="formula">bill = Σ charge heads for the plot (fixed | rate × marla | rate for the plot size)
+payable = bill + unpaid earlier bills (arrears)</div>
+<div class="note">Rates, fees and percentages are settings, not code. Changing them affects new documents only; posted invoices keep the values they were created with.</div>
+
+<h2 id="states">8. Status models</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Record</th><th>Statuses</th><th>Moves when</th></tr></thead>
+  <tbody>
+    <tr><td>Plot</td><td>Available → Hold / Reserved → Booked → Sold → Possession Given</td><td>Hold by management; booking submitted; fully paid; possession given (needs full payment and no society dues)</td></tr>
+    <tr><td>Booking</td><td>Draft → Due / Overdue / Paid → Cancelled</td><td>Submit; daily dues refresh; full payment; approved cancellation</td></tr>
+    <tr><td>Installment</td><td>Unpaid → Due → Overdue / Partly Paid → Paid</td><td>Calendar and receipts</td></tr>
+    <tr><td>Approval documents</td><td>Draft → Pending Approval → Approved / Rejected (→ Revise)</td><td>Requester submits; Sales Manager (or Accounts for waivers) decides</td></tr>
+    <tr><td>Society bill</td><td>Unpaid → Due → Overdue / Partly Paid → Paid</td><td>Calendar and receipts</td></tr>
+    <tr><td>Commission</td><td>Accrued → Payable → Paid (→ Cancelled)</td><td>25% collected; payout; booking cancelled</td></tr>
+    <tr><td>Task (job)</td><td>Open → Working → Completed / Overdue</td><td>Technician updates; due date passes</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="jobs">9. Scheduled jobs</h2>
+<div class="tbl"><table>
+  <thead><tr><th>When</th><th>Job</th></tr></thead>
+  <tbody>
+    <tr><td>Daily</td><td>Refresh dues and statuses · society bills on bill day · installment reminders · overdue notices · vault expiry alerts</td></tr>
+    <tr><td>Daily</td><td>Late-payment surcharges · recovery dunnings · commission statuses</td></tr>
+    <tr><td>Daily</td><td>Planned maintenance tasks · mark overdue jobs</td></tr>
+    <tr><td>Every minute</td><td>WhatsApp delivery statuses (mock) · SMS fallback for failed messages</td></tr>
+    <tr><td>Month end</td><td>Asset depreciation (ERPNext)</td></tr>
+    <tr><td>Demo only</td><td>A live day of demo activity (<code>re-daily-data</code>) when mock mode is on and the project is the demo</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="reports">10. Reports and dashboards</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Area</th><th>Reports</th></tr></thead>
+  <tbody>
+    <tr><td>Sales &amp; collections</td><td>Collection Summary · Installment Dues · Plot Inventory · Recovery Promised vs Received · Sales by Block · Receivables Aging · Commission Report</td></tr>
+    <tr><td>Society</td><td>Society Bill Status · Society Defaulters · Society Dues by Charge Head · Society Income vs Expense · Maintenance Tasks</td></tr>
+    <tr><td>Development</td><td>Development Budget vs Actual · Development Cost and Profitability</td></tr>
+    <tr><td>CRM</td><td>Agent Activity · Agent Response Time · Lead Conversion · Leads by Source · Missed Follow-ups</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="integrations">11. Integrations</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Integration</th><th>Use</th><th>State</th></tr></thead>
+  <tbody>
+    <tr><td>WhatsApp Cloud API (Meta)</td><td>Templates, chat, delivery status, calls; webhook for incoming messages</td><td><span class="pill">Mock mode</span> until credentials are entered in RE Settings</td></tr>
+    <tr><td>SMS / email</td><td>Fallback when a WhatsApp message fails</td><td>Configured channels in RE Settings</td></tr>
+    <tr><td>Maps</td><td>MapLibre with satellite imagery; Google Maps optional</td><td>MapLibre live; Google needs an API key</td></tr>
+    <tr><td>ERPNext</td><td>Accounts, buying, stock, assets, projects, dunning</td><td>Live</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="security">12. Security and audit</h2>
+<ul>
+  <li>Role-based access per §3; agents are scoped to their own records by server-side query conditions, not only by the screens.</li>
+  <li>Approval workflows for transfers, cancellations (refunds), re-allotments, merges and surcharge waivers; discounts above the limit need approval.</li>
+  <li>Submitted and cancelled financial documents cannot be deleted; corrections are cancel and amend.</li>
+  <li>Version history on every financial and settings document; the activity chain shows each record's history as linked blocks.</li>
+  <li>Secrets (API tokens, map keys) are stored encrypted in RE Settings; rates and fees are settings.</li>
+  <li>The owner portal reaches only the signed-in owner's records; staff preview is read-only.</li>
+</ul>
+
+<h2 id="nfr">13. Non-functional requirements</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Area</th><th>Requirement</th></tr></thead>
+  <tbody>
+    <tr><td>Usability</td><td>Works at phone width (390 px) in light and dark themes; staff screens in English, owner portal and documents in English or Urdu.</td></tr>
+    <tr><td>Performance</td><td>Lists and insight headers load in about a second on the demo data; reports preview up to 1,000 rows and export all rows.</td></tr>
+    <tr><td>Reliability</td><td>Daily jobs are idempotent (safe to re-run); missed demo days are caught up (up to 14).</td></tr>
+    <tr><td>Accuracy</td><td>Schedules always total the net price; the general ledger balances; cross-page totals audited (127 checks).</td></tr>
+    <tr><td>Maintainability</td><td>Standard ERPNext documents for all accounting; money maths in one tested module.</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="setup">14. Project and site setup</h2>
+<ol class="steps">
+  <li><b>Install.</b> Bench with Frappe / ERPNext v16, Frappe CRM and WhatsApp; <code>bench get-app realestate</code>; create the site; <code>bench --site &lt;site&gt; install-app realestate</code> (setup runs roles, workflows, print formats and workspaces).</li>
+  <li><b>Company and accounts.</b> Company, fiscal year (July–June), cost centers per block, common and society; bank accounts; modes of payment (cash, bank transfer, cheque).</li>
+  <li><b>RE Settings.</b> Company and default project; discount limit; surcharge, transfer, re-allotment, cancellation and commission rules; billing day and due days; WhatsApp (mock or live) and fallback channels; map provider.</li>
+  <li><b>Project and map.</b> Create the RE Project and draw or import the boundary; land-use shares; blocks; plot sizes and prices; plots (import from KML / GeoJSON or create); infrastructure features.</li>
+  <li><b>Sales setup.</b> Payment plans; agents (users with Sales Agent) and dealers (Sales Partners); quick replies and WhatsApp templates.</li>
+  <li><b>Society setup.</b> Charge heads and size rates; maintenance plans; maintenance assignee.</li>
+  <li><b>Development setup.</b> Cost-head projects and budgets; site store; suppliers; asset categories with depreciation.</li>
+  <li><b>Users.</b> Staff users with roles; owner-portal invites from the customer page.</li>
+  <li><b>Go live.</b> Turn on the scheduler; run <code>bench --site &lt;site&gt; re-acceptance</code> until every check passes.</li>
+</ol>
+<div class="note warn">Demo commands (<code>re-reset-demo</code>, <code>re-daily-data</code>) only act when mock mode is on and the default project is flagged as the demo; they never touch real records.</div>
+
+<h2 id="acceptance">15. Acceptance criteria</h2>
+<div class="tbl"><table>
+  <thead><tr><th>No.</th><th>Check</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td class="n">1</td><td>Land use totals 100% of the boundary (400.00 kanal)</td><td>Pass</td></tr>
+    <tr><td class="n">2</td><td>Every plot inside its block, blocks inside the boundary, no overlaps</td><td>Pass</td></tr>
+    <tr><td class="n">3</td><td>Every schedule = price − discount; invoice payment schedule = invoice total</td><td>Pass</td></tr>
+    <tr><td class="n">4</td><td>Every receipt has a submitted Payment Entry of the same amount; ledger balances</td><td>Pass</td></tr>
+    <tr><td class="n">5</td><td>Map recolours live when a plot changes</td><td>Pass</td></tr>
+    <tr><td class="n">6</td><td>Scheduled jobs enabled and current</td><td>Pass</td></tr>
+    <tr><td class="n">7</td><td>WhatsApp incoming reaches the inbox and timeline</td><td>Pass (mock)</td></tr>
+    <tr><td class="n">8</td><td>All documents render to PDF on the letterhead (English and Urdu)</td><td>Pass</td></tr>
+    <tr><td class="n">9</td><td>Role scoping: agents, managers, portal owners</td><td>Pass</td></tr>
+    <tr><td class="n">10</td><td>Audit trail and no deletion of financial records</td><td>Pass</td></tr>
+    <tr><td class="n">11</td><td>Phone width, light and dark</td><td>Checked by eye</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="videos">16. Video library</h2>
+<p>Screen recordings of the system on the demo scheme, one per operation. Each starts with a title card and narrates every step in a caption bar. They are re-recorded with <code>node tools/videos/record.mjs</code> in the app repository.</p>
+<p class="dl"><b>Downloads</b> <a href="downloads/Zarmeen-Gardens-FSD-slides.pdf">Slides (PDF)</a> · <a href="downloads/Zarmeen-Gardens-FSD-document.pdf">Full document (PDF)</a></p>
+<div class="vids">
+    <figure class="vid" id="v-00-setup">
+      <video controls preload="none" poster="posters/00-setup.jpg" src="videos/00-setup.webm"></video>
+      <figcaption><span class="pill">00</span> <b>Project & site setup</b><br><span>Install, settings, project and map, blocks, plot sizes, plots, payment plans, society heads, users, acceptance checks.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-01-daily">
+      <video controls preload="none" poster="posters/01-daily.jpg" src="videos/01-daily.webm"></video>
+      <figcaption><span class="pill">01</span> <b>Your day in the app</b><br><span>Home, dashboard, today's visits and follow-ups, insights and notifications.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-02-crm">
+      <video controls preload="none" poster="posters/02-crm.jpg" src="videos/02-crm.webm"></video>
+      <figcaption><span class="pill">02</span> <b>CRM & WhatsApp</b><br><span>Leads, deals, site visits and replying in the shared WhatsApp inbox.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-03-booking">
+      <video controls preload="none" poster="posters/03-booking.jpg" src="videos/03-booking.webm"></video>
+      <figcaption><span class="pill">03</span> <b>Booking a plot</b><br><span>Pick a plot, book it, submit, see the schedule and Sales Invoice, generate the allotment letter in Urdu.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-04-receipt">
+      <video controls preload="none" poster="posters/04-receipt.jpg" src="videos/04-receipt.webm"></video>
+      <figcaption><span class="pill">04</span> <b>Receiving a payment</b><br><span>Receipt against a booking, oldest-due-first allocation, Payment Entry and ledger.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-05-transfer">
+      <video controls preload="none" poster="posters/05-transfer.jpg" src="videos/05-transfer.webm"></video>
+      <figcaption><span class="pill">05</span> <b>Transferring a plot</b><br><span>No-dues check, new owner, transfer fee, approval and the invoices that move.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-06-cancellation">
+      <video controls preload="none" poster="posters/06-cancellation.jpg" src="videos/06-cancellation.webm"></video>
+      <figcaption><span class="pill">06</span> <b>Cancelling a booking</b><br><span>Deduction and refund, approval, credit notes and the plot released.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-07-reallotment">
+      <video controls preload="none" poster="posters/07-reallotment.jpg" src="videos/07-reallotment.webm"></video>
+      <figcaption><span class="pill">07</span> <b>Re-allotting a released plot</b><br><span>A plot freed by a cancellation goes to a waiting buyer, with approval.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-08-merge">
+      <video controls preload="none" poster="posters/08-merge.jpg" src="videos/08-merge.webm"></video>
+      <figcaption><span class="pill">08</span> <b>Merging plots</b><br><span>Two adjacent plots become one; approval; the map updates.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-09-recovery">
+      <video controls preload="none" poster="posters/09-recovery.jpg" src="videos/09-recovery.webm"></video>
+      <figcaption><span class="pill">09</span> <b>Recovery & surcharges</b><br><span>Dunning, monthly surcharges and a waiver with approval.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-10-commissions">
+      <video controls preload="none" poster="posters/10-commissions.jpg" src="videos/10-commissions.webm"></video>
+      <figcaption><span class="pill">10</span> <b>Commissions</b><br><span>Accrued, payable and paid; paying with a voucher.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-11-society">
+      <video controls preload="none" poster="posters/11-society.jpg" src="videos/11-society.webm"></video>
+      <figcaption><span class="pill">11</span> <b>Society billing</b><br><span>Charge heads, monthly bills with arrears, insights and bulk collection.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-12-maintenance">
+      <video controls preload="none" poster="posters/12-maintenance.jpg" src="videos/12-maintenance.webm"></video>
+      <figcaption><span class="pill">12</span> <b>Maintenance & complaints</b><br><span>Plans, the urgent queue, complaint jobs and infrastructure.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-13-development">
+      <video controls preload="none" poster="posters/13-development.jpg" src="videos/13-development.webm"></video>
+      <figcaption><span class="pill">13</span> <b>Development, stock & assets</b><br><span>Budget vs actual, procurement, material issues and assets with depreciation.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-14-documents-reports">
+      <video controls preload="none" poster="posters/14-documents-reports.jpg" src="videos/14-documents-reports.webm"></video>
+      <figcaption><span class="pill">14</span> <b>Documents & reports</b><br><span>Documents in English or Urdu and the report centre with charts.</span></figcaption>
+    </figure>
+    <figure class="vid" id="v-15-portal">
+      <video controls preload="none" poster="posters/15-portal.jpg" src="videos/15-portal.webm"></video>
+      <figcaption><span class="pill">15</span> <b>Owner portal</b><br><span>What a plot owner sees, in English and Urdu.</span></figcaption>
+    </figure>
+</div>
+</main>
+</div>
