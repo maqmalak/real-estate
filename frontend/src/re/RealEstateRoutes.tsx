@@ -12,6 +12,9 @@ import { DocumentsPage } from "./pages/Documents";
 import { HomePage } from "./pages/Home";
 import { InboxPage } from "./pages/Inbox";
 import { InsightsPage } from "./pages/Insights";
+import { LandPage } from "./pages/Land";
+import { LandLegalPage } from "./pages/LandLegal";
+import { LandPaymentsPage } from "./pages/LandPayments";
 import { MapPage } from "./pages/MapPage";
 import { OperationsPage } from "./pages/Operations";
 import { PlotsPage } from "./pages/Plots";
@@ -32,6 +35,9 @@ export function RealEstateRoutes() {
           <Route path="home" element={<HomePage />} />
           <Route path="today" element={<TodayPage />} />
           <Route path="map" element={<MapPage />} />
+          <Route path="land" element={<LandPage />} />
+          <Route path="land/payments" element={<LandPaymentsPage />} />
+          <Route path="land/legal" element={<LandLegalPage />} />
           <Route path="plots" element={<PlotsPage />} />
           <Route path="plots/:plot" element={<PlotsPage />} />
           <Route path="assets" element={<AssetsPage />} />

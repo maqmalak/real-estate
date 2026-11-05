@@ -70,7 +70,20 @@
   "maintenance_assignee",
   "complaint_due_days",
   "cb_maint",
-  "notify_customer_on_completion"
+  "notify_customer_on_completion",
+  "land_tab",
+  "land_marla_sqft",
+  "land_province",
+  "land_payment_approval_limit",
+  "land_due_window_days",
+  "land_cb1",
+  "land_supplier_group",
+  "land_cwip_account",
+  "land_creditors_account",
+  "land_extension_account",
+  "land_cost_account",
+  "land_wht_account",
+  "land_item"
  ],
  "fields": [
   {
@@ -448,12 +461,92 @@
    "fieldname": "notify_customer_on_completion",
    "fieldtype": "Check",
    "label": "WhatsApp the Customer When a Complaint Is Resolved"
+  },
+  {
+   "fieldname": "land_tab",
+   "fieldtype": "Tab Break",
+   "label": "Land"
+  },
+  {
+   "fieldname": "land_marla_sqft",
+   "fieldtype": "Float",
+   "label": "Sqft per Marla (land)",
+   "default": "272",
+   "precision": "2",
+   "description": "Land deals: 1 Kanal = 20 Marla, 1 Acre = 8 Kanal. Use 272, 272.25 or 225 as your revenue record does."
+  },
+  {
+   "fieldname": "land_province",
+   "fieldtype": "Select",
+   "label": "Province (transfer cost rates)",
+   "options": "Punjab\nSindh\nKhyber Pakhtunkhwa\nBalochistan\nIslamabad",
+   "default": "Punjab"
+  },
+  {
+   "fieldname": "land_payment_approval_limit",
+   "fieldtype": "Currency",
+   "label": "Seller payments above this need approval",
+   "options": "PKR",
+   "default": "5000000"
+  },
+  {
+   "fieldname": "land_due_window_days",
+   "fieldtype": "Int",
+   "label": "Seller payment 'Due' window (days)",
+   "default": "7"
+  },
+  {
+   "fieldname": "land_cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "land_supplier_group",
+   "fieldtype": "Link",
+   "label": "Land owner supplier group",
+   "options": "Supplier Group"
+  },
+  {
+   "fieldname": "land_cwip_account",
+   "fieldtype": "Link",
+   "label": "Land Under Acquisition (CWIP)",
+   "options": "Account"
+  },
+  {
+   "fieldname": "land_creditors_account",
+   "fieldtype": "Link",
+   "label": "Creditors - Land Owners",
+   "options": "Account"
+  },
+  {
+   "fieldname": "land_extension_account",
+   "fieldtype": "Link",
+   "label": "Extension charges account",
+   "options": "Account",
+   "description": "Land cost or an extension / finance cost account"
+  },
+  {
+   "fieldname": "land_cost_account",
+   "fieldtype": "Link",
+   "label": "Project land cost (on capitalisation)",
+   "options": "Account"
+  },
+  {
+   "fieldname": "land_wht_account",
+   "fieldtype": "Link",
+   "label": "Withholding tax payable",
+   "options": "Account"
+  },
+  {
+   "fieldname": "land_item",
+   "fieldtype": "Link",
+   "label": "Land item (non-stock)",
+   "options": "Item"
   }
  ],
  "index_web_pages_for_search": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-10-10 12:00:00.000000",
+ "modified": "2026-11-05 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "RE CRM",
  "name": "RE Settings",

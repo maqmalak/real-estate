@@ -7,7 +7,7 @@ import { GoogleSocietyMap } from "@/re/components/map/GoogleSocietyMap";
 import { FeatureSheet } from "@/re/components/map/FeatureSheet";
 import { MapEditor } from "@/re/components/map/MapEditor";
 import { useAuth } from "@/re/providers/auth";
-import { LAYER_GROUPS, SocietyMap, type BaseStyle } from "@/re/components/map/SocietyMap";
+import { LAYER_GROUPS, LAYERS_OFF, SocietyMap, type BaseStyle } from "@/re/components/map/SocietyMap";
 import { PlotFilterPanel } from "@/re/components/plot/PlotFilters";
 import { PlotSheet } from "@/re/components/plot/PlotSheet";
 import { Button } from "@/re/components/ui/button";
@@ -16,7 +16,7 @@ import { Skeleton } from "@/re/components/ui/skeleton";
 import { get } from "@/re/lib/api";
 import { useRealtime } from "@/re/lib/realtime";
 import type { MapData, PaymentStatus, PlotStatus } from "@/re/lib/types";
-import { PAY_COLORS, STATUS_COLORS, plotMatches, useFilterOptions, useMapData, useMapTasks, usePlotFilters, type ColorBy } from "@/re/lib/plots";
+import { LAND_OWNER_COLOR, PAY_COLORS, STATUS_COLORS, plotMatches, useFilterOptions, useMapData, useMapTasks, usePlotFilters, type ColorBy } from "@/re/lib/plots";
 import { cn } from "@/re/lib/utils";
 import { useTheme } from "@/re/providers/theme";
 
@@ -53,7 +53,7 @@ export function MapPage() {
   const [filters, set, clear] = usePlotFilters();
   const [style, setStyle] = useState<BaseStyle>("default");
   const [colorBy, setColorBy] = useState<ColorBy>("payment");
-  const [visible, setVisible] = useState(() => new Set(LAYER_GROUPS.map((l) => l.key)));
+  const [visible, setVisible] = useState(() => new Set(LAYER_GROUPS.map((l) => l.key).filter((k) => !LAYERS_OFF.has(k))));
   const [panel, setPanel] = useState<"filters" | "layers" | null>(() => (window.innerWidth >= 768 ? "filters" : null)); // phones start with the map
   const [selected, setSelected] = useState<string>();
   const [mlMap, setMlMap] = useState<MLMap | null>(null);
@@ -76,7 +76,7 @@ export function MapPage() {
     return data.project.boundary_geojson;
   }, [data]);
 
-  const legend = colorBy === "status" ? STATUS_COLORS
+  const legend = colorBy === "status" ? { ...STATUS_COLORS, ...((data?.plots ?? []).some((p) => p.land_adjustment) ? { "Land owner plot": LAND_OWNER_COLOR } : {}) }
     : colorBy === "block" ? Object.fromEntries((data?.blocks ?? []).map((b) => [b.name, b.color]))
       : { Available: "#ffffff", ...PAY_COLORS };
 

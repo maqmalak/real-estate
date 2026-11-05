@@ -1,4 +1,4 @@
-"""Roles (Admin = System Manager, Accounts = Accounts User/Manager, Sales Manager, Sales Agent, Recovery Officer,
+"""Roles (Admin = System Manager, Accounts = Accounts User/Manager, Land Manager, Sales Manager, Sales Agent, Recovery Officer,
 Society Manager, Customer) and the approval workflows for transfers, cancellations, merges and surcharge waivers."""
 
 import frappe
@@ -17,6 +17,12 @@ GRANTS = {
 		"RE Booking": (R,), "RE Payment": (R, W, C, S), "RE Plot": (R,), "RE Surcharge": (R, W), "RE Surcharge Waiver": (R, W, C),
 		"RE Society Bill": (R,), "RE Reminder Log": (R,), "RE Conversation": (R, W), "RE Generated Document": (R, C),
 		"Dunning": (R, W, C, S), "Sales Invoice": (R,), "Payment Entry": (R, W, C, S), "Customer": (R,), "CRM Call Log": (R, W, C), "CRM Task": (R, W, C),
+	},
+	# Module 0 (land purchase): parcels, sellers, deals and seller payments; the land doctypes are added here as they are built
+	"Land Manager": {
+		"Supplier": (R, W, C), "Purchase Invoice": (R, W, C), "Payment Entry": (R,), "Journal Entry": (R,), "Project": (R,),
+		"RE Project": (R,), "RE Block": (R,), "RE Plot": (R,), "RE Map Feature": (R,), "RE Map Import": (R, W, C),
+		"RE Vault Document": (R, W, C), "RE Generated Document": (R, C), "Task": (R, W, C),
 	},
 	"Society Manager": {
 		"RE Society Bill": (R, W, C, D), "RE Charge Head": (R, W, C), "RE Maintenance Plan": (R, W, C, D), "RE Vault Document": (R, W, C),

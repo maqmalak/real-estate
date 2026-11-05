@@ -27,6 +27,8 @@
   "remarks",
   "fmt_amount",
   "payment_entry",
+  "journal_entry",
+  "land_adjustment",
   "amended_from"
  ],
  "fields": [
@@ -178,6 +180,20 @@
    "read_only": 1
   },
   {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry (land adjustment)",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "land_adjustment",
+   "fieldtype": "Link",
+   "label": "Plot adjustment against land",
+   "options": "RE Plot Adjustment",
+   "read_only": 1
+  },
+  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -190,7 +206,7 @@
  "index_web_pages_for_search": 0,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-10-10 12:00:00.000000",
+ "modified": "2026-11-06 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Real Estate",
  "name": "RE Payment",

@@ -1,0 +1,400 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "tab_details",
+  "title",
+  "project",
+  "stage",
+  "responsible",
+  "cb1",
+  "mauza",
+  "tehsil",
+  "district",
+  "sb_record",
+  "khewat_no",
+  "khatooni_no",
+  "cb2",
+  "square_no",
+  "killa_nos",
+  "cb3",
+  "khasra_nos",
+  "location_index",
+  "sb_area",
+  "area_kanal",
+  "area_marla",
+  "area_sarsai",
+  "cb4",
+  "area_sqft",
+  "area_acre",
+  "area_display",
+  "sb_land",
+  "land_type",
+  "current_use",
+  "cb5",
+  "access_road",
+  "asking_rate",
+  "rate_unit",
+  "sb_owners",
+  "owners",
+  "owners_sqft",
+  "geojson",
+  "tab_pipeline",
+  "stages",
+  "tab_diligence",
+  "checks",
+  "diligence_clear",
+  "diligence_override",
+  "override_reason",
+  "override_by",
+  "is_demo"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "RE-KH-.#####",
+   "default": "RE-KH-.#####",
+   "hidden": 1
+  },
+  {
+   "fieldname": "tab_details",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Parcel",
+   "read_only": 1,
+   "description": "Mauza · khasra"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "RE Project",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "stage",
+   "fieldtype": "Select",
+   "label": "Acquisition stage",
+   "options": "Identified\nUnder Negotiation\nDue Diligence\nToken Paid\nAgreement Signed\nPayment in Progress\nRegistry / Mutation Done\nPossession Taken\nAcquired\nDropped\nDisputed",
+   "default": "Identified",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "responsible",
+   "fieldtype": "Link",
+   "label": "Responsible",
+   "options": "User"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mauza",
+   "fieldtype": "Data",
+   "label": "Mauza / village",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "tehsil",
+   "fieldtype": "Data",
+   "label": "Tehsil"
+  },
+  {
+   "fieldname": "district",
+   "fieldtype": "Data",
+   "label": "District"
+  },
+  {
+   "fieldname": "sb_record",
+   "fieldtype": "Section Break",
+   "label": "Revenue record"
+  },
+  {
+   "fieldname": "khewat_no",
+   "fieldtype": "Data",
+   "label": "Khewat no"
+  },
+  {
+   "fieldname": "khatooni_no",
+   "fieldtype": "Data",
+   "label": "Khatooni no"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "square_no",
+   "fieldtype": "Data",
+   "label": "Square (murabba) no"
+  },
+  {
+   "fieldname": "killa_nos",
+   "fieldtype": "Data",
+   "label": "Killa no(s)",
+   "description": "Lists and ranges, e.g. \"43-44\" or \"5/2,16,17\""
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "khasra_nos",
+   "fieldtype": "Data",
+   "label": "Khasra no(s)",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "location_index",
+   "fieldtype": "Small Text",
+   "label": "Search index",
+   "hidden": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_area",
+   "fieldtype": "Section Break",
+   "label": "Area (per fard)"
+  },
+  {
+   "fieldname": "area_kanal",
+   "fieldtype": "Int",
+   "label": "Kanal"
+  },
+  {
+   "fieldname": "area_marla",
+   "fieldtype": "Float",
+   "label": "Marla",
+   "precision": "2"
+  },
+  {
+   "fieldname": "area_sarsai",
+   "fieldtype": "Float",
+   "label": "Sarsai",
+   "precision": "2"
+  },
+  {
+   "fieldname": "cb4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area_sqft",
+   "fieldtype": "Float",
+   "label": "Area (sqft)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "area_acre",
+   "fieldtype": "Float",
+   "label": "Area (acre)",
+   "read_only": 1,
+   "precision": "4"
+  },
+  {
+   "fieldname": "area_display",
+   "fieldtype": "Data",
+   "label": "Area",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sb_land",
+   "fieldtype": "Section Break",
+   "label": "Land"
+  },
+  {
+   "fieldname": "land_type",
+   "fieldtype": "Select",
+   "label": "Land type",
+   "options": "\nBarani\nNehri\nChahi\nBanjar\nResidential",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "current_use",
+   "fieldtype": "Data",
+   "label": "Current use"
+  },
+  {
+   "fieldname": "cb5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "access_road",
+   "fieldtype": "Data",
+   "label": "Access road"
+  },
+  {
+   "fieldname": "asking_rate",
+   "fieldtype": "Currency",
+   "label": "Asking / negotiated rate",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "rate_unit",
+   "fieldtype": "Select",
+   "label": "Rate per",
+   "options": "Kanal\nAcre\nMarla",
+   "default": "Kanal"
+  },
+  {
+   "fieldname": "sb_owners",
+   "fieldtype": "Section Break",
+   "label": "Owners per fard"
+  },
+  {
+   "fieldname": "owners",
+   "fieldtype": "Table",
+   "label": "Co-owners",
+   "options": "RE Parcel Owner"
+  },
+  {
+   "fieldname": "owners_sqft",
+   "fieldtype": "Float",
+   "label": "Owners' shares (sqft)",
+   "read_only": 1,
+   "precision": "2",
+   "hidden": 1
+  },
+  {
+   "fieldname": "geojson",
+   "fieldtype": "Code",
+   "label": "Outline (GeoJSON)",
+   "options": "JSON",
+   "hidden": 1
+  },
+  {
+   "fieldname": "tab_pipeline",
+   "fieldtype": "Tab Break",
+   "label": "Pipeline"
+  },
+  {
+   "fieldname": "stages",
+   "fieldtype": "Table",
+   "label": "Stage history",
+   "options": "RE Parcel Stage"
+  },
+  {
+   "fieldname": "tab_diligence",
+   "fieldtype": "Tab Break",
+   "label": "Due diligence"
+  },
+  {
+   "fieldname": "checks",
+   "fieldtype": "Table",
+   "label": "Checklist",
+   "options": "RE Parcel Check"
+  },
+  {
+   "fieldname": "diligence_clear",
+   "fieldtype": "Check",
+   "label": "Mandatory checks passed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "diligence_override",
+   "fieldtype": "Check",
+   "label": "Admin override",
+   "read_only": 1
+  },
+  {
+   "fieldname": "override_reason",
+   "fieldtype": "Small Text",
+   "label": "Override reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "override_by",
+   "fieldtype": "Link",
+   "label": "Override by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_demo",
+   "fieldtype": "Check",
+   "label": "Demo record",
+   "hidden": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-06 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Parcel",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Land Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Projects Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "naming_series:",
+ "naming_rule": "By \"Naming Series\" field",
+ "title_field": "title",
+ "show_title_field_in_link": 1,
+ "search_fields": "mauza,khasra_nos,khewat_no",
+ "allow_rename": 0
+}

@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "plot",
+  "block",
+  "plot_size",
+  "list_price",
+  "agreed_value",
+  "booking",
+  "receipt"
+ ],
+ "fields": [
+  {
+   "fieldname": "plot",
+   "fieldtype": "Link",
+   "label": "Plot",
+   "options": "RE Plot",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "block",
+   "fieldtype": "Link",
+   "label": "Block",
+   "options": "RE Block",
+   "fetch_from": "plot.block",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "plot_size",
+   "fieldtype": "Link",
+   "label": "Size",
+   "options": "RE Plot Size",
+   "fetch_from": "plot.plot_size",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "list_price",
+   "fieldtype": "Currency",
+   "label": "List price",
+   "options": "PKR",
+   "fetch_from": "plot.list_price",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "agreed_value",
+   "fieldtype": "Currency",
+   "label": "Agreed value",
+   "options": "PKR",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "booking",
+   "fieldtype": "Link",
+   "label": "Booking",
+   "options": "RE Booking",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "receipt",
+   "fieldtype": "Link",
+   "label": "Adjustment receipt",
+   "options": "RE Payment",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-05 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Plot Adjustment Plot",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": []
+}

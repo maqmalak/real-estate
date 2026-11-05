@@ -32,6 +32,13 @@ export const DOC_ROUTES: Record<string, string> = {
   "RE Vault Document": "/re/d/re-vault-document/",
   "RE Re-allotment": "/re/d/re-re-allotment/",
   "RE Settings": "/re/d/re-settings/",
+  "RE Land Parcel": "/re/d/re-land-parcel/",
+  "RE Land Deal": "/re/d/re-land-deal/",
+  "RE Land Owner": "/re/d/re-land-owner/",
+  "RE Land Case": "/re/d/re-land-case/",
+  "RE Transfer Cost Rate": "/re/d/re-transfer-cost-rate/",
+  "RE Land Payment": "/re/d/re-land-payment/",
+  "RE Plot Adjustment": "/re/d/re-plot-adjustment/",
   // Buying / import
   "Material Request": "/import/material-requests/",
   "Request for Quotation": "/import/rfqs/",

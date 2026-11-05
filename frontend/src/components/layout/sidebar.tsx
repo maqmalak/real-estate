@@ -111,7 +111,7 @@ function NavLinks({
                   <ExternalLink className="ml-auto h-3 w-3 shrink-0 opacity-50" />
                 </a>
               ) : (
-              <NavLink key={item.to} to={item.to} end={isAppRoot(item.to)} onClick={onNavigate} className={linkClass(item.to)}>
+              <NavLink key={item.to} to={item.to} end={isAppRoot(item.to) || group.items.some((o) => o.to !== item.to && o.to.startsWith(`${item.to}/`))} onClick={onNavigate} className={linkClass(item.to)}>
                 {Icon && <Icon className="h-4 w-4 shrink-0" />}
                 <span className="truncate">{item.label}</span>
               </NavLink>

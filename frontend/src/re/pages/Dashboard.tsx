@@ -7,7 +7,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertTriangle, ArrowRight, Banknote, CalendarClock, CircleDollarSign, FileDown, Gauge as GaugeIcon, Home, Landmark, Map as MapIcon, MessageCircle, Phone,
-  PhoneCall, Users, Wrench, FileWarning, Inbox,
+  PhoneCall, Users, Wrench, FileWarning, Inbox, Gavel, HandCoins,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import { Button } from "@/re/components/ui/button";
 import { Empty, Skeleton } from "@/re/components/ui/skeleton";
 import type { BlockScore, Receipt } from "@/re/lib/analytics-types";
 import { get, post } from "@/re/lib/api";
-import { date, money, num, time } from "@/re/lib/format";
+import { date, money, num, time, todayISO } from "@/re/lib/format";
 import type { Dashboard } from "@/re/lib/types";
 import { cn, followUpUrl, recordUrl } from "@/re/lib/utils";
 import { useAuth } from "@/re/providers/auth";
@@ -75,7 +75,7 @@ export function DashboardPage() {
   const [kind, setKind] = useState<"installments" | "society">("installments");
   const colPrefs = useSeriesPrefs("re-chart-collections", Object.fromEntries(COLLECTION_SERIES.map((sr) => [sr.key, { from: sr.from, to: sr.to }])));
   const visibleSeries = COLLECTION_SERIES.filter((sr) => !colPrefs.hidden.has(sr.key));
-  const [urgentTab, setUrgentTab] = useState<"complaints" | "documents" | "approvals">("complaints");
+  const [urgentTab, setUrgentTab] = useState<"complaints" | "documents" | "approvals" | "land">("complaints");
   const { dark } = useTheme();
   const { boot } = useAuth();
   const t = useChartTheme(dark);
@@ -323,7 +323,8 @@ export function DashboardPage() {
 
         <ChartCard title="Urgent queue" sub="Complaints by priority, documents due for renewal, approvals waiting" bodyClass="h-auto"
           actions={<Segmented value={urgentTab} onChange={setUrgentTab} options={[
-            ["complaints", `Complaints ${data.urgent.length}`], ["documents", `Documents ${data.expiring?.length ?? 0}`], ["approvals", `Approvals ${data.approvals?.count ?? 0}`]]} />}>
+            ["complaints", `Complaints ${data.urgent.length}`], ["documents", `Documents ${data.expiring?.length ?? 0}`], ["approvals", `Approvals ${data.approvals?.count ?? 0}`],
+            ...(data.land ? [["land", `Land ${data.land.count}`] as ["land", string]] : [])]} />}>
           <div className="divide-y">
             {urgentTab === "complaints" && (data.urgent.length ? data.urgent.map((u) => (
               <Link key={u.name} to={recordUrl("Task", u.name)} className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
@@ -345,6 +346,31 @@ export function DashboardPage() {
                 <Pill color={d.status === "Expired" ? C.red : C.amber}>{d.status}</Pill>
               </Link>
             )) : <Empty title="No documents due for renewal" />)}
+            {urgentTab === "land" && data.land && (data.land.count ? (
+              <>
+                {data.land.hearings.map((h) => (
+                  <Link key={h.name} to={recordUrl("RE Land Case", h.name)} className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400"><Gavel className="size-4" /></span>
+                    <div className="min-w-0 flex-1"><p className="truncate font-medium">{h.case_title}</p><p className="truncate text-xs text-muted-foreground">Hearing {date(h.next_hearing)} · {h.court}</p></div>
+                    <Pill color={C.red}>Court</Pill>
+                  </Link>
+                ))}
+                {data.land.payments.map((p) => (
+                  <Link key={`${p.deal}-${p.ser}-${p.label}`} to={recordUrl("RE Land Deal", p.deal)} className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400"><HandCoins className="size-4" /></span>
+                    <div className="min-w-0 flex-1"><p className="truncate font-medium">{p.owner_name} · {money(p.pending, { compact: true })}</p><p className="truncate text-xs text-muted-foreground">{p.deal} · {p.label} · due {date(p.due_date)}</p></div>
+                    <Pill color={p.due_date < todayISO() ? C.red : C.amber}>{p.due_date < todayISO() ? "Overdue" : "This week"}</Pill>
+                  </Link>
+                ))}
+                {data.land.approvals.map((a) => (
+                  <Link key={`${a.doctype}-${a.name}`} to={recordUrl(a.doctype, a.name)} className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-violet-500/15 text-violet-600 dark:text-violet-400"><Inbox className="size-4" /></span>
+                    <div className="min-w-0 flex-1"><p className="truncate font-medium">{a.doctype.replace("RE ", "")} · {a.name}</p><p className="truncate text-xs text-muted-foreground">{a.label}</p></div>
+                    <Pill color={C.amber}>Approval</Pill>
+                  </Link>
+                ))}
+              </>
+            ) : <Empty title="No seller payments or hearings this week" />)}
             {urgentTab === "approvals" && (data.approvals?.rows.length ? data.approvals.rows.map((a) => (
               <Link key={`${a.doctype}-${a.name}`} to="/re/operations?tab=approvals" className="flex items-center gap-3 py-2.5 hover:bg-accent/40">
                 <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-violet-500/15 text-violet-600 dark:text-violet-400"><Inbox className="size-4" /></span>

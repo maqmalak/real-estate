@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "creation": "2026-11-06 18:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "cost_head",
+  "payee",
+  "basis",
+  "amount",
+  "purchase_invoice",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "cost_head",
+   "fieldtype": "Select",
+   "label": "Cost head",
+   "options": "Stamp Duty\nRegistration Fee\nMutation Fee\nCVT\nAdvance Tax 236K\nWithholding Tax\nTMA / District Council Fee\nPatwari Fee\nLegal Fee\nBroker Commission\nOther",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "payee",
+   "fieldtype": "Link",
+   "label": "Paid to",
+   "options": "Supplier",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "basis",
+   "fieldtype": "Data",
+   "label": "Basis",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "options": "PKR",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Link",
+   "label": "Purchase invoice",
+   "options": "Purchase Invoice",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-06 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Deal Cost",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

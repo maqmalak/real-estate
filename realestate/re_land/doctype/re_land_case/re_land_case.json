@@ -1,0 +1,214 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "case_title",
+  "court",
+  "case_no",
+  "filed_on",
+  "cb1",
+  "status",
+  "next_hearing",
+  "lawyer",
+  "responsible",
+  "sb_parties",
+  "parties",
+  "deal",
+  "cb2",
+  "parcels",
+  "affected_area",
+  "affected_sqft",
+  "sb_notes",
+  "notes",
+  "is_demo"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "RE-LC-.#####",
+   "default": "RE-LC-.#####",
+   "hidden": 1
+  },
+  {
+   "fieldname": "case_title",
+   "fieldtype": "Data",
+   "label": "Case title",
+   "reqd": 1,
+   "in_list_view": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "court",
+   "fieldtype": "Data",
+   "label": "Court",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "case_no",
+   "fieldtype": "Data",
+   "label": "Case no",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "filed_on",
+   "fieldtype": "Date",
+   "label": "Filed on"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nUnder Hearing\nStay Order\nDecided - In Favour\nDecided - Against\nSettled\nWithdrawn",
+   "default": "Pending",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "next_hearing",
+   "fieldtype": "Date",
+   "label": "Next hearing",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "lawyer",
+   "fieldtype": "Data",
+   "label": "Lawyer"
+  },
+  {
+   "fieldname": "responsible",
+   "fieldtype": "Link",
+   "label": "Responsible",
+   "options": "User"
+  },
+  {
+   "fieldname": "sb_parties",
+   "fieldtype": "Section Break",
+   "label": "Parties and land"
+  },
+  {
+   "fieldname": "parties",
+   "fieldtype": "Small Text",
+   "label": "Parties"
+  },
+  {
+   "fieldname": "deal",
+   "fieldtype": "Link",
+   "label": "Land deal",
+   "options": "RE Land Deal"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parcels",
+   "fieldtype": "Table",
+   "label": "Affected khasras",
+   "options": "RE Land Case Parcel"
+  },
+  {
+   "fieldname": "affected_area",
+   "fieldtype": "Data",
+   "label": "Affected area",
+   "read_only": 1
+  },
+  {
+   "fieldname": "affected_sqft",
+   "fieldtype": "Float",
+   "label": "Affected area (sqft)",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "sb_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text Editor",
+   "label": "Hearing notes"
+  },
+  {
+   "fieldname": "is_demo",
+   "fieldtype": "Check",
+   "label": "Demo record",
+   "hidden": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-06 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Case",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Land Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Projects Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "naming_series:",
+ "naming_rule": "By \"Naming Series\" field",
+ "title_field": "case_title",
+ "show_title_field_in_link": 1,
+ "search_fields": "case_no,court"
+}

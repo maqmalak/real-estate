@@ -1,0 +1,38 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+.re-doc .grid td,.re-doc .grid th{font-size:13px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:13px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:16px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set st = owner_statement(doc.name) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>گوشوارہ مالکِ اراضی</h2><div class="sub">{{ doc.display_name }} · شناختی کارڈ {{ ur_ltr(doc.cnic) }} · {{ ur_date(frappe.utils.nowdate()) }}</div>
+<h3>فروخت شدہ اراضی</h3><table class="grid"><tr><th>سودا</th><th>خسرہ</th><th>حصہ</th><th>کل واجب الادا</th><th>ادا شدہ</th><th>پلاٹ</th><th>بقایا</th><th>کیفیت</th></tr>
+{%- for l in st.lines %}<tr><td>{{ ur_ltr(l.deal) }}</td><td>{{ ur_ltr(l.khasra) }}</td><td>{{ ur_ltr((l.kanal or 0)|string ~ "K-" ~ ("%g"|format(l.marla or 0)) ~ "M") }}</td><td>{{ ur_money(l.net_due) }}</td><td>{{ ur_money(l.paid_amount) }}</td><td>{{ ur_money(l.adjusted_amount) if l.adjusted_amount else "" }}</td><td>{{ ur_money(l.balance) }}</td><td>{{ ur(l.line_status) }}</td></tr>{% endfor %}
+</table>
+<h3>کھاتہ</h3><table class="grid"><tr><th>تاریخ</th><th>اندراج</th><th>واؤچر</th><th>واجب الادا</th><th>ادا / منہا</th><th>بقایا</th></tr>
+{%- for r in st.ledger %}<tr{% if r.bold %} style="font-weight:bold"{% endif %}><td>{{ ur_date(r.posting_date) if r.posting_date else "" }}</td><td>{{ ur(r.kind) if r.kind else ("اختتامی بقایا" if r.bold else "") }}</td><td>{{ ur_ltr(r.voucher_no) }}</td>
+<td>{{ ur_money(r.payable) if r.payable else "" }}</td><td>{{ ur_money(r.paid) if r.paid else "" }}</td><td>{{ ur_money(r.balance or 0) }}</td></tr>{% endfor %}
+</table>
+<p><b>{{ "آپ کو واجب الادا بقایا" if (st.closing or 0) > 0.5 else "آپ سے واجب الوصول" if (st.closing or 0) < -0.5 else "بقایا — کچھ نہیں" }}: {{ ur_money(st.closing or 0) }}</b></p>
+<p class="muted">کسی فرق کی صورت میں 15 دن کے اندر مطلع کریں۔</p></div>

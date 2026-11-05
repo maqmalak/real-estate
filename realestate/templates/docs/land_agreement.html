@@ -1,0 +1,58 @@
+<style>
+.re-doc{font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#1f2937;line-height:1.5}
+.re-doc h2{font-size:17px;text-align:center;letter-spacing:.6px;margin:6px 0 2px;text-transform:uppercase}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:32%}
+.re-doc .grid th{width:auto}
+.re-doc .r{text-align:right}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:right;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc .grid th{background:#f0fdfa}
+.re-doc .grid td,.re-doc .grid th{font-size:11px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:11px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:13px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set ms = frappe.db.get_single_value("RE Settings", "land_marla_sqft") or 272 -%}
+{%- set active = doc.lines | selectattr("status", "ne", "Cancelled") | list -%}
+{%- set parcels = [] -%}{%- for l in active %}{% if l.parcel and l.parcel not in parcels %}{% set _ = parcels.append(l.parcel) %}{% endif %}{% endfor -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>Agreement to Sell (Iqrar Nama)</h2><div class="sub">Deal {{ doc.name }} · {{ frappe.utils.formatdate(doc.deal_date, "dd MMM yyyy") }} · {{ doc.land_owners_type }} owner{{ "s" if doc.land_owners_type == "MULTI" else "" }}</div>
+<p>This agreement is made at {{ doc.jurisdiction or "Lahore" }} on {{ frappe.utils.formatdate(doc.deal_date, "dd MMMM yyyy") }} between the owners named below (the <b>Sellers</b>) and <b>{{ doc.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}</b>{% if doc.buyer_signatory %}, through {{ doc.buyer_signatory }}{% endif %} (the <b>Buyer</b>), for the sale of the land described below for the housing scheme{% if doc.land_for %} ({{ doc.land_for }}){% endif %}.</p>
+<h3>1. The land</h3>
+<table class="grid"><tr><th>Mauza</th><th>Khasra</th><th>Khewat</th><th>Khatooni</th><th>Square</th><th>Killa</th><th class="r">Area per fard</th></tr>
+{%- for p in parcels %}{% set pc = frappe.get_doc("RE Land Parcel", p) %}<tr><td>{{ pc.mauza }}, Tehsil {{ pc.tehsil }}, {{ pc.district }}</td><td>{{ pc.khasra_nos }}</td><td>{{ pc.khewat_no or "" }}</td><td>{{ pc.khatooni_no or "" }}</td><td>{{ pc.square_no or "" }}</td><td>{{ pc.killa_nos or "" }}</td><td class="r">{{ pc.area_display }}</td></tr>{% endfor %}
+</table>
+<h3>2. Sellers, shares and price</h3>
+<table class="grid"><tr><th>#</th><th>Seller</th><th>CNIC</th><th>Khasra</th><th class="r">Share</th><th class="r">Rate</th><th class="r">Amount</th><th>Signs through</th></tr>
+{%- for l in active %}{% set o = frappe.get_doc("RE Land Owner", l.land_owner) %}<tr><td>{{ l.ser }}</td><td>{{ l.owner_name }}{% if l.group_members %}<br><span class="muted">{{ l.group_members.splitlines() | join(", ") }}</span>{% endif %}</td><td>{{ o.cnic or "" }}</td>
+<td>{{ frappe.db.get_value("RE Land Parcel", l.parcel, "khasra_nos") if l.parcel else "" }}</td><td class="r">{{ l.kanal or 0 }}K-{{ "%g"|format(l.marla or 0) }}M{% if l.sqft %}-{{ "%g"|format(l.sqft) }}sqft{% endif %}<br><span class="muted">{{ "%g"|format(l.total_area) }} {{ l.unit }}</span></td>
+<td class="r">{{ frappe.utils.fmt_money(l.rate, currency="PKR", precision=0) }} / {{ l.unit }}</td><td class="r">{{ frappe.utils.fmt_money(l.due_amount, currency="PKR", precision=0) }}</td><td>{{ frappe.db.get_value("RE Land Owner", l.attorney, "display_name") if l.attorney else "Self" }}</td></tr>{% endfor %}
+<tr><th colspan="4">Total</th><th class="r">{{ doc.deal_area_display }}</th><th></th><th class="r">{{ frappe.utils.fmt_money(doc.due_amount, currency="PKR", precision=0) }}</th><th></th></tr></table>
+<p>Total price: <b>{{ frappe.utils.fmt_money(doc.due_amount, currency="PKR", precision=0) }}</b> ({{ frappe.utils.money_in_words(doc.due_amount, "PKR") }}).</p>
+<h3>3. Payment</h3>
+<p>{{ doc.payment_terms or "" }}{% if doc.token_amount %} Token (bayana) {{ frappe.utils.fmt_money(doc.token_amount, currency="PKR", precision=0) }}{% endif %}{% if doc.agreement_amount %}; agreement amount {{ frappe.utils.fmt_money(doc.agreement_amount, currency="PKR", precision=0) }}{% endif %}. Each seller is paid in proportion to their share, by crossed cheque, pay order or bank transfer to their own account.</p>
+<table class="grid"><tr><th>Seller</th><th>Payment</th><th>Due date</th><th class="r">Amount</th></tr>
+{%- for s in doc.schedule if s.status != "Refund" %}{% set l = (doc.lines | selectattr("ser", "equalto", s.ser) | first) %}<tr><td>{{ s.ser }}. {{ l.owner_name if l else "" }}</td><td>{{ s.label }}</td><td>{{ frappe.utils.formatdate(s.due_date) if s.due_date else "" }}</td><td class="r">{{ frappe.utils.fmt_money(s.amount, currency="PKR", precision=0) }}</td></tr>{% endfor %}
+</table>
+<h3>4. Possession, registry and other terms</h3>
+<ol><li>Possession will be handed over by {{ frappe.utils.formatdate(doc.possession_date, "dd MMMM yyyy") if doc.possession_date else "the date agreed" }}; the registry / mutation will be completed by {{ frappe.utils.formatdate(doc.registry_deadline, "dd MMMM yyyy") if doc.registry_deadline else "the date agreed" }}.</li>
+<li>The Sellers declare that the land is free of every charge, mortgage, lien and dispute, and that they will produce the fard, jamabandi and mutation copies the Buyer requires.</li>
+<li>Penalty: {{ doc.penalty_clause or "as agreed by the parties" }}</li><li>Cancellation: {{ doc.cancellation_clause or "as agreed by the parties" }}</li>
+<li>Disputes are subject to the courts at {{ doc.jurisdiction or "Lahore" }}.</li></ol>
+<p class="muted">Executed on stamp paper of {{ frappe.utils.fmt_money(doc.stamp_paper_value or 0, currency="PKR", precision=0) }}. Each seller signs and affixes a thumb impression below.</p>
+{%- for l in active %}<div class="sig"><div class="thumb"></div><div class="line"></div>{{ l.owner_name }}<br><span class="muted">Seller {{ l.ser }}{% if l.signed_on %} · signed {{ frappe.utils.formatdate(l.signed_on) }}{% endif %}</span></div>{% endfor %}
+<div class="sig"><div class="thumb" style="border:0"></div><div class="line"></div>{{ doc.buyer_signatory or "Authorised signatory" }}<br><span class="muted">For {{ doc.buyer_company or "the Buyer" }}</span></div>
+<div class="sig"><div class="thumb" style="border:0"></div><div class="line"></div>{{ doc.witness_1_name or "Witness 1" }}<br><span class="muted">Witness 1 · {{ doc.witness_1_cnic or "CNIC" }}</span></div>
+<div class="sig"><div class="thumb" style="border:0"></div><div class="line"></div>{{ doc.witness_2_name or "Witness 2" }}<br><span class="muted">Witness 2 · {{ doc.witness_2_cnic or "CNIC" }}</span></div>
+</div>

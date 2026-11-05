@@ -6,6 +6,8 @@ import type { MapData, MapPlot, MapTask } from "@/re/lib/types";
 export const STATUS_COLORS: Record<string, string> = {
   Available: "#22c55e", Reserved: "#a855f7", Hold: "#f97316", Booked: "#3b82f6", Sold: "#6366f1", "Possession Given": "#0ea5e9", Blocked: "#9ca3af",
 };
+/** Plots given to land owners against a land deal (Module 0) — their own colour on the status map. */
+export const LAND_OWNER_COLOR = "#c026d3";
 export const PAY_COLORS: Record<string, string> = { Paid: "#16a34a", Due: "#f59e0b", Overdue: "#dc2626" };
 
 export type ColorBy = "status" | "payment" | "block";

@@ -31,6 +31,8 @@
   "booking",
   "mobile_no",
   "merged_into",
+  "land_adjustment",
+  "land_deal",
   "tab_geo",
   "map_html",
   "centre_lat",
@@ -212,6 +214,21 @@
    "read_only": 1
   },
   {
+   "fieldname": "land_adjustment",
+   "fieldtype": "Link",
+   "label": "Land owner adjustment",
+   "options": "RE Plot Adjustment",
+   "read_only": 1,
+   "description": "Given to a land owner against a land deal"
+  },
+  {
+   "fieldname": "land_deal",
+   "fieldtype": "Link",
+   "label": "Land deal",
+   "options": "RE Land Deal",
+   "read_only": 1
+  },
+  {
    "fieldname": "tab_geo",
    "fieldtype": "Tab Break",
    "label": "Map"
@@ -265,7 +282,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-10 12:00:00.000000",
+ "modified": "2026-11-06 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Real Estate",
  "name": "RE Plot",

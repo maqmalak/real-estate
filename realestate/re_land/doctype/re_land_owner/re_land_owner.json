@@ -1,0 +1,255 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "owner_name",
+  "relation",
+  "father_name",
+  "display_name",
+  "cb1",
+  "cnic",
+  "mobile_no",
+  "address",
+  "sb_bank",
+  "bank_name",
+  "account_title",
+  "cb2",
+  "iban",
+  "sb_attorney",
+  "attorney",
+  "poa_document",
+  "poa_date",
+  "cb3",
+  "is_deceased",
+  "heirs",
+  "sb_accounts",
+  "supplier",
+  "cb4",
+  "customer",
+  "is_demo"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "RE-LO-.#####",
+   "default": "RE-LO-.#####",
+   "hidden": 1
+  },
+  {
+   "fieldname": "owner_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "relation",
+   "fieldtype": "Select",
+   "label": "Relation",
+   "options": "S/O\nD/O\nW/O",
+   "default": "S/O",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "father_name",
+   "fieldtype": "Data",
+   "label": "Father / husband name",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "display_name",
+   "fieldtype": "Data",
+   "label": "Display name",
+   "read_only": 1,
+   "description": "Name with relation, as it appears on deals and the agreement"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cnic",
+   "fieldtype": "Data",
+   "label": "CNIC",
+   "in_standard_filter": 1,
+   "unique": 1,
+   "description": "13 digits, saved as 00000-0000000-0"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "sb_bank",
+   "fieldtype": "Section Break",
+   "label": "Bank details"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank"
+  },
+  {
+   "fieldname": "account_title",
+   "fieldtype": "Data",
+   "label": "Account title"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "iban",
+   "fieldtype": "Data",
+   "label": "IBAN / account no"
+  },
+  {
+   "fieldname": "sb_attorney",
+   "fieldtype": "Section Break",
+   "label": "Attorney and heirs",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "attorney",
+   "fieldtype": "Link",
+   "label": "Attorney (mukhtar-e-aam)",
+   "options": "RE Land Owner"
+  },
+  {
+   "fieldname": "poa_document",
+   "fieldtype": "Attach",
+   "label": "Power of attorney"
+  },
+  {
+   "fieldname": "poa_date",
+   "fieldtype": "Date",
+   "label": "Power of attorney date"
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "is_deceased",
+   "fieldtype": "Check",
+   "label": "Deceased"
+  },
+  {
+   "fieldname": "heirs",
+   "fieldtype": "Table",
+   "label": "Legal heirs",
+   "options": "RE Land Owner Heir",
+   "depends_on": "is_deceased"
+  },
+  {
+   "fieldname": "sb_accounts",
+   "fieldtype": "Section Break",
+   "label": "Accounts"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1,
+   "description": "Created automatically in the Land Owners supplier group"
+  },
+  {
+   "fieldname": "cb4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "description": "When this owner also buys or is adjusted plots; linked by a Party Link for one ledger"
+  },
+  {
+   "fieldname": "is_demo",
+   "fieldtype": "Check",
+   "label": "Demo record",
+   "hidden": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-06 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Owner",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Land Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Projects Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "naming_series:",
+ "naming_rule": "By \"Naming Series\" field",
+ "title_field": "display_name",
+ "show_title_field_in_link": 1,
+ "search_fields": "owner_name,father_name,cnic",
+ "allow_rename": 0
+}

@@ -64,6 +64,7 @@ scheduler_events = {
 		"realestate.tasks.phase_b_daily",
 		"realestate.maintenance.generate_planned_tasks",
 		"realestate.maintenance.mark_overdue",
+		"realestate.land_api.daily_reminders",  # land: seller dues, registry / possession dates, court hearings
 		"realestate.demo.daily.scheduled",  # demo only: a live day of activity (no-op unless mock mode + demo project)
 	],
 }
@@ -101,6 +102,7 @@ jinja = {
 		"realestate.doc_ur.ur_date",
 		"realestate.doc_ur.ur_money",
 		"realestate.doc_ur.ur_ltr",
+		"realestate.land_reports.owner_statement",
 	],
 }
 

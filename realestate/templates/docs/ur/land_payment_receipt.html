@@ -1,0 +1,39 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+.re-doc .grid td,.re-doc .grid th{font-size:13px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:13px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:16px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set deal = frappe.get_doc("RE Land Deal", doc.deal) -%}{%- set line = (deal.lines | selectattr("ser", "equalto", doc.ser) | first) -%}{%- set o = frappe.get_doc("RE Land Owner", doc.land_owner) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>{{ "رسید بیعانہ" if doc.payment_kind == "Token" else "رسید واپسی رقم" if doc.payment_kind == "Refund Received" else "رسید ادائیگی اراضی" }}</h2><div class="sub">{{ ur_ltr(doc.name) }} · {{ ur_date(doc.posting_date) }}</div>
+{% if doc.payment_kind == "Refund Received" %}<p><b>{{ o.display_name }}</b> (شناختی کارڈ {{ ur_ltr(o.cnic) }}) سے سودا {{ ur_ltr(deal.name) }} میں ان کے حصے کی منسوخی کے بعد ادا شدہ رقم کی واپسی وصول کی گئی۔</p>
+{% else %}<p>میں <b>{{ o.display_name }}</b> (شناختی کارڈ {{ ur_ltr(o.cnic) }}) اقرار کرتا / کرتی ہوں کہ میں نے سودا {{ ur_ltr(deal.name) }} کے تحت اپنے حصے کی اراضی کی فروخت کے عوض <b>{{ deal.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}</b> سے درج ذیل رقم وصول کی۔</p>{% endif %}
+<table><tr><th>سودا</th><td>{{ ur_ltr(deal.name) }} — {{ deal.description }}</td></tr>
+<tr><th>اراضی</th><td>خسرہ {{ ur_ltr(frappe.db.get_value("RE Land Parcel", line.parcel, "khasra_nos") if line and line.parcel else deal.khasras) }}{% if line %} · حصہ {{ ur_ltr((line.kanal or 0)|string ~ "K-" ~ ("%g"|format(line.marla or 0)) ~ "M") }}{% endif %}</td></tr>
+<tr><th>ادائیگی برائے</th><td>{{ ur(doc.payment_kind) }}</td></tr>
+<tr><th>رقم</th><td><b>{{ ur_money(doc.amount) }}</b></td></tr>
+{% if doc.wht_amount %}<tr><th>ودہولڈنگ ٹیکس کٹوتی</th><td>{{ ur_money(doc.wht_amount) }} — بائع کی جانب سے ایف بی آر میں جمع</td></tr><tr><th>خالص ادائیگی</th><td><b>{{ ur_money(doc.net_paid) }}</b></td></tr>{% endif %}
+<tr><th>طریقہ</th><td>{{ ur(doc.mode_of_payment) }} {{ ur_ltr(doc.instrument_no) }} {{ ur_date(doc.instrument_date) if doc.instrument_date else "" }} {{ doc.bank_name or "" }}</td></tr>
+<tr><th>اس ادائیگی کے بعد بقایا</th><td>{{ ur_money(doc.balance_after) }}</td></tr></table>
+<table class="sign"><tr><td><span class="thumb"></span><br>{{ o.display_name }}<br><span class="muted">بائع</span></td><td class="gap"></td><td>برائے {{ deal.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}<br><span class="muted">اکاؤنٹس</span></td></tr></table></div>

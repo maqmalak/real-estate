@@ -8,6 +8,8 @@
  "field_order": [
   "title",
   "project",
+  "land_parcel",
+  "land_deal",
   "document_type",
   "authority",
   "reference_no",
@@ -38,12 +40,25 @@
    "reqd": 1
   },
   {
+   "fieldname": "land_parcel",
+   "fieldtype": "Link",
+   "label": "Land parcel (khasra)",
+   "options": "RE Land Parcel",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "land_deal",
+   "fieldtype": "Link",
+   "label": "Land deal",
+   "options": "RE Land Deal"
+  },
+  {
    "fieldname": "document_type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Document Type",
-   "options": "NOC\nApproval\nFard\nRegistry\nMutation (Intiqal)\nApproved Layout Plan\nUtility Demand Notice\nAgreement\nInsurance\nOther",
+   "options": "NOC\nApproval\nFard\nRegistry\nMutation (Intiqal)\nApproved Layout Plan\nUtility Demand Notice\nAgreement\nInsurance\nOther\nIqrar Nama\nToken Receipt\nPower of Attorney\nRegistry Deed\nJamabandi\nAks Shajra\nDemarcation Report\nCo-owner NOC\nLegal Opinion",
    "reqd": 1
   },
   {
@@ -117,7 +132,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-10 12:00:00.000000",
+ "modified": "2026-11-06 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "Real Estate",
  "name": "RE Vault Document",

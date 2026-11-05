@@ -24,6 +24,14 @@ WORDS = {
 	# society charge heads
 	"Maintenance": "مینٹیننس", "Security": "سیکیورٹی", "Garbage Collection": "کوڑا اٹھانا", "Sweeper": "صفائی", "Park Maintenance": "پارک مینٹیننس",
 	"Street Light": "اسٹریٹ لائٹ", "Water": "پانی",
+	# land purchase (Module 0)
+	"Token (bayana)": "بیعانہ", "Agreement amount": "اقرار نامہ کی رقم", "Final payment at registry": "رجسٹری پر حتمی ادائیگی", "Extension": "توسیع",
+	"Refund to cancelled owner": "منسوخ شدہ مالک کو واپسی", "Registry Done": "رجسٹری مکمل", "Mutation Done": "انتقال مکمل", "Pending": "زیرِ التوا",
+	"Acre": "ایکڑ", "Owner": "مالک", "Attorney": "مختارِ عام", "Legal Heir": "قانونی وارث", "Agent": "ایجنٹ", "Token": "بیعانہ", "Agreement": "اقرار نامہ",
+	"Installment": "قسط", "Final": "حتمی ادائیگی", "Refund Received": "رقم کی واپسی", "Other": "دیگر", "Pay Order": "پے آرڈر",
+	"S/O": "ولد", "D/O": "دختر", "W/O": "زوجہ", "Barani": "بارانی", "Nehri": "نہری", "Chahi": "چاہی", "Banjar": "بنجر",
+	"Executed": "نافذ العمل", "In Payment": "ادائیگی جاری", "Completed": "مکمل", "Closed": "بند", "Partially Signed": "جزوی دستخط شدہ", "Disputed": "متنازعہ",
+	"Invoice": "واجب الادا رقم", "Debit note": "کمی (ڈیبٹ نوٹ)", "Payment": "ادائیگی", "Plot adjustment": "پلاٹ کی صورت میں ادائیگی",
 	# payment plans
 	"3 Years Monthly": "3 سال ماہانہ", "2 Years Monthly": "2 سال ماہانہ", "3 Years Quarterly": "3 سال سہ ماہی", "2 Years Quarterly": "2 سال سہ ماہی",
 }

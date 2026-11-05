@@ -1,0 +1,37 @@
+<style>
+.re-doc{font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#1f2937;line-height:1.5}
+.re-doc h2{font-size:17px;text-align:center;letter-spacing:.6px;margin:6px 0 2px;text-transform:uppercase}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:32%}
+.re-doc .grid th{width:auto}
+.re-doc .r{text-align:right}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:right;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc .grid th{background:#f0fdfa}
+.re-doc .grid td,.re-doc .grid th{font-size:11px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:11px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:13px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set deal = frappe.get_doc("RE Land Deal", doc.deal) -%}{%- set o = frappe.get_doc("RE Land Owner", doc.land_owner) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>Plot Adjustment Memo</h2><div class="sub">{{ doc.name }} · {{ frappe.utils.formatdate(doc.posting_date, "dd MMM yyyy") }} · {{ doc.workflow_state }}</div>
+<p>The plots below are given to <b>{{ o.display_name }}</b> (CNIC {{ o.cnic or "" }}), seller {{ doc.ser }} under land deal <b>{{ deal.name }}</b>, instead of cash. Their value is adjusted against the amount payable to the seller for their land; no cash changes hands.</p>
+<table class="grid"><tr><th>Plot</th><th>Block</th><th>Size</th><th class="r">List price</th><th class="r">Agreed value</th><th>Booking</th></tr>
+{%- for p in doc.plots %}<tr><td>{{ p.plot }}</td><td>{{ p.block or "" }}</td><td>{{ p.plot_size or "" }}</td><td class="r">{{ frappe.utils.fmt_money(p.list_price, currency="PKR", precision=0) }}</td><td class="r">{{ frappe.utils.fmt_money(p.agreed_value, currency="PKR", precision=0) }}</td><td>{{ p.booking or "" }}</td></tr>{% endfor %}
+<tr><th colspan="4">Total value of plots</th><th class="r">{{ frappe.utils.fmt_money(doc.total_value, currency="PKR", precision=0) }}</th><th></th></tr></table>
+<table><tr><th>Seller's balance before</th><td>{{ frappe.utils.fmt_money(doc.line_balance, currency="PKR", precision=0) }}</td></tr><tr><th>Adjusted against land</th><td><b>{{ frappe.utils.fmt_money(doc.applied_amount, currency="PKR", precision=0) }}</b></td></tr>
+<tr><th>Still payable to the seller</th><td>{{ frappe.utils.fmt_money(doc.remaining_payable, currency="PKR", precision=0) }}</td></tr>
+{% if doc.excess_receivable %}<tr><th>Receivable from the seller</th><td>{{ frappe.utils.fmt_money(doc.excess_receivable, currency="PKR", precision=0) }} on the plan "{{ doc.payment_plan }}"</td></tr>{% endif %}
+<tr><th>Charges</th><td>Development, possession and society charges {{ "apply as for any buyer" if doc.charges_apply else "are waived for these plots" }}; price {{ "fixed at the deal rate" if doc.price_fixed else "as per the agreed value" }}.</td></tr></table>
+<table class="sign"><tr><td>{{ o.display_name }}<br><span class="muted">Seller / allottee</span></td><td class="gap"></td><td>For {{ deal.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}<br><span class="muted">Approved by</span></td></tr></table></div>

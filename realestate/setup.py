@@ -172,6 +172,9 @@ def setup():
 	from realestate import documents
 
 	documents.setup()
+	from realestate import land
+
+	land.setup()  # Module 0: Land Owners supplier group, land deal approval workflow
 	from realestate import commissions
 
 	commissions.setup()  # party-wise commission payable, payment voucher print format

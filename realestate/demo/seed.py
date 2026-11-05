@@ -207,6 +207,9 @@ def _run(reset_first):
 	print("phase B (transfers, cancellations, merges, surcharges, commissions, recovery) done")
 	portal_users()
 	frappe.db.commit()
+	from realestate.demo import land as land_demo
+
+	land_demo.run()  # Module 0: khasras, owners, land deals, seller payments, cases
 	settings.reload()
 	settings.send_booking_confirmation = 1
 	settings.save(ignore_permissions=True)
@@ -974,6 +977,10 @@ def wipe_accounting(projects):
 def wipe():
 	"""Delete the demo project and everything generated with it."""
 	projects = frappe.get_all("RE Project", {"is_demo": 1}, pluck="name")
+	if frappe.db.exists("RE Land Parcel", {"is_demo": 1}):
+		from realestate.demo import land as land_demo
+
+		land_demo.wipe(guard=False)
 	wipe_accounting(projects)
 	plots = frappe.get_all("RE Plot", {"project": ("in", projects or [""])}, pluck="name")
 	customers = frappe.get_all("Customer", {"re_demo": 1}, pluck="name")

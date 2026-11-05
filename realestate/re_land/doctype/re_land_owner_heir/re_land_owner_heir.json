@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "heir_name",
+  "relation",
+  "cnic",
+  "share_pct",
+  "land_owner"
+ ],
+ "fields": [
+  {
+   "fieldname": "heir_name",
+   "fieldtype": "Data",
+   "label": "Heir",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "relation",
+   "fieldtype": "Data",
+   "label": "Relation",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cnic",
+   "fieldtype": "Data",
+   "label": "CNIC",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "share_pct",
+   "fieldtype": "Percent",
+   "label": "Share %",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "land_owner",
+   "fieldtype": "Link",
+   "label": "Land Owner record",
+   "options": "RE Land Owner"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-05 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Owner Heir",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": []
+}

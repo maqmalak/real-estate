@@ -1,7 +1,7 @@
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import maplibregl, { type GeoJSONSource, type Map as MLMap, type MapLayerMouseEvent, type StyleSpecification } from "maplibre-gl";
 import { useEffect, useMemo, useRef } from "react";
-import { PAY_COLORS, STATUS_COLORS, type ColorBy } from "@/re/lib/plots";
+import { PAY_COLORS, STATUS_COLORS, type ColorBy, LAND_OWNER_COLOR } from "@/re/lib/plots";
 import type { MapData, MapTask } from "@/re/lib/types";
 
 export type BaseStyle = "default" | "streets" | "terrain" | "satellite";
@@ -19,7 +19,10 @@ export const LAYER_GROUPS: { key: string; label: string; color: string }[] = [
   { key: "Electricity Line", label: "Electricity (WAPDA)", color: "#ca8a04" },
   { key: "Internet Cable", label: "Internet cable", color: "#db2777" },
   { key: "maintenance", label: "Open maintenance", color: "#ea580c" },
+  { key: "land", label: "Land acquisition (khasras)", color: "#16a34a" },
 ];
+/** Layers that start switched off. */
+export const LAYERS_OFF = new Set(["land"]);
 
 const GLYPHS = "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
 
@@ -88,7 +91,7 @@ export function SocietyMap({ data, tasks, colorBy, visible, matches, style, dark
       data.plots.map((p, i) =>
         feature(p.geojson, {
           name: p.name, short: p.name.split("-")[1] ?? p.name, status: p.status,
-          color: colorBy === "status" ? STATUS_COLORS[p.status] ?? "#9ca3af"
+          color: colorBy === "status" ? (p.land_adjustment ? LAND_OWNER_COLOR : STATUS_COLORS[p.status] ?? "#9ca3af")
             : colorBy === "block" ? blockColor[p.block] ?? "#64748b"
               : p.status === "Available" ? "#ffffff" : PAY_COLORS[p.payment_status ?? ""] ?? "#9ca3af",
           dim: !matches.has(p.name), selected: p.name === selected,
@@ -107,6 +110,7 @@ export function SocietyMap({ data, tasks, colorBy, visible, matches, style, dark
       blocks: fc(data.blocks.map((b) => feature(b.geojson, { name: b.name, color: b.color })).filter(notNull)),
       plots,
       features: fc(feats),
+      parcels: fc((data.parcels ?? []).map((p) => feature(p.geojson, { name: p.name, label: p.khasra_nos, stage: p.stage, color: p.color, area: p.area_display })).filter(notNull)),
       tasks: fc(tasks.map((t) => feature({ type: "Point", coordinates: [t.lng, t.lat] }, {
         name: t.name, subject: t.subject, priority: t.priority, status: t.status,
         color: t.priority === "Urgent" ? "#dc2626" : t.priority === "High" ? "#ea580c" : "#ca8a04",
@@ -202,6 +206,11 @@ export function SocietyMap({ data, tasks, colorBy, visible, matches, style, dark
   function addLayers(m: MLMap) {
     const s = sourcesRef.current;
     for (const [id, data] of Object.entries(s)) if (!m.getSource(id)) m.addSource(id, { type: "geojson", data });
+    m.addLayer({ id: "land-fill", type: "fill", source: "parcels", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.4 } });
+    m.addLayer({ id: "land-line", type: "line", source: "parcels", paint: { "line-color": ["get", "color"], "line-width": 2.2 } });
+    m.addLayer({ id: "land-label", type: "symbol", source: "parcels", minzoom: 15.5,
+      layout: { "text-field": ["concat", "Khasra ", ["get", "label"]], "text-size": 11, "text-font": ["Open Sans Semibold"] },
+      paint: { "text-color": "#ffffff", "text-halo-color": "rgba(15,23,42,.85)", "text-halo-width": 1.3 } });
     m.addLayer({ id: "blocks-fill", type: "fill", source: "blocks", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.12 } });
     m.addLayer({ id: "blocks-line", type: "line", source: "blocks", paint: { "line-color": ["get", "color"], "line-width": 2 } });
     m.addLayer({ id: "features-fill", type: "fill", source: "features", filter: ["==", ["geometry-type"], "Polygon"],
@@ -233,7 +242,8 @@ function applyVisibility(m: MLMap, visible: Set<string>) {
   show("blocks-line", visible.has("blocks"));
   for (const id of ["plots-fill", "plots-line", "plots-label"]) show(id, visible.has("plots"));
   show("tasks-point", visible.has("maintenance"));
-  const groups = LAYER_GROUPS.map((g) => g.key).filter((k) => !["boundary", "blocks", "plots", "maintenance"].includes(k));
+  for (const id of ["land-fill", "land-line", "land-label"]) show(id, visible.has("land"));
+  const groups = LAYER_GROUPS.map((g) => g.key).filter((k) => !["boundary", "blocks", "plots", "maintenance", "land"].includes(k));
   const on = groups.filter((g) => visible.has(g));
   // feature layers show only the categories that are switched on
   const base = (geom: string) => ["all", ["==", ["geometry-type"], geom], ["in", ["get", "group"], ["literal", on]]];

@@ -1,0 +1,39 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+.re-doc .grid td,.re-doc .grid th{font-size:13px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:13px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:16px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set settled = doc.lines | selectattr("status", "ne", "Cancelled") | list -%}
+<div class="re-doc">
+{%- for l in settled if (l.balance or 0) <= 0.5 %}{% set o = frappe.get_doc("RE Land Owner", l.land_owner) %}
+<div class="page"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>رسید حتمی تصفیہ</h2><div class="sub">سودا {{ ur_ltr(doc.name) }} · بائع {{ ur_ltr(l.ser) }} · {{ ur_date(frappe.utils.nowdate()) }}</div>
+<p>میں <b>{{ o.display_name }}</b> (شناختی کارڈ {{ ur_ltr(o.cnic) }}) اقرار کرتا / کرتی ہوں کہ میں نے ذیل میں درج اراضی میں اپنے حصے کی پوری قیمت <b>{{ doc.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}</b> سے وصول کر لی ہے اور اب مشتری یا اراضی پر میرا کوئی دعویٰ باقی نہیں۔</p>
+<table><tr><th>اراضی</th><td>خسرہ {{ ur_ltr(frappe.db.get_value("RE Land Parcel", l.parcel, "khasra_nos") if l.parcel else doc.khasras) }} · {{ ur_ltr((l.kanal or 0)|string ~ "K-" ~ ("%g"|format(l.marla or 0)) ~ "M") }}</td></tr>
+<tr><th>حصے کی قیمت</th><td>{{ ur_money(l.due_amount) }}</td></tr>{% if l.extra_amount %}<tr><th>توسیع چارجز</th><td>{{ ur_money(l.extra_amount) }}</td></tr>{% endif %}
+<tr><th>کل واجب الادا</th><td>{{ ur_money(l.net_due) }}</td></tr><tr><th>نقد / بینک ادائیگی</th><td>{{ ur_money(l.paid_amount) }}</td></tr>
+{% if l.adjusted_amount %}<tr><th>پلاٹ کی صورت میں ادائیگی</th><td>{{ ur_money(l.adjusted_amount) }}</td></tr>{% endif %}
+<tr><th>بقایا</th><td><b>کچھ نہیں</b></td></tr><tr><th>رجسٹری / انتقال</th><td>{{ ur(l.status) }}</td></tr></table>
+<table class="sign"><tr><td><span class="thumb"></span><br>{{ o.display_name }}<br><span class="muted">بائع</span></td><td class="gap"></td><td>برائے {{ doc.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}<br><span class="muted">مجاز دستخط کنندہ</span></td></tr></table></div>
+{%- else %}<p>اس سودے کا کوئی بائع ابھی مکمل طور پر ادا شدہ نہیں۔</p>{%- endfor %}</div>

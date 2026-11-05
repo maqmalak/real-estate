@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "parcel",
+  "khasra_nos",
+  "area_display"
+ ],
+ "fields": [
+  {
+   "fieldname": "parcel",
+   "fieldtype": "Link",
+   "label": "Parcel",
+   "options": "RE Land Parcel",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "khasra_nos",
+   "fieldtype": "Data",
+   "label": "Khasra",
+   "fetch_from": "parcel.khasra_nos",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "area_display",
+   "fieldtype": "Data",
+   "label": "Area",
+   "fetch_from": "parcel.area_display",
+   "read_only": 1,
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-05 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Case Parcel",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": []
+}

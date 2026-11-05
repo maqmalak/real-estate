@@ -223,10 +223,17 @@ def check_schedules():
 
 def check_receipts():
 	bad = []
+	# plots given to land owners: a "Land Deal Adjustment" receipt posts a Journal Entry (no cash) instead of a Payment Entry
+	for j in frappe.db.sql("""select p.name, p.amount, p.journal_entry, je.docstatus je_status,
+			(select sum(debit) - sum(credit) from `tabGL Entry` g where g.voucher_type = 'Journal Entry' and g.voucher_no = je.name and g.is_cancelled = 0) as diff,
+			(select sum(credit) from `tabGL Entry` g where g.voucher_type = 'Journal Entry' and g.voucher_no = je.name and g.is_cancelled = 0 and g.party_type = 'Customer') as settled
+			from `tabRE Payment` p left join `tabJournal Entry` je on je.name = p.journal_entry where p.docstatus = 1 and p.land_adjustment is not null""", as_dict=True):
+		if j.je_status != 1 or abs(flt(j.diff)) > 0.01 or abs(flt(j.settled) - flt(j.amount)) > 0.5:
+			bad.append(f"{j.name}: land adjustment Journal Entry missing, unbalanced or ≠ receipt")
 	rows = frappe.db.sql("""select p.name, p.amount, p.payment_entry, pe.docstatus as pe_status, pe.paid_amount,
 		(select sum(debit) - sum(credit) from `tabGL Entry` g where g.voucher_type = 'Payment Entry' and g.voucher_no = pe.name and g.is_cancelled = 0) as diff,
 		(select count(*) from `tabGL Entry` g where g.voucher_type = 'Payment Entry' and g.voucher_no = pe.name and g.is_cancelled = 0) as gl_rows
-		from `tabRE Payment` p left join `tabPayment Entry` pe on pe.name = p.payment_entry where p.docstatus = 1""", as_dict=True)
+		from `tabRE Payment` p left join `tabPayment Entry` pe on pe.name = p.payment_entry where p.docstatus = 1 and p.land_adjustment is null""", as_dict=True)
 	for r in rows:
 		if not r.payment_entry or r.pe_status != 1:
 			bad.append(f"{r.name}: no submitted Payment Entry")
@@ -435,8 +442,10 @@ def check_ui():
 				   ["Re-check after UI changes: Chrome device toolbar at 390 px, toggle the theme switch in the header."])
 
 
+from realestate.land_acceptance import CHECKS as LAND_CHECKS  # noqa: E402  Module 0 (land purchase)
+
 CHECKS = (check_land_use, check_geometry, check_schedules, check_receipts, check_realtime, check_scheduler, check_whatsapp,
-		  check_documents, check_roles, check_audit, check_ui)
+		  check_documents, check_roles, check_audit, check_ui, *LAND_CHECKS)
 
 
 def run_all(project=None):

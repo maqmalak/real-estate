@@ -1,4 +1,4 @@
-"""The spec's roles as ERPNext Role Profiles (§7): Admin, Accounts, Sales Manager, Sales Agent, Recovery Officer, Society Manager,
+"""The spec's roles as ERPNext Role Profiles (§7): Admin, Accounts, Land Manager, Sales Manager, Sales Agent, Recovery Officer, Society Manager,
 Customer — plus the maintenance team. A profile bundles the permission roles; giving a user a profile gives them exactly
 those roles, so access is managed in one place (desk: User → Role Profiles, or React: Setup → Users & Roles).
 
@@ -11,9 +11,11 @@ from frappe import _
 PROFILES = {
 	# profile: (roles, what it is for)
 	"RE Admin": (["System Manager", "Sales Manager", "Sales User", "Accounts Manager", "Accounts User", "Projects Manager", "Projects User",
-				  "Society Manager", "Recovery Officer", "Stock Manager", "Purchase Manager"], "Everything, including settings and users"),
+				  "Society Manager", "Recovery Officer", "Land Manager", "Stock Manager", "Purchase Manager"], "Everything, including settings and users"),
 	"RE Accounts": (["Accounts Manager", "Accounts User", "Purchase User", "Stock User"],
 					"Invoices, receipts, Payment Entries, ledgers, refunds, commissions payouts, all finance reports"),
+	"RE Land Manager": (["Land Manager", "Purchase User", "Projects User"],
+						"Land purchase: khasra parcels, sellers and shares, deals and contracts, seller payments, due diligence and court cases"),
 	"RE Sales Manager": (["Sales Manager", "Sales User", "Accounts User"],
 						 "All sales, approvals (discounts, transfers, cancellations, re-allotments, merges, waivers), insights and reports"),
 	"RE Sales Agent": (["Sales User", "Sales Agent"], "Own leads, deals, customers, bookings, receipts, visits and chats only"),
@@ -34,6 +36,7 @@ DEMO_ASSIGN = {
 DEMO_NEW = [  # roles the demo had no user for
 	("farah.qureshi@zarmeen.example", "Farah", "Qureshi", "RE Accounts", "+923009990301"),
 	("imran.haider@zarmeen.example", "Imran", "Haider", "RE Society Manager", "+923009990302"),
+	("tariq.mahmood@zarmeen.example", "Tariq", "Mahmood", "RE Land Manager", "+923009990303"),
 ]
 
 

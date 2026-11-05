@@ -24,6 +24,20 @@ REPORTS = {
 	"Maintenance Tasks": ("Society", ["from_date", "to_date", "group_by"]),
 	"Development Budget vs Actual": ("Development & Costs", ["from_date", "to_date"]),
 	"Development Cost and Profitability": ("Development & Costs", []),
+	"Land Purchase Status": ("Land", ["from_date", "to_date", "land_for", "owners_type", "deal_status", "balance_only", "matured_unpaid"]),
+	"Land Owner Ledger": ("Land", ["land_owner", "from_date", "to_date"]),
+	"Land Payables Aging": ("Land", ["land_for"]),
+	"Seller Payments Due": ("Land", ["window"]),
+	"Seller Payment Schedule": ("Land", ["from_date", "to_date", "land_for", "deal_status"]),
+	"Payments by Seller": ("Land", ["from_date", "to_date"]),
+	"Land Owners Trial Balance": ("Land", ["from_date", "to_date"]),
+	"Plots Adjusted Against Land": ("Land", ["block"]),
+	"Land Cost Cash vs Plots": ("Land", ["from_date", "to_date", "land_for"]),
+	"Land Acquisition by Stage": ("Land", []),
+	"Land Cost per Kanal": ("Land", []),
+	"Transfer Cost Summary": ("Land", ["from_date", "to_date"]),
+	"Pending Registry and Mutation": ("Land", []),
+	"Litigation Register": ("Land", ["open_only"]),
 	"Lead Conversion": ("CRM", []),
 	"Leads by Source": ("CRM", []),
 	"Agent Activity": ("CRM", []),
@@ -46,6 +60,20 @@ DESCRIPTIONS = {
 	"Maintenance Tasks": "Maintenance and complaint tasks by type, block, assignee or source",
 	"Development Budget vs Actual": "Each development head — budget, spent, committed and payable",
 	"Development Cost and Profitability": "Development cost against plot sales — margin by head",
+	"Land Purchase Status": "The deal sheet: each deal's owner lines, deal subtotals and grand totals (client layout)",
+	"Land Owner Ledger": "One owner's statement from Creditors - Land Owners, or every owner summarised",
+	"Land Payables Aging": "What is owed to sellers by days past the mature / extended date",
+	"Seller Payments Due": "Seller payments overdue or due this week, month or quarter",
+	"Seller Payment Schedule": "Every seller's schedule with paid, pending, status and days late",
+	"Payments by Seller": "Payments, tax withheld, bank vs cash and refunds per land owner",
+	"Land Owners Trial Balance": "Opening, invoiced, paid, adjusted and closing per owner, checked against the account",
+	"Plots Adjusted Against Land": "Plots given to land owners instead of cash, with values and bookings",
+	"Land Cost Cash vs Plots": "Per deal: land cost settled in cash, settled with plots and still payable",
+	"Land Acquisition by Stage": "Khasras and Kanal at each acquisition stage against the target",
+	"Land Cost per Kanal": "Cost per Kanal and per marla by khasra",
+	"Transfer Cost Summary": "Stamp duty, registration, mutation, CVT, 236K and fees per deal (estimated from the rate table)",
+	"Pending Registry and Mutation": "Owners not yet registered, with the registry deadline and readiness",
+	"Litigation Register": "Court cases over khasras with the area affected and the next hearing",
 	"Lead Conversion": "Leads through the pipeline to deals and bookings",
 	"Leads by Source": "Where leads come from and how they convert",
 	"Agent Activity": "Calls, visits, chats and bookings per agent",
@@ -58,9 +86,15 @@ def _filters(report, raw):
 	given = json.loads(raw) if isinstance(raw, str) else (raw or {})
 	accepted = REPORTS[report][1]
 	f = {k: v for k, v in given.items() if k in accepted and v not in (None, "")}
-	if "from_date" in accepted:
+	if "from_date" in accepted and REPORTS[report][0] != "Land":  # land deals go back years: no default start date
 		f.setdefault("from_date", add_months(nowdate(), -12))
+	if "from_date" in accepted:
 		f.setdefault("to_date", nowdate())
+	if "window" in accepted:
+		f.setdefault("window", "Month")
+	for flag in ("balance_only", "matured_unpaid", "open_only"):
+		if flag in f:
+			f[flag] = 1 if str(f[flag]).lower() in ("1", "true", "yes", "on") else 0
 	if "min_months" in accepted:
 		f.setdefault("min_months", 1)
 	if "group_by" in accepted:
@@ -120,7 +154,9 @@ def preview(report: str, filters: str | None = None) -> dict:
 			   for x in (extras.get("summary") or []) if isinstance(x, dict)]
 	return {"columns": columns, "rows": rows[:MAX_PREVIEW], "total": len(rows), "filters": f, "summary": summary,
 			"chart": extras.get("chart"), "message": cstr(extras.get("message") or "") or None,
-			"blocks": frappe.get_all("RE Block", pluck="name", order_by="name") if "block" in REPORTS[report][1] else []}
+			"blocks": frappe.get_all("RE Block", pluck="name", order_by="name") if "block" in REPORTS[report][1] else [],
+			"owners": frappe.get_all("RE Land Owner", fields=["name as value", "display_name as label"], order_by="display_name", limit=0)
+			if "land_owner" in REPORTS[report][1] else []}
 
 
 def _cell(value, fieldtype, for_pdf=False):
@@ -149,6 +185,8 @@ def download(report: str, file_format: str = "xlsx", filters: str | None = None)
 		data = [[c["label"] for c in columns]] + [[_cell(r.get(c["fieldname"]), c["fieldtype"]) for c in columns] for r in rows]
 		frappe.local.response.filecontent = make_xlsx(data, report[:31]).getvalue()
 		frappe.local.response.filename = f"{report} {stamp}.xlsx"
+	elif file_format == "pdf" and report in CUSTOM_PDF:
+		CUSTOM_PDF[report](report, f, columns, rows, stamp)
 	elif file_format == "pdf":
 		from frappe.utils.pdf import get_pdf
 
@@ -165,3 +203,24 @@ def download(report: str, file_format: str = "xlsx", filters: str | None = None)
 	else:
 		frappe.throw(_("Format must be xlsx or pdf"))
 	frappe.local.response.type = "download"
+
+
+def _land_purchase_status_pdf(report, f, columns, rows, stamp):
+	"""The client's Land Purchase Status layout: logo and company, title, date range, report no, user, print date,
+	page x of y; legal size, landscape; a section per deal with its owner lines, subtotals and the grand total."""
+	from frappe.utils.pdf import get_pdf
+
+	company = frappe.db.get_single_value("RE Settings", "company") or frappe.db.get_single_value("Global Defaults", "default_company")
+	logo = frappe.db.get_value("Company", company, "company_logo") or frappe.db.get_single_value("Website Settings", "app_logo")
+	html = frappe.render_template("realestate/templates/docs/land_purchase_status.html", {
+		"company": company, "logo": frappe.utils.get_url(logo) if logo else None, "filters": f, "rows": rows,
+		"report_no": f"LPS-{frappe.utils.now_datetime().strftime('%Y%m%d-%H%M')}", "user": frappe.session.user,
+		"printed": frappe.utils.now_datetime(), "fmt": lambda v: fmt_money(flt(v), precision=0) if v not in (None, "") else "",
+		"num": lambda v: (f"{flt(v):,.2f}".rstrip("0").rstrip(".") if flt(v) else "") if v not in (None, "") else "",
+	})
+	frappe.local.response.filecontent = get_pdf(html, {"page-size": "Legal", "orientation": "Landscape", "margin-top": "34mm", "margin-bottom": "14mm",
+													   "margin-left": "8mm", "margin-right": "8mm"})
+	frappe.local.response.filename = f"{report} {stamp}.pdf"
+
+
+CUSTOM_PDF = {"Land Purchase Status": _land_purchase_status_pdf}

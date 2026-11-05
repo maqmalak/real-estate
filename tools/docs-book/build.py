@@ -39,6 +39,11 @@ ABOUT = {
 	"Customer Account Statement": ("All bookings, receipts and balances of an owner", "Any customer"),
 	"Transfer Application": ("Seller and buyer details and the dues position", "Transfer request"),
 	"Transfer Letter": ("Confirms the plot now belongs to the buyer", "Approved transfer"),
+	"Land Purchase Agreement": ("Iqrar nama: every seller with CNIC, khasra, share, price, schedule and signature blocks", "Any land deal"),
+	"Land Payment Receipt": ("Token / payment / refund receipt with tax withheld, signed by the seller", "Approved seller payment"),
+	"Land Final Settlement": ("One page per fully paid seller: no further claim", "At least one seller fully paid"),
+	"Plot Adjustment Memo": ("Plots given to a land owner instead of cash, with values and balances", "Approved plot adjustment"),
+	"Land Owner Statement": ("A land owner's deals and ledger with running balance", "Any land owner"),
 }
 
 
@@ -98,6 +103,13 @@ code{font:500 8.3pt ui-monospace,Menlo,monospace;color:var(--deep)}
 """
 
 
+PER_CONTENTS_PAGE = 16
+
+
+def contents_pages(rows) -> int:
+	return -(-len({r["type"] for r in rows}) // PER_CONTENTS_PAGE)
+
+
 def front_html(rows, starts, total, generated):
 	types = []
 	for r in rows:
@@ -134,10 +146,13 @@ def front_html(rows, starts, total, generated):
 		body.append(f"""<tr><td class="n">{t['no']:02d}</td><td><b>{esc(t['type'])}</b><small>{esc(purpose)}</small>{tag}</td>
 		<td>{esc(t['doctype'])}<small>{esc(when)}</small></td><td><code>{esc(en['ref'])}</code></td>
 		<td class="p">{page('en')}</td><td class="p">{page('ur')}</td></tr>""")
-	contents = f"""<section class="page"><div class="eyebrow">Contents</div><h2 style="margin-bottom:2mm">Sixteen documents, two languages</h2>
-	<p class="lead" style="margin-bottom:4mm">English first, then Urdu. Page numbers are PDF pages; the bookmarks list every document too.</p>
-	<table><thead><tr><th>No.</th><th>Document</th><th>Generated from · allowed when</th><th>Specimen record</th><th>English</th><th>اردو</th></tr></thead>
-	<tbody>{''.join(body)}</tbody></table>{foot(3)}</section>"""
+	head = '<table><thead><tr><th>No.</th><th>Document</th><th>Generated from · allowed when</th><th>Specimen record</th><th>English</th><th>اردو</th></tr></thead>'
+	pages = [body[i:i + PER_CONTENTS_PAGE] for i in range(0, len(body), PER_CONTENTS_PAGE)]
+	contents = "".join(
+		f"""<section class="page"><div class="eyebrow">Contents{f' (continued)' if n else ''}</div>"""
+		+ (f"""<h2 style="margin-bottom:2mm">{len(types)} documents, two languages</h2>
+	<p class="lead" style="margin-bottom:4mm">English first, then Urdu. Page numbers are PDF pages; the bookmarks list every document too.</p>""" if not n else "")
+		+ f"""{head}<tbody>{''.join(chunk)}</tbody></table>{foot(3 + n)}</section>""" for n, chunk in enumerate(pages))
 	return f'<!doctype html><html lang="en"><head><meta charset="utf-8"><style>{CSS}</style></head><body>{cover}{about}{contents}</body></html>'
 
 
@@ -147,7 +162,7 @@ def build():
 	if failed:
 		sys.exit(f"missing renders: {[(r['type'], r['language'], r.get('error')) for r in failed]}")
 	generated = datetime.date.fromtimestamp(os.path.getmtime(os.path.join(WORK, "index.json"))).strftime("%d %B %Y")
-	front_pages = 3
+	front_pages = 2 + contents_pages(rows)
 	starts, page = {}, front_pages + 1
 	for r in rows:
 		starts[(r["no"], r["language"])] = page
@@ -164,7 +179,7 @@ def build():
 	w.append(front)
 	w.add_outline_item("Cover", 0)
 	w.add_outline_item("How documents are generated", 1)
-	w.add_outline_item("Contents", 2)
+	w.add_outline_item("Contents", 2)  # continued on the next page when there are more than PER_CONTENTS_PAGE documents
 	parent = None
 	for r in rows:
 		w.append(r["file"])

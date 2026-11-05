@@ -34,6 +34,10 @@ class REPayment(Document):
 			if flt(self.amount) > flt(bill.outstanding_amount) + 0.5:
 				frappe.throw(_("Amount is more than the bill's outstanding {0}").format(money(bill.outstanding_amount)))
 			self.unallocated_amount = 0
+		from realestate.land_accounts import ADJUSTMENT_MODE
+
+		if (self.mode_of_payment == ADJUSTMENT_MODE) != bool(self.land_adjustment):
+			frappe.throw(_("\"{0}\" receipts are made only by a plot adjustment against a land deal").format(ADJUSTMENT_MODE))
 		self.received_by = self.received_by or frappe.session.user
 		self.fmt_amount = money(self.amount)
 
@@ -54,7 +58,12 @@ class REPayment(Document):
 		from realestate.erp import payment_entry
 
 		self._apply(1)
-		self.db_set("payment_entry", payment_entry(self))
+		if self.land_adjustment:  # plots given to a land owner: net the plot invoice against their land payable, no cash
+			from realestate.land_accounts import adjustment_journal
+
+			self.db_set("journal_entry", adjustment_journal(self, frappe.get_doc("RE Plot Adjustment", self.land_adjustment)))
+		else:
+			self.db_set("payment_entry", payment_entry(self))
 		if self.booking:
 			from realestate.commissions import refresh_for_booking
 
@@ -69,6 +78,7 @@ class REPayment(Document):
 		from realestate.erp import cancel
 
 		cancel("Payment Entry", self.payment_entry)
+		cancel("Journal Entry", self.get("journal_entry"))
 		self._apply(-1)
 		if self.booking:
 			from realestate.commissions import refresh_for_booking

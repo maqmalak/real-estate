@@ -65,7 +65,7 @@ def dashboard(granularity: str = "week", kind: str = "installments") -> dict:
 
 	return {"kpis": kpis, "collection": collection_series(granularity, kind), "visits": visit_pipeline(),
 			"schedule": todays_schedule(), "urgent": urgent_queue(), "analytics": dashboard_extra(),
-			"expiring": expiring_documents(), "approvals": pending_approvals(), "scope": scope.info()}
+			"expiring": expiring_documents(), "approvals": pending_approvals(), "land": land_urgent(), "scope": scope.info()}
 
 
 def _buckets(granularity):
@@ -144,6 +144,24 @@ def todays_schedule():
 	for t in tasks:
 		t.mobile_no = frappe.db.get_value(t.reference_doctype, t.reference_docname, "mobile_no") if t.reference_doctype else None
 	return {"visits": visits, "follow_ups": tasks}
+
+
+def land_urgent():
+	"""Seller payments overdue or due this week, court hearings this week and land approvals waiting (land roles only)."""
+	if not set(frappe.get_roles()) & {"System Manager", "Land Manager", "Accounts Manager", "Accounts User"}:
+		return None
+	from frappe.utils import add_days
+
+	week = add_days(nowdate(), 7)
+	due = frappe.db.sql("""select d.name deal, s.ser, l.owner_name, s.label, s.due_date, s.amount - s.paid pending from `tabRE Land Deal Schedule` s
+		join `tabRE Land Deal` d on d.name=s.parent left join `tabRE Land Deal Line` l on l.parent=d.name and l.ser=s.ser
+		where d.status not in ('Cancelled','Closed','Disputed') and s.status not in ('Paid','Refund') and s.due_date <= %s and s.amount - s.paid > 0.5
+		order by s.due_date limit 12""", week, as_dict=True)
+	hearings = frappe.get_all("RE Land Case", {"status": ("in", ["Pending", "Under Hearing", "Stay Order"]), "next_hearing": ("between", [nowdate(), week])},
+							  ["name", "case_title", "court", "next_hearing"], order_by="next_hearing")
+	approvals = [{"doctype": dt, "name": n.name, "label": n.get(label)} for dt, label in (("RE Land Deal", "description"), ("RE Land Payment", "owner_name"),
+				 ("RE Plot Adjustment", "owner_name")) for n in frappe.get_all(dt, {"workflow_state": "Pending Approval"}, ["name", label], limit=10)]
+	return {"payments": due, "hearings": hearings, "approvals": approvals, "count": len(due) + len(hearings) + len(approvals)}
 
 
 def expiring_documents():

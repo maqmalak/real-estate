@@ -1,0 +1,58 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+.re-doc .grid td,.re-doc .grid th{font-size:13px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:13px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:16px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set active = doc.lines | selectattr("status", "ne", "Cancelled") | list -%}
+{%- set parcels = [] -%}{%- for l in active %}{% if l.parcel and l.parcel not in parcels %}{% set _ = parcels.append(l.parcel) %}{% endif %}{% endfor -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>اقرار نامہ بیع</h2><div class="sub">سودا {{ ur_ltr(doc.name) }} · {{ ur_date(doc.deal_date) }}</div>
+<p>یہ اقرار نامہ آج بتاریخ {{ ur_date(doc.deal_date) }} بمقام {{ doc.jurisdiction or "لاہور" }} ذیل میں درج مالکان (<b>بائعان</b>) اور <b>{{ doc.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}</b>{% if doc.buyer_signatory %} بذریعہ {{ doc.buyer_signatory }}{% endif %} (<b>مشتری</b>) کے درمیان ہاؤسنگ اسکیم کے لیے ذیل میں درج اراضی کی فروخت کے لیے طے پایا۔</p>
+<h3>1۔ اراضی</h3>
+<table class="grid"><tr><th>موضع</th><th>خسرہ</th><th>کھیوٹ</th><th>کھتونی</th><th>مربع</th><th>کِلہ</th><th>رقبہ (فرد)</th></tr>
+{%- for p in parcels %}{% set pc = frappe.get_doc("RE Land Parcel", p) %}<tr><td>{{ pc.mauza }}، تحصیل {{ pc.tehsil }}، {{ pc.district }}</td><td>{{ ur_ltr(pc.khasra_nos) }}</td><td>{{ ur_ltr(pc.khewat_no) }}</td><td>{{ ur_ltr(pc.khatooni_no) }}</td><td>{{ ur_ltr(pc.square_no) }}</td><td>{{ ur_ltr(pc.killa_nos) }}</td><td>{{ ur_ltr(pc.area_display) }}</td></tr>{% endfor %}
+</table>
+<h3>2۔ بائعان، حصص اور قیمت</h3>
+<table class="grid"><tr><th>نمبر</th><th>بائع</th><th>شناختی کارڈ</th><th>خسرہ</th><th>حصہ</th><th>ریٹ</th><th>رقم</th><th>دستخط بذریعہ</th></tr>
+{%- for l in active %}{% set o = frappe.get_doc("RE Land Owner", l.land_owner) %}<tr><td>{{ ur_ltr(l.ser) }}</td><td>{{ l.owner_name }}{% if l.group_members %}<br><span class="muted">{{ l.group_members.splitlines() | join("، ") }}</span>{% endif %}</td><td>{{ ur_ltr(o.cnic) }}</td>
+<td>{{ ur_ltr(frappe.db.get_value("RE Land Parcel", l.parcel, "khasra_nos") if l.parcel else "") }}</td><td>{{ ur_ltr((l.kanal or 0)|string ~ "K-" ~ ("%g"|format(l.marla or 0)) ~ "M") }}<br><span class="muted">{{ ur_ltr("%g"|format(l.total_area)) }} {{ ur(l.unit) }}</span></td>
+<td>{{ ur_money(l.rate) }} فی {{ ur(l.unit) }}</td><td>{{ ur_money(l.due_amount) }}</td><td>{{ frappe.db.get_value("RE Land Owner", l.attorney, "display_name") if l.attorney else "خود" }}</td></tr>{% endfor %}
+<tr><th colspan="4">کل</th><th>{{ ur_ltr(doc.deal_area_display) }}</th><th></th><th>{{ ur_money(doc.due_amount) }}</th><th></th></tr></table>
+<p>کل قیمت: <b>{{ ur_money(doc.due_amount) }}</b></p>
+<h3>3۔ ادائیگی</h3>
+<p>{% if doc.token_amount %}بیعانہ {{ ur_money(doc.token_amount) }}{% endif %}{% if doc.agreement_amount %}، اقرار نامہ کی رقم {{ ur_money(doc.agreement_amount) }}{% endif %}۔ ہر بائع کو اس کے حصے کے تناسب سے کراس چیک، پے آرڈر یا بینک ٹرانسفر کے ذریعے اس کے اپنے اکاؤنٹ میں ادائیگی کی جائے گی۔</p>
+<table class="grid"><tr><th>بائع</th><th>ادائیگی</th><th>تاریخ</th><th>رقم</th></tr>
+{%- for s in doc.schedule if s.status != "Refund" %}{% set l = (doc.lines | selectattr("ser", "equalto", s.ser) | first) %}<tr><td>{{ ur_ltr(s.ser) }}۔ {{ l.owner_name if l else "" }}</td><td>{{ ur(s.label) }}</td><td>{{ ur_date(s.due_date) }}</td><td>{{ ur_money(s.amount) }}</td></tr>{% endfor %}
+</table>
+<h3>4۔ قبضہ، رجسٹری اور دیگر شرائط</h3>
+<ol><li>قبضہ {{ ur_date(doc.possession_date) if doc.possession_date else "طے شدہ تاریخ" }} تک دیا جائے گا اور رجسٹری / انتقال {{ ur_date(doc.registry_deadline) if doc.registry_deadline else "طے شدہ تاریخ" }} تک مکمل کیا جائے گا۔</li>
+<li>بائعان اقرار کرتے ہیں کہ اراضی ہر قسم کے رہن، بار اور تنازعہ سے پاک ہے اور وہ فرد، جمعبندی اور انتقالات کی نقول مہیا کریں گے۔</li>
+<li>جرمانہ: {{ doc.penalty_clause or "فریقین کی باہمی رضامندی کے مطابق" }}</li><li>منسوخی: {{ doc.cancellation_clause or "فریقین کی باہمی رضامندی کے مطابق" }}</li>
+<li>کسی بھی تنازعہ کی صورت میں {{ doc.jurisdiction or "لاہور" }} کی عدالتوں کو سماعت کا اختیار ہوگا۔</li></ol>
+<p class="muted">اسٹامپ پیپر مالیت {{ ur_money(doc.stamp_paper_value or 0) }}۔ ہر بائع ذیل میں دستخط اور نشانِ انگوٹھا ثبت کرے۔</p>
+{%- for l in active %}<div class="sig"><div class="thumb"></div><div class="line"></div>{{ l.owner_name }}<br><span class="muted">بائع {{ ur_ltr(l.ser) }}</span></div>{% endfor %}
+<div class="sig"><div class="thumb" style="border:0"></div><div class="line"></div>{{ doc.buyer_signatory or "مجاز دستخط کنندہ" }}<br><span class="muted">برائے مشتری</span></div>
+<div class="sig"><div class="thumb" style="border:0"></div><div class="line"></div>{{ doc.witness_1_name or "گواہ 1" }}<br><span class="muted">گواہ 1 · {{ ur_ltr(doc.witness_1_cnic) }}</span></div>
+<div class="sig"><div class="thumb" style="border:0"></div><div class="line"></div>{{ doc.witness_2_name or "گواہ 2" }}<br><span class="muted">گواہ 2 · {{ ur_ltr(doc.witness_2_cnic) }}</span></div>
+</div>

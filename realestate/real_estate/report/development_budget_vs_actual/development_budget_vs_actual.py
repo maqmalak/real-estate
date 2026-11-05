@@ -9,11 +9,14 @@ def execute(filters=None):
 	filters = filters or {}
 	rng = [filters.get("from_date") or "2000-01-01", filters.get("to_date") or "2100-01-01"]
 	projects = frappe.get_all("Project", {"re_cost_head": ("is", "set")}, ["name", "re_cost_head", "re_expense_account"], order_by="name")
+	# land being bought (Module 0) sits in Land Under Acquisition until capitalised to the land cost head; count both so the
+	# Land & Legal head shows land price, extensions and transfer costs from the first purchase invoice
+	land_cwip = frappe.db.get_single_value("RE Settings", "land_cwip_account") or ""
 	data = []
 	for p in projects:
 		budget = flt(frappe.db.sql("select sum(budget_amount) from `tabBudget` where project=%s and docstatus=1", p.name)[0][0])
 		actual = flt(frappe.db.sql("""select sum(debit - credit) from `tabGL Entry` where project=%s and is_cancelled=0 and posting_date between %s and %s
-			and account in (select name from `tabAccount` where root_type='Expense')""", (p.name, *rng))[0][0])
+			and (account in (select name from `tabAccount` where root_type='Expense') or account=%s)""", (p.name, *rng, land_cwip))[0][0])
 		committed = flt(frappe.db.sql("""select sum(base_net_total * (100 - per_billed) / 100) from `tabPurchase Order`
 			where project=%s and docstatus=1 and status not in ('Closed', 'Completed')""", p.name)[0][0])
 		billed, outstanding = frappe.db.sql("""select sum(base_grand_total), sum(outstanding_amount) from `tabPurchase Invoice`

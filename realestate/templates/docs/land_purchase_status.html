@@ -1,0 +1,81 @@
+<style>
+body{font-family:Helvetica,Arial,sans-serif;color:#111827}
+.lps{font-size:7px;line-height:1.25}
+.lps table{width:100%;border-collapse:collapse;table-layout:auto}
+.lps th{background:#0f766e;color:#fff;font-weight:600;padding:2px 3px;border:1px solid #0f766e;text-align:left;vertical-align:bottom}
+.lps td{border:1px solid #d1d5db;padding:1.5px 3px;vertical-align:top}
+.lps td.n{text-align:right;white-space:nowrap}
+.lps tr.deal td{background:#ecfdf5;font-weight:600;border-top:2px solid #0f766e}
+.lps tr.sub td{background:#f8fafc;font-weight:700}
+.lps tr.total td{background:#0f766e;color:#fff;font-weight:700;font-size:7.6px}
+.lps tr.over td.st{color:#b91c1c;font-weight:700}
+.lps .ind{padding-left:14px}
+.lps .muted{color:#6b7280}
+.lps tr{page-break-inside:avoid}
+.lps th,.lps td{font-size:7px !important;line-height:1.25 !important}
+.lps tr.total td{font-size:7.6px !important}
+.lps th.desc{width:17%}
+.lps td.date{white-space:nowrap}
+.filters{font-size:8.6px;color:#374151;margin:0 0 6px}
+</style>
+<div id="header-html">
+	<table style="width:100%;font-family:Helvetica,Arial,sans-serif;border-bottom:2px solid #0f766e;padding-bottom:4px">
+		<tr>
+			<td style="width:70px;vertical-align:middle">{% if logo %}<img src="{{ logo }}" style="max-height:46px;max-width:68px">{% endif %}</td>
+			<td style="vertical-align:middle">
+				<div style="font-size:15px;font-weight:700;color:#0f766e">{{ company }}</div>
+				<div style="font-size:12px;font-weight:700;letter-spacing:.5px">LAND PURCHASE STATUS REPORT</div>
+				<div style="font-size:9px;color:#374151">From {{ frappe.utils.formatdate(filters.from_date) if filters.from_date else "the first deal" }} To {{ frappe.utils.formatdate(filters.to_date) if filters.to_date else frappe.utils.formatdate(frappe.utils.nowdate()) }}</div>
+			</td>
+			<td style="vertical-align:middle;text-align:right;font-size:9px;line-height:1.5">
+				Report No: <b>{{ report_no }}</b><br>User ID: <b>{{ user }}</b><br>Print date: <b>{{ frappe.utils.format_datetime(printed, "dd-MM-yyyy HH:mm") }}</b><br>
+				Page <span class="page"></span> of <span class="topage"></span>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="footer-html">
+	<div style="font-family:Helvetica,Arial,sans-serif;font-size:8px;color:#6b7280;border-top:1px solid #d1d5db;padding-top:2px">
+		{{ company }} · Land Purchase Status · {{ report_no }} <span style="float:right">Page <span class="page"></span> of <span class="topage"></span></span>
+	</div>
+</div>
+<div class="lps">
+	{%- set chosen = [] -%}
+	{%- if filters.land_for %}{% set _ = chosen.append("Land for: " ~ filters.land_for) %}{% endif -%}
+	{%- if filters.owners_type %}{% set _ = chosen.append("Owners: " ~ filters.owners_type) %}{% endif -%}
+	{%- if filters.deal_status %}{% set _ = chosen.append("Status: " ~ filters.deal_status) %}{% endif -%}
+	{%- if filters.balance_only %}{% set _ = chosen.append("Owners with balance only") %}{% endif -%}
+	{%- if filters.matured_unpaid %}{% set _ = chosen.append("Matured but unpaid") %}{% endif -%}
+	{% if chosen %}<p class="filters">Filters: {{ chosen | join(" · ") }}</p>{% endif %}
+	<table>
+		<thead>
+			<tr>
+				<th>Sr</th><th>Deal No</th><th>Deal Date</th><th class="desc">Deal Desc / Owner (Ser#)</th><th>Land For</th><th>Owners</th><th>Khewat</th><th>Khatooni</th>
+				<th>Square</th><th>Killa</th><th>Kanals</th><th>Marlas</th><th>Sqft</th><th>Total Area</th><th>Unit</th><th>Rate</th><th>Due Amount</th>
+				<th>Mature Date</th><th>Extra Amt</th><th>Date Ext</th><th>Net Due Amount</th><th>Paid Amount</th><th>Adjusted (Plots)</th><th>Balance Amount</th><th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+		{%- for r in rows %}
+			{%- if r.row_type == "deal" %}
+			<tr class="deal">
+				<td class="n">{{ r.sr }}</td><td>{{ r.deal }}</td><td class="date">{{ frappe.utils.formatdate(r.deal_date) }}</td><td>{{ r.description }}</td><td>{{ r.land_for or "" }}</td>
+				<td>{{ r.owners or "" }}</td><td>{{ r.khewat or "" }}</td><td>{{ r.khatooni or "" }}</td><td>{{ r.square or "" }}</td><td>{{ r.killa or "" }}</td>
+				<td colspan="14"></td><td>{{ r.status }}</td>
+			</tr>
+			{%- else %}
+			<tr class="{{ 'sub' if r.row_type == 'subtotal' else 'total' if r.row_type == 'total' else ('over' if r.status == 'Overdue' else '') }}">
+				<td></td><td></td><td></td>
+				<td class="{{ 'ind' if r.row_type == 'line' else '' }}" colspan="7">{{ r.description }}</td>
+				<td class="n">{{ num(r.kanal) }}</td><td class="n">{{ num(r.marla) }}</td><td class="n">{{ num(r.sqft) }}</td><td class="n">{{ r.total_area or "" }}</td>
+				<td>{{ r.unit or "" }}</td><td class="n">{{ fmt(r.rate) if r.rate else "" }}</td><td class="n">{{ fmt(r.due) if r.due else "" }}</td>
+				<td class="date">{{ frappe.utils.formatdate(r.mature_date) if r.mature_date else "" }}</td><td class="n">{{ fmt(r.extra) if r.extra else "" }}</td>
+				<td class="date">{{ frappe.utils.formatdate(r.date_ext) if r.date_ext else "" }}</td><td class="n">{{ fmt(r.net_due) if r.net_due else "" }}</td><td class="n">{{ fmt(r.paid or 0) }}</td>
+				<td class="n">{{ fmt(r.adjusted) if r.adjusted else "" }}</td><td class="n">{{ fmt(r.balance or 0) }}</td><td class="st">{{ r.status or "" }}</td>
+			</tr>
+			{%- endif %}
+		{%- endfor %}
+		</tbody>
+	</table>
+	{% if not rows %}<p class="muted">No deals match these filters.</p>{% endif %}
+</div>

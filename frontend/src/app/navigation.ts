@@ -36,6 +36,9 @@ import {
   ArrowLeftRight,
   Percent,
   MapIcon,
+  Gavel,
+  LandPlot,
+  UserSquare2,
   Tag,
   Hash,
   Barcode,
@@ -298,6 +301,9 @@ const HOME_NAV: NavGroup[] = [...APP_GROUPS, "More"]
   }))
   .filter((g) => g.items.length > 0);
 
+/** Module 0 — land purchase (Land Manager runs it; Accounts and Projects read it). */
+const LAND_ROLES = ["Land Manager", "Accounts User", "Accounts Manager", "Projects Manager"];
+
 export const APP_NAVIGATION: Record<string, NavGroup[]> = {
   home: HOME_NAV,
   re: [
@@ -312,6 +318,18 @@ export const APP_NAVIGATION: Record<string, NavGroup[]> = {
       { label: "Insights", to: "/re/insights", icon: BarChart3, roles: ["Sales Manager", "Accounts User", "Accounts Manager"] },
       { label: "Reports", to: "/re/reports", icon: FileText, roles: ["Sales Manager", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager", "Projects User", "Projects Manager"] },
       { label: "Acceptance checks", to: "/re/acceptance", icon: ShieldCheck, roles: ["System Manager"] },
+    ] },
+    { title: "Land Acquisition", items: [
+      { label: "Land Overview", to: "/re/land", icon: Gauge, roles: LAND_ROLES },
+      { label: "Sellers & Payments", to: "/re/land/payments", icon: HandCoins, roles: LAND_ROLES },
+      { label: "Due Diligence & Cases", to: "/re/land/legal", icon: Scale, roles: LAND_ROLES },
+      { label: "Khasras (records)", to: "/re/d/re-land-parcel", icon: LandPlot, roles: LAND_ROLES },
+      { label: "Land Deals", to: "/re/d/re-land-deal", icon: ScrollText, roles: LAND_ROLES },
+      { label: "Seller Payments", to: "/re/d/re-land-payment", icon: Calculator, roles: LAND_ROLES },
+      { label: "Plot Adjustments", to: "/re/d/re-plot-adjustment", icon: ArrowRightLeft, roles: LAND_ROLES },
+      { label: "Land Owners", to: "/re/d/re-land-owner", icon: UserSquare2, roles: LAND_ROLES },
+      { label: "Court Cases", to: "/re/d/re-land-case", icon: Gavel, roles: LAND_ROLES },
+      { label: "Transfer Cost Rates", to: "/re/d/re-transfer-cost-rate", icon: Percent, roles: ["Land Manager", "Accounts Manager"] },
     ] },
     { title: "Setup", items: [
       { label: "Projects", to: "/re/d/re-project", icon: Landmark, roles: ["Sales Manager", "Projects User", "Projects Manager"] },

@@ -1,0 +1,37 @@
+<style>
+.re-doc{direction:rtl;text-align:right;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',FreeSerif,'DejaVu Sans',serif;font-size:15px;color:#1f2937;line-height:1.9}
+.re-doc h2{font-size:22px;text-align:center;margin:6px 0 2px}
+.re-doc .sub{text-align:center;color:#6b7280;margin-bottom:12px;font-size:13px}
+.re-doc table{width:100%;border-collapse:collapse;margin:8px 0}
+.re-doc th,.re-doc td{border:1px solid #d1d5db;padding:4px 8px;text-align:right;vertical-align:top}
+.re-doc th{background:#f0fdfa;width:30%;font-weight:bold}
+.re-doc .grid th{width:auto}
+.re-doc .num{text-align:left}
+.re-doc .ltr{direction:ltr;unicode-bidi:embed;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+.re-doc .muted{color:#6b7280}
+.re-doc table.sign{margin-top:48px;border:0}
+.re-doc table.sign td{border:0;border-top:1px solid #6b7280;text-align:center;padding-top:4px;width:40%}
+.re-doc table.sign td.gap{border-top:0;width:20%}
+.re-doc .qr{float:left;width:84px;height:84px}
+.re-doc .box{border:1px solid #d1d5db;padding:8px 10px;border-radius:4px;margin:8px 0}
+.re-doc .red{color:#b91c1c;font-weight:bold}
+.re-doc ol{padding-right:22px;padding-left:0}
+.re-doc .grid td,.re-doc .grid th{font-size:13px}
+.re-doc .sig{display:inline-block;width:31%;margin:26px 1% 0;vertical-align:top;text-align:center;font-size:13px}
+.re-doc .sig .line{border-top:1px solid #6b7280;margin-bottom:3px;height:0}
+.re-doc .thumb{display:inline-block;width:46px;height:52px;border:1px dashed #9ca3af;margin-bottom:4px}
+.re-doc .page{page-break-after:always}
+.re-doc .page:last-child{page-break-after:auto}
+.re-doc h3{font-size:16px;margin:14px 0 4px;color:#0f766e}
+</style>
+{% if letter_head and not no_letterhead %}<div class="re-lh">{{ letter_head }}</div>{% endif %}
+{%- set deal = frappe.get_doc("RE Land Deal", doc.deal) -%}{%- set o = frappe.get_doc("RE Land Owner", doc.land_owner) -%}
+<div class="re-doc"><img class="qr" src="{{ qr_svg(verify_url(doc.doctype, doc.name)) }}"><h2>یادداشت: پلاٹ بعوض اراضی</h2><div class="sub">{{ ur_ltr(doc.name) }} · {{ ur_date(doc.posting_date) }}</div>
+<p>ذیل میں درج پلاٹ سودا <b>{{ ur_ltr(deal.name) }}</b> کے بائع نمبر {{ ur_ltr(doc.ser) }} <b>{{ o.display_name }}</b> (شناختی کارڈ {{ ur_ltr(o.cnic) }}) کو نقد رقم کی بجائے دیے گئے ہیں۔ ان کی مالیت بائع کو اراضی کی واجب الادا رقم سے منہا کی گئی ہے؛ کوئی نقد لین دین نہیں ہوا۔</p>
+<table class="grid"><tr><th>پلاٹ</th><th>بلاک</th><th>سائز</th><th>لسٹ قیمت</th><th>طے شدہ مالیت</th><th>بکنگ</th></tr>
+{%- for p in doc.plots %}<tr><td>{{ ur_ltr(p.plot) }}</td><td>{{ ur(p.block) }}</td><td>{{ ur(p.plot_size) }}</td><td>{{ ur_money(p.list_price) }}</td><td>{{ ur_money(p.agreed_value) }}</td><td>{{ ur_ltr(p.booking) }}</td></tr>{% endfor %}
+<tr><th colspan="4">پلاٹوں کی کل مالیت</th><th>{{ ur_money(doc.total_value) }}</th><th></th></tr></table>
+<table><tr><th>بائع کا سابقہ بقایا</th><td>{{ ur_money(doc.line_balance) }}</td></tr><tr><th>اراضی کی رقم سے منہا</th><td><b>{{ ur_money(doc.applied_amount) }}</b></td></tr>
+<tr><th>بائع کو مزید واجب الادا</th><td>{{ ur_money(doc.remaining_payable) }}</td></tr>{% if doc.excess_receivable %}<tr><th>بائع سے وصولی</th><td>{{ ur_money(doc.excess_receivable) }}</td></tr>{% endif %}
+<tr><th>چارجز</th><td>ترقیاتی، قبضہ اور سوسائٹی چارجز {{ "عام خریدار کی طرح لاگو ہوں گے" if doc.charges_apply else "ان پلاٹوں پر معاف ہیں" }}</td></tr></table>
+<table class="sign"><tr><td>{{ o.display_name }}<br><span class="muted">بائع / الاٹی</span></td><td class="gap"></td><td>برائے {{ deal.buyer_company or "Zarmeen Developers (Pvt) Ltd" }}<br><span class="muted">منظور کنندہ</span></td></tr></table></div>

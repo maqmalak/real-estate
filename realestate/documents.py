@@ -34,6 +34,12 @@ DOCUMENTS = {
 	"Customer Account Statement": ("Customer", "customer_statement"),
 	"Transfer Application": ("RE Plot Transfer", "transfer_application"),
 	"Transfer Letter": ("RE Plot Transfer", "transfer_letter"),
+	# Module 0 — land purchase
+	"Land Purchase Agreement": ("RE Land Deal", "land_agreement"),
+	"Land Payment Receipt": ("RE Land Payment", "land_payment_receipt"),
+	"Land Final Settlement": ("RE Land Deal", "land_final_settlement"),
+	"Plot Adjustment Memo": ("RE Plot Adjustment", "plot_adjustment_memo"),
+	"Land Owner Statement": ("RE Land Owner", "land_owner_statement"),
 }
 
 
@@ -65,6 +71,7 @@ def setup():
 				   "standard": "No", "disabled": 0, "html": _read(f"docs/{template}.html")})
 		pf.flags.ignore_permissions = True
 		pf.save()
+	_sync_document_types()
 	for document_type, template in UR_TEMPLATES.items():
 		html = _read(f"docs/ur/{template}.html")
 		if not html:
@@ -76,6 +83,16 @@ def setup():
 		pf.flags.ignore_permissions = True
 		pf.save()
 	frappe.db.commit()
+
+
+def _sync_document_types():
+	"""RE Generated Document.document_type must list every type in DOCUMENTS (a missing one makes Generate fail)."""
+	options = (frappe.get_meta("RE Generated Document").get_field("document_type").options or "").split("\n")
+	missing = [t for t in DOCUMENTS if t not in options]
+	if missing:
+		from frappe.custom.doctype.property_setter.property_setter import make_property_setter
+
+		make_property_setter("RE Generated Document", "document_type", "options", "\n".join(options + missing), "Text", validate_fields_for_doctype=False)
 
 
 def _read(path):
@@ -210,6 +227,10 @@ def _guard(document_type, src):
 		frappe.throw(_("Cancel the booking first"))
 	if document_type == "Transfer Letter" and src.docstatus != 1:
 		frappe.throw(_("The transfer letter is issued once the transfer is approved"))
+	if document_type in ("Land Payment Receipt", "Plot Adjustment Memo") and src.docstatus != 1:
+		frappe.throw(_("Issued once the {0} is approved").format(_("payment") if document_type == "Land Payment Receipt" else _("adjustment")))
+	if document_type == "Land Final Settlement" and not any(r.status != "Cancelled" and frappe.utils.flt(r.balance) <= 0.5 for r in src.lines):
+		frappe.throw(_("A final settlement is issued to sellers who are fully paid — none is yet"))
 	if document_type == "NOC for Construction" and (not src.customer or src.status not in ("Sold", "Possession Given")):
 		frappe.throw(_("Construction NOC is issued for fully paid (sold) plots only"))
 

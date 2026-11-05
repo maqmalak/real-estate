@@ -2,7 +2,7 @@
 import {
   Archive, Building, CalendarCheck, ClipboardList, FileBadge, FileText, Grid3x3, HandCoins, Layers, ListChecks, Map, MapPinned,
   Megaphone, MessageCircle, MessagesSquare, Receipt, Ruler, Settings, Upload, Wallet, Wrench, Zap, Repeat2, Ban, Combine, BadgePercent,
-  CheckCircle2, XCircle, Send, type LucideIcon,
+  CheckCircle2, XCircle, Send, Gavel, LandPlot, ScrollText, UserSquare2, CalendarRange, type LucideIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import type { DocConfig, DocValues, ExtraContext, FormAction } from "@/components/doc/doc-config";
@@ -28,11 +28,18 @@ import { PlotProfile } from "./components/record/PlotProfile";
 export interface ReDoc {
   doctype: string;
   label: string;
-  group: "Society" | "Sales & Collections" | "Operations" | "CRM & WhatsApp" | "Society Ops" | "Documents" | "Setup";
+  group: "Land" | "Society" | "Sales & Collections" | "Operations" | "CRM & WhatsApp" | "Society Ops" | "Documents" | "Setup";
   icon: LucideIcon;
 }
 
 export const RE_DOCS: ReDoc[] = [
+  { doctype: "RE Land Parcel", label: "Land Parcels (khasras)", group: "Land", icon: LandPlot },
+  { doctype: "RE Land Deal", label: "Land Deals", group: "Land", icon: ScrollText },
+  { doctype: "RE Land Payment", label: "Seller Payments", group: "Land", icon: Wallet },
+  { doctype: "RE Plot Adjustment", label: "Plot Adjustments (against land)", group: "Land", icon: Combine },
+  { doctype: "RE Land Owner", label: "Land Owners", group: "Land", icon: UserSquare2 },
+  { doctype: "RE Land Case", label: "Court Cases", group: "Land", icon: Gavel },
+  { doctype: "RE Transfer Cost Rate", label: "Transfer Cost Rates", group: "Land", icon: BadgePercent },
   { doctype: "RE Project", label: "Projects", group: "Setup", icon: Building },
   { doctype: "RE Block", label: "Blocks", group: "Society", icon: Layers },
   { doctype: "RE Plot", label: "Plots (records)", group: "Society", icon: Grid3x3 },
@@ -136,7 +143,138 @@ const wf = (doctype: string, icon: LucideIcon, subtitle: string, docs: string[] 
   icon, subtitle, extend: extend(() => ({ actions: [...workflowActions(doctype), ...docActions(doctype, docs)], summary: (v) => [{ label: "Approval", value: String(v.workflow_state ?? "Draft"), tone: v.workflow_state === "Approved" ? "emerald" : v.workflow_state === "Rejected" ? "rose" : "amber" }] })),
 });
 
+/** Land deal approval (Land Manager submits; Admin / Accounts Manager approve) and the deal's own actions. */
+const landDealActions = (): FormAction[] => {
+  const act = (action: string) => async (c: ExtraContext) => {
+    try {
+      const r = await postCall<{ state: string }>("realestate.land.act", { name: c.name, action });
+      toast.success(`${action}: ${r.state}`);
+      c.reload();
+    } catch (e) {
+      toast.error(humanizeError(e));
+    }
+  };
+  const state = (x: ExtraContext) => String(x.values.workflow_state ?? "Draft");
+  return [
+    { label: "Submit for approval", icon: Send, show: (x) => !x.isNew && state(x) === "Draft", run: act("Submit for Approval") },
+    { label: "Approve deal", icon: CheckCircle2, show: (x) => state(x) === "Pending Approval", run: act("Approve") },
+    { label: "Reject deal", icon: XCircle, show: (x) => state(x) === "Pending Approval", run: act("Reject") },
+    { label: "Revise", icon: Send, show: (x) => state(x) === "Rejected", run: act("Revise") },
+    { label: "Build seller schedules", icon: CalendarRange, show: (x) => !x.isNew && !Number(x.values.paid_amount ?? 0), run: run("RE Land Deal", "make_schedule", "Seller schedules rebuilt from the contract terms") },
+    { label: "Record seller payment", icon: Wallet, show: (x) => !x.isNew && x.values.status !== "Cancelled", run: (x) => go(`/re/d/re-land-payment/new?deal=${encodeURIComponent(x.name ?? "")}`)() },
+    { label: "Adjust with plots", icon: Combine, show: (x) => state(x) === "Approved" && Number(x.values.balance_amount ?? 0) > 0, run: (x) => go(`/re/d/re-plot-adjustment/new?deal=${encodeURIComponent(x.name ?? "")}`)() },
+    { label: "Estimate transfer costs", icon: BadgePercent, show: (x) => !x.isNew, run: run("RE Land Deal", "estimate_transfer_costs", "Transfer costs estimated from the rate table") },
+    { label: "Post transfer costs", icon: Receipt, show: (x) => !x.isNew && state(x) === "Approved", run: run("RE Land Deal", "post_transfer_costs", "Transfer costs posted to the land cost") },
+    { label: "Refresh from ledger", icon: Repeat2, show: (x) => !x.isNew, run: run("RE Land Deal", "refresh_ledger", "Paid and balance re-read from the ledger") },
+    { label: "Capitalise land cost", icon: CheckCircle2, show: (x) => (x.values.status === "Completed" || x.values.status === "Closed") && !x.values.capitalisation_entry, run: run("RE Land Deal", "capitalise", "Land cost moved to the project's land cost") },
+  ];
+};
+/** Seller payments and plot adjustments: pay directly up to the limit, otherwise submit for Admin / Accounts approval. */
+const landSubmitActions = (doctype: string, direct?: string): FormAction[] => {
+  const act = (action: string) => async (c: ExtraContext) => {
+    try {
+      const r = await postCall<{ state: string }>("realestate.land.act", { doctype, name: c.name, action });
+      toast.success(`${action}: ${r.state}`);
+      c.reload();
+    } catch (e) {
+      toast.error(humanizeError(e));
+    }
+  };
+  const state = (x: ExtraContext) => String(x.values.workflow_state ?? "Draft");
+  const needs = (x: ExtraContext) => !direct || Boolean(Number(x.values.approval_required ?? 0));
+  return [
+    ...(direct ? [{ label: direct, icon: CheckCircle2, show: (x: ExtraContext) => !x.isNew && state(x) === "Draft" && !needs(x), run: act(direct) }] : []),
+    { label: "Submit for approval", icon: Send, show: (x) => !x.isNew && state(x) === "Draft" && needs(x), run: act("Submit for Approval") },
+    { label: "Approve", icon: CheckCircle2, show: (x) => state(x) === "Pending Approval", run: act("Approve") },
+    { label: "Reject", icon: XCircle, show: (x) => state(x) === "Pending Approval", run: act("Reject") },
+    { label: "Revise", icon: Send, show: (x) => state(x) === "Rejected", run: act("Revise") },
+    { label: "Cancel (reverse entries)", icon: XCircle, show: (x) => x.docstatus === 1, run: act("Cancel") },
+  ];
+};
+const statusTone = (s: unknown) =>
+  s === "Completed" || s === "Closed" || s === "Executed" || s === "In Payment" ? "emerald" : s === "Cancelled" || s === "Disputed" ? "rose" : "amber";
+
 export const ENHANCERS: Record<string, Enhancer> = {
+  "RE Land Parcel": {
+    icon: LandPlot,
+    subtitle: "Khasras — revenue record, area per fard, co-owners and shares, acquisition stage and due diligence",
+    extend: extend((c) => ({
+      topFilters: { searchLabel: "Khasra / mauza", fields: [{ field: "stage", label: "Stage" }, { field: "land_type", label: "Land type" }] },
+      listFields: Array.from(new Set([...c.listFields, "title", "mauza", "khasra_nos", "area_display", "stage", "land_type", "diligence_clear"])),
+      summary: (v) => [
+        { label: "Stage", value: String(v.stage ?? "Identified"), tone: v.stage === "Acquired" || v.stage === "Possession Taken" ? "emerald" : v.stage === "Disputed" || v.stage === "Dropped" ? "rose" : "amber" },
+        { label: "Area", value: String(v.area_display ?? "—") },
+        { label: "Due diligence", value: v.diligence_clear ? "Passed" : v.diligence_override ? "Overridden" : "Pending", tone: v.diligence_clear ? "emerald" : "amber" },
+      ],
+      tabPanels: { Details: { after: (ctx: ExtraContext) => (
+        <LocationCapture mode="shape" values={ctx.values} patch={ctx.patch} readOnly={ctx.readOnly} geoField="geojson" title="Khasra outline (draw or import)" />
+      ) } },
+    })),
+  },
+  "RE Land Deal": {
+    icon: ScrollText,
+    subtitle: "Land purchase deals and agreements to sell — owner lines, extensions, seller schedules and amendments",
+    extend: extend((c) => ({
+      actions: [...landDealActions(), ...docActions("RE Land Deal", ["Land Purchase Agreement", "Land Final Settlement"])],
+      topFilters: { searchLabel: "Deal / description", fields: [{ field: "status", label: "Status" }, { field: "land_owners_type", label: "Owners" }, { field: "land_for", label: "Land for" }] },
+      listFields: Array.from(new Set([...c.listFields, "description", "deal_date", "land_for", "land_owners_type", "deal_area_display", "net_due_amount", "balance_amount", "status", "overdue_lines"])),
+      summary: (v) => [
+        { label: "Contract", value: String(v.status ?? "Draft"), tone: statusTone(v.status) },
+        { label: "Approval", value: String(v.workflow_state ?? "Draft"), tone: v.workflow_state === "Approved" ? "emerald" : v.workflow_state === "Rejected" ? "rose" : "amber" },
+        { label: "Deal area", value: String(v.deal_area_display ?? "—") },
+        { label: "Net due", value: money(v.net_due_amount) },
+        { label: "Balance", value: money(v.balance_amount), tone: Number(v.overdue_lines ?? 0) ? "rose" : undefined },
+        { label: "Signatures", value: String(v.signed_count ?? "—") },
+      ],
+    })),
+  },
+  "RE Land Payment": {
+    icon: Wallet,
+    subtitle: "Payments to land owners — cheque, pay order, transfer or cash, with withholding tax; posted as Payment Entries",
+    extend: extend((c) => ({
+      actions: [...landSubmitActions("RE Land Payment", "Pay"), ...docActions("RE Land Payment", ["Land Payment Receipt"])],
+      topFilters: { searchLabel: "Owner / deal", fields: [{ field: "payment_kind", label: "For" }, { field: "workflow_state", label: "Approval" }] },
+      listFields: Array.from(new Set([...c.listFields, "deal", "owner_name", "payment_kind", "posting_date", "amount", "net_paid", "workflow_state"])),
+      summary: (v) => [
+        { label: "Amount", value: money(v.amount) },
+        { label: "Net to owner", value: money(v.net_paid) },
+        { label: "Owner balance after", value: money(v.balance_after) },
+        { label: "Approval", value: String(v.workflow_state ?? "Draft"), tone: v.workflow_state === "Paid" ? "emerald" : v.workflow_state === "Rejected" ? "rose" : "amber" },
+      ],
+    })),
+  },
+  "RE Plot Adjustment": {
+    icon: Combine,
+    subtitle: "Plots given to land owners instead of cash — booked to the owner and netted against their land payable",
+    extend: extend((c) => ({
+      actions: [...landSubmitActions("RE Plot Adjustment"), ...docActions("RE Plot Adjustment", ["Plot Adjustment Memo"])],
+      listFields: Array.from(new Set([...c.listFields, "deal", "owner_name", "posting_date", "total_value", "applied_amount", "workflow_state"])),
+      summary: (v) => [
+        { label: "Plots' value", value: money(v.total_value) },
+        { label: "Adjusted against land", value: money(v.applied_amount) },
+        { label: "Excess receivable", value: money(v.excess_receivable), tone: Number(v.excess_receivable ?? 0) ? "amber" : undefined },
+        { label: "Still payable", value: money(v.remaining_payable) },
+        { label: "Approval", value: String(v.workflow_state ?? "Draft"), tone: v.workflow_state === "Adjusted" ? "emerald" : v.workflow_state === "Rejected" ? "rose" : "amber" },
+      ],
+    })),
+  },
+  "RE Land Owner": {
+    icon: UserSquare2,
+    subtitle: "Sellers per fard — CNIC, bank details, attorney and legal heirs; each is an ERPNext Supplier in Land Owners",
+    extend: extend((c) => ({ listFields: Array.from(new Set([...c.listFields, "display_name", "cnic", "mobile_no", "supplier"])), actions: docActions("RE Land Owner", ["Land Owner Statement"]) })),
+  },
+  "RE Land Case": {
+    icon: Gavel,
+    subtitle: "Court cases and disputes over khasras — court, lawyer, next hearing and the area affected",
+    extend: extend((c) => ({
+      topFilters: { searchLabel: "Case", fields: [{ field: "status", label: "Status" }, { field: "court", label: "Court" }] },
+      listFields: Array.from(new Set([...c.listFields, "case_title", "court", "case_no", "status", "next_hearing", "affected_area"])),
+    })),
+  },
+  "RE Transfer Cost Rate": {
+    icon: BadgePercent,
+    subtitle: "Stamp duty, registration and mutation fees, CVT, 236K advance tax and other charges — per province and fiscal year",
+  },
   "RE Map Feature": {
     icon: MapPinned,
     subtitle: "Infrastructure on the scheme map — build-out, network lengths, cost, assets and upkeep",

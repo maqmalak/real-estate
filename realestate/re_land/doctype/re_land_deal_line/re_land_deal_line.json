@@ -1,0 +1,281 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "ser",
+  "land_owner",
+  "owner_name",
+  "group_members",
+  "line_type",
+  "attorney",
+  "parcel",
+  "cb1",
+  "kanal",
+  "marla",
+  "sqft",
+  "area_sqft",
+  "unit",
+  "total_area",
+  "rate",
+  "due_amount",
+  "mature_date",
+  "cb2",
+  "extra_amount",
+  "date_ext",
+  "net_due",
+  "paid_amount",
+  "adjusted_amount",
+  "balance",
+  "share_pct",
+  "status",
+  "overdue",
+  "cb3",
+  "signed",
+  "signed_on",
+  "thumb_impression",
+  "bank_account",
+  "supplier",
+  "purchase_invoice"
+ ],
+ "fields": [
+  {
+   "fieldname": "ser",
+   "fieldtype": "Int",
+   "label": "Ser#",
+   "in_list_view": 1,
+   "columns": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "land_owner",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "options": "RE Land Owner",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "owner_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "read_only": 1,
+   "description": "Name with relation and father / husband name"
+  },
+  {
+   "fieldname": "group_members",
+   "fieldtype": "Small Text",
+   "label": "Group members",
+   "description": "When this line is a group (\"Orangzaib, Imran, Ahsan etc.\"), one name per line"
+  },
+  {
+   "fieldname": "line_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Owner\nAttorney\nLegal Heir\nAgent",
+   "default": "Owner"
+  },
+  {
+   "fieldname": "attorney",
+   "fieldtype": "Link",
+   "label": "Signed by attorney",
+   "options": "RE Land Owner"
+  },
+  {
+   "fieldname": "parcel",
+   "fieldtype": "Link",
+   "label": "Khasra / parcel",
+   "options": "RE Land Parcel",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "kanal",
+   "fieldtype": "Int",
+   "label": "Kanals",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "marla",
+   "fieldtype": "Float",
+   "label": "Marlas",
+   "in_list_view": 1,
+   "columns": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "sqft",
+   "fieldtype": "Float",
+   "label": "Sqft",
+   "precision": "2"
+  },
+  {
+   "fieldname": "area_sqft",
+   "fieldtype": "Float",
+   "label": "Area (sqft)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Select",
+   "label": "Unit",
+   "options": "Acre\nKanal\nMarla",
+   "default": "Kanal",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "total_area",
+   "fieldtype": "Float",
+   "label": "Total area (in unit)",
+   "read_only": 1,
+   "precision": "4"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "options": "PKR",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "due_amount",
+   "fieldtype": "Currency",
+   "label": "Due amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mature_date",
+   "fieldtype": "Date",
+   "label": "Mature date"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "extra_amount",
+   "fieldtype": "Currency",
+   "label": "Extra amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "date_ext",
+   "fieldtype": "Date",
+   "label": "Date ext",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_due",
+   "fieldtype": "Currency",
+   "label": "Net due",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "label": "Paid (cash)",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "adjusted_amount",
+   "fieldtype": "Currency",
+   "label": "Adjusted (plots)",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance",
+   "options": "PKR",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "share_pct",
+   "fieldtype": "Percent",
+   "label": "Share of deal %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nRegistry Done\nMutation Done\nCancelled",
+   "default": "Pending"
+  },
+  {
+   "fieldname": "overdue",
+   "fieldtype": "Check",
+   "label": "Overdue",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "signed",
+   "fieldtype": "Check",
+   "label": "Signed"
+  },
+  {
+   "fieldname": "signed_on",
+   "fieldtype": "Date",
+   "label": "Signed on"
+  },
+  {
+   "fieldname": "thumb_impression",
+   "fieldtype": "Check",
+   "label": "Thumb impression"
+  },
+  {
+   "fieldname": "bank_account",
+   "fieldtype": "Data",
+   "label": "Bank account"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Link",
+   "label": "Purchase invoice",
+   "options": "Purchase Invoice",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-05 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Deal Line",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": []
+}

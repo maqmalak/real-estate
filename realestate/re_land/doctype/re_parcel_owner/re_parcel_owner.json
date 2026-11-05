@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "land_owner",
+  "owner_name",
+  "share_kanal",
+  "share_marla",
+  "share_sqft",
+  "share_sqft_total",
+  "share_pct"
+ ],
+ "fields": [
+  {
+   "fieldname": "land_owner",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "options": "RE Land Owner",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 3
+  },
+  {
+   "fieldname": "owner_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "fetch_from": "land_owner.display_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "share_kanal",
+   "fieldtype": "Int",
+   "label": "Kanal",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "share_marla",
+   "fieldtype": "Float",
+   "label": "Marla",
+   "in_list_view": 1,
+   "columns": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "share_sqft",
+   "fieldtype": "Float",
+   "label": "Sqft",
+   "precision": "2"
+  },
+  {
+   "fieldname": "share_sqft_total",
+   "fieldtype": "Float",
+   "label": "Share (sqft)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "share_pct",
+   "fieldtype": "Percent",
+   "label": "Share %",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-05 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Parcel Owner",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1,
+ "permissions": []
+}

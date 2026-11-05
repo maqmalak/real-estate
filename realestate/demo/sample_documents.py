@@ -43,6 +43,12 @@ def _pick():
 		"Customer Account Statement": (owner, True),
 		"Transfer Application": (transfer, True),
 		"Transfer Letter": (transfer, True),
+		"Land Purchase Agreement": (frappe.db.get_value("RE Land Deal", {"land_owners_type": "MULTI", "status": ("in", ["Completed", "In Payment"])}, "name", order_by="deal_date"), True),
+		"Land Payment Receipt": (frappe.db.get_value("RE Land Payment", {"docstatus": 1, "payment_kind": "Token"}, "name", order_by="posting_date"), True),
+		"Land Final Settlement": (frappe.db.get_value("RE Land Deal", {"status": "Completed"}, "name", order_by="deal_date"), True),
+		"Plot Adjustment Memo": (frappe.db.get_value("RE Plot Adjustment", {"docstatus": 1}, "name"), True),
+		"Land Owner Statement": (frappe.db.get_value("RE Land Owner", {"customer": ("is", "set")}, "name")  # paid in cash and plots: the fullest statement
+								 or frappe.db.get_value("RE Land Owner", {"supplier": ("is", "set")}, "name", order_by="name"), True),
 	}
 
 

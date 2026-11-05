@@ -28,7 +28,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Document Type",
-   "options": "Booking Application Form\nAllotment Letter\nPayment Schedule\nPayment Receipt\nInstallment Reminder\nFinal Notice\nCancellation Letter\nTransfer Letter\nNo Demand Certificate\nPossession Letter\nSite Plan\nSale Agreement\nNOC for Construction\nMaintenance Bill\nCustomer Account Statement\nTransfer Application",
+   "options": "Booking Application Form\nAllotment Letter\nPayment Schedule\nPayment Receipt\nInstallment Reminder\nFinal Notice\nCancellation Letter\nTransfer Letter\nNo Demand Certificate\nPossession Letter\nSite Plan\nSale Agreement\nNOC for Construction\nMaintenance Bill\nCustomer Account Statement\nTransfer Application\nLand Purchase Agreement\nLand Payment Receipt\nLand Final Settlement\nPlot Adjustment Memo\nLand Owner Statement",
    "reqd": 1
   },
   {
@@ -121,7 +121,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-10 12:00:00.000000",
+ "modified": "2026-11-06 20:00:00.000000",
  "modified_by": "Administrator",
  "module": "Real Estate",
  "name": "RE Generated Document",

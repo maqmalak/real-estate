@@ -18,6 +18,8 @@ export interface Boot {
 
 export interface MapPlot {
   name: string;
+  /** Set when the plot was given to a land owner against a land deal (Module 0). */
+  land_adjustment?: string | null;
   block: string;
   plot_size: string;
   status: PlotStatus;
@@ -68,6 +70,8 @@ export interface MapData {
   blocks: MapBlock[];
   plots: MapPlot[];
   features: MapFeature[];
+  /** Module 0 khasras for the "Land acquisition" layer (empty without land access). */
+  parcels?: { name: string; title: string; khasra_nos: string; area_display: string; stage: string; layer: string; color: string; geojson: Geometry | null }[];
 }
 
 export interface MapTask {
@@ -154,6 +158,9 @@ export interface Dashboard {
   expiring?: { name: string; title: string; document_type: string; authority: string | null; expiry_date: string; status: string; responsible: string | null }[];
   scope?: { agent: boolean; user: string | null; name: string | null };
   approvals?: { count: number; rows: { doctype: string; name: string; state: string; who: string | null; modified: string; can_act: boolean }[] };
+  /** Module 0 items for land roles (null otherwise). */
+  land?: { count: number; payments: { deal: string; ser: number; owner_name: string; label: string; due_date: string; pending: number }[];
+    hearings: { name: string; case_title: string; court: string; next_hearing: string }[]; approvals: { doctype: string; name: string; label: string }[] } | null;
 }
 
 export interface Installment {

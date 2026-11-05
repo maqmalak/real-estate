@@ -1,0 +1,664 @@
+{
+ "actions": [],
+ "creation": "2026-11-05 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "tab_deal",
+  "deal_date",
+  "description",
+  "land_for",
+  "land_owners_type",
+  "cb1",
+  "project",
+  "status",
+  "workflow_state",
+  "sb_location",
+  "khewat_no",
+  "khatooni_no",
+  "cb2",
+  "square_no",
+  "killa_nos",
+  "cb3",
+  "khasras",
+  "location_index",
+  "sb_lines",
+  "lines",
+  "sb_totals",
+  "total_kanal",
+  "total_marla",
+  "total_sqft",
+  "deal_area_display",
+  "deal_area_sqft",
+  "cb4",
+  "due_amount",
+  "extra_amount",
+  "net_due_amount",
+  "cb5",
+  "paid_amount",
+  "adjusted_amount",
+  "balance_amount",
+  "overdue_lines",
+  "tab_contract",
+  "buyer_company",
+  "buyer_signatory",
+  "rate_unit",
+  "default_rate",
+  "contract_total",
+  "cb6",
+  "token_amount",
+  "token_date",
+  "agreement_amount",
+  "agreement_date",
+  "installments",
+  "installment_months",
+  "first_installment_date",
+  "cb7",
+  "possession_date",
+  "registry_deadline",
+  "jurisdiction",
+  "sb_clauses",
+  "payment_terms",
+  "penalty_clause",
+  "cb8",
+  "cancellation_clause",
+  "sb_broker",
+  "broker",
+  "cb9",
+  "commission_pct",
+  "commission_amount",
+  "sb_costs",
+  "costs",
+  "transfer_cost_total",
+  "sb_witness",
+  "witness_1_name",
+  "witness_1_cnic",
+  "witness_1_signed",
+  "cb10",
+  "witness_2_name",
+  "witness_2_cnic",
+  "witness_2_signed",
+  "cb11",
+  "stamp_paper_value",
+  "signed_count",
+  "tab_schedule",
+  "schedule",
+  "tab_changes",
+  "extensions",
+  "amendments",
+  "status_reason",
+  "capitalisation_entry",
+  "is_demo"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "LD-.#####",
+   "default": "LD-.#####",
+   "hidden": 1
+  },
+  {
+   "fieldname": "tab_deal",
+   "fieldtype": "Tab Break",
+   "label": "Deal"
+  },
+  {
+   "fieldname": "deal_date",
+   "fieldtype": "Date",
+   "label": "Deal date",
+   "reqd": 1,
+   "default": "Today",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Deal description",
+   "reqd": 1,
+   "description": "Free text, e.g. \"Falak Sher and Aalam Sher S/O Ghulam ...\""
+  },
+  {
+   "fieldname": "land_for",
+   "fieldtype": "Data",
+   "label": "Land for",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Target block or purpose, e.g. A Block"
+  },
+  {
+   "fieldname": "land_owners_type",
+   "fieldtype": "Select",
+   "label": "Land owners",
+   "options": "SINGLE\nMULTI",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "RE Project",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Contract status",
+   "options": "Draft\nPartially Signed\nExecuted\nIn Payment\nCompleted\nClosed\nCancelled\nDisputed",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "label": "Approval",
+   "options": "Workflow State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_location",
+   "fieldtype": "Section Break",
+   "label": "Land location"
+  },
+  {
+   "fieldname": "khewat_no",
+   "fieldtype": "Data",
+   "label": "Khewat no"
+  },
+  {
+   "fieldname": "khatooni_no",
+   "fieldtype": "Data",
+   "label": "Khatooni no"
+  },
+  {
+   "fieldname": "cb2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "square_no",
+   "fieldtype": "Data",
+   "label": "Square no"
+  },
+  {
+   "fieldname": "killa_nos",
+   "fieldtype": "Data",
+   "label": "Killa no(s)",
+   "description": "e.g. \"43-44\" or \"5/2,16,17\""
+  },
+  {
+   "fieldname": "cb3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "khasras",
+   "fieldtype": "Small Text",
+   "label": "Khasras covered",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location_index",
+   "fieldtype": "Small Text",
+   "label": "Search index",
+   "hidden": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_lines",
+   "fieldtype": "Section Break",
+   "label": "Owners"
+  },
+  {
+   "fieldname": "lines",
+   "fieldtype": "Table",
+   "label": "Owner lines",
+   "options": "RE Land Deal Line"
+  },
+  {
+   "fieldname": "sb_totals",
+   "fieldtype": "Section Break",
+   "label": "Deal subtotals"
+  },
+  {
+   "fieldname": "total_kanal",
+   "fieldtype": "Float",
+   "label": "Kanals (raw)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_marla",
+   "fieldtype": "Float",
+   "label": "Marlas (raw)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "total_sqft",
+   "fieldtype": "Float",
+   "label": "Sqft (raw)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "deal_area_display",
+   "fieldtype": "Data",
+   "label": "Total deal area",
+   "read_only": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "deal_area_sqft",
+   "fieldtype": "Float",
+   "label": "Deal area (sqft)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "cb4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "due_amount",
+   "fieldtype": "Currency",
+   "label": "Due amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "extra_amount",
+   "fieldtype": "Currency",
+   "label": "Extra amount",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_due_amount",
+   "fieldtype": "Currency",
+   "label": "Net due amount",
+   "options": "PKR",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cb5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "label": "Paid (cash)",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "adjusted_amount",
+   "fieldtype": "Currency",
+   "label": "Adjusted (plots)",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "balance_amount",
+   "fieldtype": "Currency",
+   "label": "Balance amount",
+   "options": "PKR",
+   "read_only": 1,
+   "in_list_view": 1,
+   "bold": 1
+  },
+  {
+   "fieldname": "overdue_lines",
+   "fieldtype": "Int",
+   "label": "Overdue owner lines",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tab_contract",
+   "fieldtype": "Tab Break",
+   "label": "Contract"
+  },
+  {
+   "fieldname": "buyer_company",
+   "fieldtype": "Link",
+   "label": "Buyer",
+   "options": "Company"
+  },
+  {
+   "fieldname": "buyer_signatory",
+   "fieldtype": "Data",
+   "label": "Buyer signatory"
+  },
+  {
+   "fieldname": "rate_unit",
+   "fieldtype": "Select",
+   "label": "Default rate per",
+   "options": "Kanal\nAcre\nMarla",
+   "default": "Kanal"
+  },
+  {
+   "fieldname": "default_rate",
+   "fieldtype": "Currency",
+   "label": "Default rate",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "contract_total",
+   "fieldtype": "Currency",
+   "label": "Agreed total price",
+   "options": "PKR",
+   "description": "When set, the owner lines' due amounts must add up to it"
+  },
+  {
+   "fieldname": "cb6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "token_amount",
+   "fieldtype": "Currency",
+   "label": "Token (bayana)",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "token_date",
+   "fieldtype": "Date",
+   "label": "Token date"
+  },
+  {
+   "fieldname": "agreement_amount",
+   "fieldtype": "Currency",
+   "label": "Agreement amount",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "agreement_date",
+   "fieldtype": "Date",
+   "label": "Agreement date"
+  },
+  {
+   "fieldname": "installments",
+   "fieldtype": "Int",
+   "label": "Balance installments"
+  },
+  {
+   "fieldname": "installment_months",
+   "fieldtype": "Int",
+   "label": "Months between installments",
+   "default": "1"
+  },
+  {
+   "fieldname": "first_installment_date",
+   "fieldtype": "Date",
+   "label": "First installment"
+  },
+  {
+   "fieldname": "cb7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "possession_date",
+   "fieldtype": "Date",
+   "label": "Possession date"
+  },
+  {
+   "fieldname": "registry_deadline",
+   "fieldtype": "Date",
+   "label": "Registry deadline"
+  },
+  {
+   "fieldname": "jurisdiction",
+   "fieldtype": "Data",
+   "label": "Jurisdiction",
+   "default": "Lahore"
+  },
+  {
+   "fieldname": "sb_clauses",
+   "fieldtype": "Section Break",
+   "label": "Clauses",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment terms"
+  },
+  {
+   "fieldname": "penalty_clause",
+   "fieldtype": "Small Text",
+   "label": "Penalty clause"
+  },
+  {
+   "fieldname": "cb8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cancellation_clause",
+   "fieldtype": "Small Text",
+   "label": "Cancellation clause"
+  },
+  {
+   "fieldname": "sb_broker",
+   "fieldtype": "Section Break",
+   "label": "Broker"
+  },
+  {
+   "fieldname": "broker",
+   "fieldtype": "Link",
+   "label": "Broker / dealer",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "cb9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "commission_pct",
+   "fieldtype": "Percent",
+   "label": "Commission %"
+  },
+  {
+   "fieldname": "commission_amount",
+   "fieldtype": "Currency",
+   "label": "Commission",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_costs",
+   "fieldtype": "Section Break",
+   "label": "Transfer costs",
+   "collapsible": 0,
+   "description": "Stamp duty, registration, mutation, CVT, 236K advance tax, fees and broker commission — estimated from RE Transfer Cost Rate, posted as purchase invoices into the land cost"
+  },
+  {
+   "fieldname": "costs",
+   "fieldtype": "Table",
+   "label": "Transfer costs",
+   "options": "RE Land Deal Cost"
+  },
+  {
+   "fieldname": "transfer_cost_total",
+   "fieldtype": "Currency",
+   "label": "Transfer costs total",
+   "options": "PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_witness",
+   "fieldtype": "Section Break",
+   "label": "Witnesses and stamp paper"
+  },
+  {
+   "fieldname": "witness_1_name",
+   "fieldtype": "Data",
+   "label": "Witness 1"
+  },
+  {
+   "fieldname": "witness_1_cnic",
+   "fieldtype": "Data",
+   "label": "Witness 1 CNIC"
+  },
+  {
+   "fieldname": "witness_1_signed",
+   "fieldtype": "Check",
+   "label": "Witness 1 signed"
+  },
+  {
+   "fieldname": "cb10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "witness_2_name",
+   "fieldtype": "Data",
+   "label": "Witness 2"
+  },
+  {
+   "fieldname": "witness_2_cnic",
+   "fieldtype": "Data",
+   "label": "Witness 2 CNIC"
+  },
+  {
+   "fieldname": "witness_2_signed",
+   "fieldtype": "Check",
+   "label": "Witness 2 signed"
+  },
+  {
+   "fieldname": "cb11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "stamp_paper_value",
+   "fieldtype": "Currency",
+   "label": "Stamp paper value",
+   "options": "PKR"
+  },
+  {
+   "fieldname": "signed_count",
+   "fieldtype": "Data",
+   "label": "Signatures",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tab_schedule",
+   "fieldtype": "Tab Break",
+   "label": "Schedule"
+  },
+  {
+   "fieldname": "schedule",
+   "fieldtype": "Table",
+   "label": "Seller payment schedule",
+   "options": "RE Land Deal Schedule"
+  },
+  {
+   "fieldname": "tab_changes",
+   "fieldtype": "Tab Break",
+   "label": "Extensions & amendments"
+  },
+  {
+   "fieldname": "extensions",
+   "fieldtype": "Table",
+   "label": "Extensions",
+   "options": "RE Land Deal Extension"
+  },
+  {
+   "fieldname": "amendments",
+   "fieldtype": "Table",
+   "label": "Amendments",
+   "options": "RE Land Deal Amendment"
+  },
+  {
+   "fieldname": "status_reason",
+   "fieldtype": "Small Text",
+   "label": "Cancellation / dispute reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "capitalisation_entry",
+   "fieldtype": "Link",
+   "label": "Capitalised in",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_demo",
+   "fieldtype": "Check",
+   "label": "Demo record",
+   "hidden": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-06 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "RE Land",
+ "name": "RE Land Deal",
+ "owner": "Administrator",
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Land Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  },
+  {
+   "role": "Projects Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "naming_series:",
+ "naming_rule": "By \"Naming Series\" field",
+ "title_field": "description",
+ "show_title_field_in_link": 1,
+ "search_fields": "description,land_for,khewat_no",
+ "allow_rename": 0
+}

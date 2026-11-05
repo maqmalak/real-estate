@@ -20,7 +20,7 @@ def get_map_data(project: str | None = None) -> dict:
 	# merged-away plots (merged_into set) are replaced by the merged plot — leave them off the map
 	plots = frappe.get_all("RE Plot", {"project": project, "merged_into": ("is", "not set")}, ["name", "block", "plot_size", "status", "payment_status", "customer_name",
 															 "list_price", "geojson", "street", "is_corner", "is_park_facing",
-															 "is_boulevard_facing", "booking"], limit=0)
+															 "is_boulevard_facing", "booking", "land_adjustment"], limit=0)
 	overdue = {b.name: b for b in frappe.get_all("RE Booking", {"docstatus": 1, "project": project},
 												 ["name", "overdue_amount", "outstanding_amount", "next_due_date"], limit=0)}
 	for pl in plots:
@@ -35,7 +35,14 @@ def get_map_data(project: str | None = None) -> dict:
 		"plots": plots,
 		"features": [{**f, "geojson": _geo(f.geojson)} for f in frappe.get_all(
 			"RE Map Feature", {"project": project}, ["name", "feature_name", "feature_type", "category", "color", "geojson", "width_ft"], limit=0)],
+		"parcels": land_parcels(project),  # Module 0 "Land acquisition" layer (empty for roles without land access)
 	}
+
+
+def land_parcels(project):
+	from realestate.land_api import parcels_for_map
+
+	return parcels_for_map(project)
 
 
 def _geo(value):

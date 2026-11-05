@@ -7,7 +7,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowDown, ArrowUp, ArrowUpDown, BarChart3, Building2, ClipboardList, FileSpreadsheet, FileText, Hammer, Loader2, MessageSquare,
-  RefreshCw, Search, Sparkles, Table2, TrendingUp, Wallet,
+  LandPlot, RefreshCw, Search, Sparkles, Table2, TrendingUp, Wallet,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -24,7 +24,7 @@ interface Entry { name: string; group: string; filters: string[]; description: s
 interface Column { label: string; fieldname: string; fieldtype: string }
 interface Summary { label: string; value: number | string; datatype?: string; indicator?: string | null }
 interface FrappeChart { type?: string; data?: { labels?: string[]; datasets?: { name?: string; values?: number[] }[] } }
-interface Preview { columns: Column[]; rows: Record<string, unknown>[]; total: number; filters: Record<string, string | number>; summary: Summary[]; chart: FrappeChart | null; message: string | null; blocks: string[] }
+interface Preview { columns: Column[]; rows: Record<string, unknown>[]; total: number; filters: Record<string, string | number>; summary: Summary[]; chart: FrappeChart | null; message: string | null; blocks: string[]; owners?: { value: string; label: string }[] }
 
 const NUMERIC = new Set(["Currency", "Float", "Int", "Percent"]);
 const GROUP: Record<string, { icon: typeof Wallet; tone: string }> = {
@@ -32,6 +32,7 @@ const GROUP: Record<string, { icon: typeof Wallet; tone: string }> = {
   Society: { icon: Building2, tone: "from-sky-500 to-indigo-600" },
   "Development & Costs": { icon: Hammer, tone: "from-amber-500 to-orange-600" },
   CRM: { icon: MessageSquare, tone: "from-violet-500 to-fuchsia-600" },
+  Land: { icon: LandPlot, tone: "from-lime-500 to-emerald-700" },
 };
 const IND: Record<string, string> = { Green: "text-emerald-600", Red: "text-rose-600", Orange: "text-amber-600", Blue: "text-blue-600" };
 
@@ -227,6 +228,47 @@ export function ReportsPage() {
                   </select>
                 </label>
               )}
+              {entry.filters.includes("land_owner") && (
+                <label className="space-y-1 text-[11px] font-semibold text-muted-foreground">Land owner
+                  <select className="field h-9 w-64" value={filters.land_owner ?? ""} onChange={(e) => setF("land_owner", e.target.value)}>
+                    <option value="">All owners (summary)</option>
+                    {(data?.owners ?? []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </label>
+              )}
+              {entry.filters.includes("land_for") && (
+                <label className="space-y-1 text-[11px] font-semibold text-muted-foreground">Land for<input className="field h-9 w-36" placeholder="e.g. A Block" value={value("land_for")} onChange={(e) => setF("land_for", e.target.value)} /></label>
+              )}
+              {entry.filters.includes("owners_type") && (
+                <label className="space-y-1 text-[11px] font-semibold text-muted-foreground">Land owners
+                  <select className="field h-9 w-28" value={filters.owners_type ?? ""} onChange={(e) => setF("owners_type", e.target.value)}>
+                    <option value="">Single & multi</option><option>SINGLE</option><option>MULTI</option>
+                  </select>
+                </label>
+              )}
+              {entry.filters.includes("deal_status") && (
+                <label className="space-y-1 text-[11px] font-semibold text-muted-foreground">Status
+                  <select className="field h-9 w-36" value={filters.deal_status ?? ""} onChange={(e) => setF("deal_status", e.target.value)}>
+                    <option value="">Any status</option>
+                    {["Draft", "Partially Signed", "Executed", "In Payment", "Completed", "Closed", "Disputed"].map((x) => <option key={x}>{x}</option>)}
+                  </select>
+                </label>
+              )}
+              {entry.filters.includes("window") && (
+                <div className="space-y-1 text-[11px] font-semibold text-muted-foreground">Due within
+                  <div className="flex rounded-lg border bg-card p-0.5">
+                    {["Week", "Month", "Quarter"].map((g) => (
+                      <button key={g} type="button" onClick={() => setF("window", g)}
+                        className={cn("rounded-md px-2.5 py-1 text-xs font-medium", value("window") === g ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground")}>{g}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {([["balance_only", "Owners with balance only"], ["matured_unpaid", "Matured but unpaid"], ["open_only", "Open cases only"]] as const).filter(([k]) => entry.filters.includes(k)).map(([k, label]) => (
+                <label key={k} className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-medium">
+                  <input type="checkbox" className="size-4 accent-[hsl(var(--primary))]" checked={value(k) === "1"} onChange={(e) => setF(k, e.target.checked ? "1" : "")} />{label}
+                </label>
+              ))}
               {entry.filters.includes("min_months") && (
                 <label className="space-y-1 text-[11px] font-semibold text-muted-foreground">Min months due<input type="number" min={1} className="field h-9 w-24" value={value("min_months")} onChange={(e) => setF("min_months", e.target.value)} /></label>
               )}
