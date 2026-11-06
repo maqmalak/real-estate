@@ -5,12 +5,22 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt
 
-from realestate.calc import convex_hull, merge
+from realestate.calc import _ring, merge, merge_outline
 from realestate.real_estate.doctype.re_plot.re_plot import notify_plots
+
+
+def outline(plots) -> tuple[list, str | None]:
+	"""Merged outline of these RE Plot docs, checked against the other live plots in the block."""
+	names = {p.name for p in plots}
+	others = frappe.get_all("RE Plot", {"block": plots[0].block, "merged_into": ("is", "not set"), "geojson": ("is", "set"), "name": ("not in", list(names))},
+						   ["name", "geojson"])
+	return merge_outline({p.name: _ring(p.geojson) for p in plots}, {o.name: _ring(o.geojson) for o in others})
 
 
 class REPlotMerge(Document):
 	def validate(self):
+		if self.workflow_state == "Rejected":  # a rejected request is closed: the plots may have changed since
+			return
 		if len(self.plots) < 2:
 			frappe.throw(_("Pick at least two plots to merge"))
 		plots = [frappe.get_doc("RE Plot", r.plot) for r in self.plots]
@@ -26,13 +36,16 @@ class REPlotMerge(Document):
 			frappe.throw(_("Merge either available plots, or fully paid plots of the same owner"))
 		if frappe.db.exists("RE Plot", self.new_plot_no):
 			frappe.throw(_("Plot {0} already exists").format(self.new_plot_no))
+		if all(p.geojson for p in plots):
+			_hull, problem = outline(plots)
+			if problem:
+				frappe.throw(_(problem))
 		totals = merge([{"area_marla": p.area_marla, "list_price": p.list_price} for p in plots])
 		self.total_area_marla, self.total_list_price = totals["area_marla"], totals["list_price"]
 
 	def on_submit(self):
 		plots = [frappe.get_doc("RE Plot", r.plot) for r in self.plots]
-		points = [tuple(c) for p in plots for c in json.loads(p.geojson)["coordinates"][0][:-1]] if all(p.geojson for p in plots) else []
-		hull = convex_hull(points)
+		hull = outline(plots)[0] if all(p.geojson for p in plots) else []
 		first = plots[0]
 		new = frappe.get_doc({
 			"doctype": "RE Plot", "plot_no": self.new_plot_no, "project": first.project, "block": first.block, "plot_size": self.plot_size,

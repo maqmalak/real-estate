@@ -468,8 +468,8 @@ def operations(d: Day):
 	# plot merge (rare): two adjacent available plots
 	if d.chance(0.06):
 		block = d.rng.choice(["A Block", "B Block", "C Block"])
-		plots = frappe.get_all("RE Plot", {"block": block, "status": "Available", "merged_into": ("is", "not set")}, pluck="name", order_by="plot_no desc", limit=2)
-		if len(plots) == 2:
+		plots = adjacent_pair(block)
+		if plots:
 			mp = ops.merge_preview(json.dumps(plots))
 			if mp.get("ok"):
 				ops.create("RE Plot Merge", json.dumps({"new_plot_no": mp["suggested_no"], "plot_size": mp["suggested_size"],
@@ -787,3 +787,16 @@ STEPS = [
 	("inventory", inventory),
 	("notifications", notifications),  # last: tells the office about the day's events
 ]
+
+
+def adjacent_pair(block: str, look: int = 40) -> list[str]:
+	"""Two available plots in the block that share a side and merge cleanly (the merge preview passes), or []."""
+	from realestate import operations as ops
+
+	names = frappe.get_all("RE Plot", {"block": block, "status": "Available", "merged_into": ("is", "not set"), "geojson": ("is", "set")},
+						   pluck="name", order_by="plot_no desc", limit=look)
+	for i, a in enumerate(names):
+		for b in names[i + 1:i + 6]:
+			if ops.merge_preview(json.dumps([a, b])).get("ok"):
+				return [a, b]
+	return []

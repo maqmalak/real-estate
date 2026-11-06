@@ -7,7 +7,8 @@ export default async function (page, h) {
   await h.go("/re", 3000);
   await h.scroll(1400);
   await h.say("Complaints from the owner portal, WhatsApp or staff land in the urgent queue by priority.", "Complaints");
-  await h.click(page.locator("main a[href*='/projects/tasks/']").first(), 3000);
+  const job = page.locator("main a[href*='/projects/tasks/']").first();
+  if (await job.count()) await h.click(job, 3000); else await h.go("/projects/tasks", 3500);
   await h.say("Each complaint is an ERPNext Task with plot, priority, due date and assignee.", "Job");
   await h.go("/re/d/re-map-feature", 4000);
   await h.say("Infrastructure: build-out per network, upkeep jobs and the linked assets.", "Infrastructure");

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 220 24% 95%; /* soft grey-blue page so white cards stand out */
+    --background: 220 26% 93.5%; /* soft grey-blue page so white cards stand out */
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -20,9 +20,9 @@
     --accent-foreground: 222 47% 11%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 215 24% 78%; /* card and table edges visible on the light background (was 83%) */
+    --border: 215 22% 74%; /* card and table edges visible on the light background (was 83%) */
     /* inputs: own surface + a clearly visible border (requested: visible fields in light and dark) */
-    --input: 215 16% 62%;
+    --input: 216 18% 54%;
     --input-bg: 0 0% 100%;
     --success: 142 64% 34%;
     --warning: 32 95% 44%;
@@ -311,7 +311,8 @@
   .dark .form-card { box-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 30px -14px rgb(0 0 0 / 0.6); }
   .form-card-head {
     @apply flex items-center gap-2.5 border-b border-border px-4 py-2.5 text-[13px] font-semibold tracking-tight sm:px-5;
-    background: linear-gradient(90deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.02) 45%, transparent);
+    background: linear-gradient(90deg, hsl(var(--primary) / 0.14), hsl(var(--primary) / 0.04) 50%, transparent);
+    box-shadow: inset 3px 0 0 hsl(var(--primary));
   }
   .form-card-body { @apply p-4 sm:p-5; }
   .frappe-form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
@@ -322,10 +323,36 @@
     box-shadow: inset 0 1px 2px rgb(15 23 42 / 0.06);
   }
   .frappe-form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-  .frappe-form select { @apply h-8; }
+  .frappe-form select { @apply h-9; }
   .frappe-form input:focus-visible, .frappe-form select:focus-visible, .frappe-form textarea:focus-visible {
     @apply border-ring;
     box-shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
   }
-  .frappe-form label { @apply text-[12px] font-medium text-foreground/80; }
+  .frappe-form label { @apply text-[12.5px] font-semibold text-foreground/90; }
+}
+
+/* Prominent cards and fields (all pages): raised white cards, inputs as clear wells with hover and focus states */
+@layer components {
+  .bg-card.border, .bg-card.rounded-2xl, .bg-card.rounded-xl, .form-card {
+    box-shadow: 0 0 0 1px hsl(220 30% 20% / 0.03), 0 1px 3px hsl(220 30% 20% / 0.08), 0 10px 26px -12px hsl(220 40% 25% / 0.24);
+  }
+  .field, .frappe-form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), .frappe-form select, .frappe-form textarea {
+    border-width: 1.5px;
+    box-shadow: inset 0 1px 2px rgb(15 23 42 / 0.07), 0 1px 0 rgb(255 255 255 / 0.6);
+    transition: border-color .15s, box-shadow .15s, background-color .15s;
+  }
+  .field:hover:not(:disabled):not([readonly]),
+  .frappe-form input:hover:not(:disabled):not([readonly]), .frappe-form select:hover:not(:disabled), .frappe-form textarea:hover:not(:disabled) {
+    border-color: hsl(var(--primary) / 0.55);
+  }
+  .field:focus-visible, .frappe-form input:focus-visible, .frappe-form select:focus-visible, .frappe-form textarea:focus-visible {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3.5px hsl(var(--ring) / 0.22), inset 0 1px 2px rgb(15 23 42 / 0.05);
+  }
+  .dark .field, .dark .frappe-form input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), .dark .frappe-form select, .dark .frappe-form textarea {
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.45);
+  }
+  .dark .bg-card.border, .dark .bg-card.rounded-2xl, .dark .bg-card.rounded-xl, .dark .form-card {
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.05) inset, 0 10px 28px -10px hsl(0 0% 0% / 0.65);
+  }
 }

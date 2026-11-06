@@ -453,6 +453,12 @@ def run_all(project=None):
 	out = []
 	for fn in CHECKS:
 		t = time.time()
+		if fn in (check_land_use, check_geometry) and not (project and frappe.db.exists("RE Project", project)):
+			title = {check_land_use: "Land-use percentages reconcile to 100% of the boundary",
+					 check_geometry: "Plots inside their block, blocks inside the boundary, no overlaps"}[fn]
+			out.append({**_result(fn.__name__.replace("check_", ""), title, WARN,
+								  "No project yet — create the scheme (RE Project with its boundary) or load the demo, then re-run"), "seconds": 0})
+			continue
 		try:
 			r = fn(project) if fn in (check_land_use, check_geometry) else fn()
 		except Exception as e:  # noqa: BLE001

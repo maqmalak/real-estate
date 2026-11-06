@@ -33,6 +33,7 @@
   "merged_into",
   "land_adjustment",
   "land_deal",
+  "society_exempt",
   "tab_geo",
   "map_html",
   "centre_lat",
@@ -229,6 +230,13 @@
    "read_only": 1
   },
   {
+   "fieldname": "society_exempt",
+   "fieldtype": "Check",
+   "label": "Society charges waived",
+   "read_only": 1,
+   "description": "Set by a plot adjustment against land when development, possession and society charges do not apply"
+  },
+  {
    "fieldname": "tab_geo",
    "fieldtype": "Tab Break",
    "label": "Map"
@@ -282,7 +290,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-06 12:00:00.000000",
+ "modified": "2026-11-06 21:00:00.000000",
  "modified_by": "Administrator",
  "module": "Real Estate",
  "name": "RE Plot",

@@ -43,7 +43,8 @@ def generate_society_bills(month=None, silent=False):
 	made = 0
 	month_end = add_days(add_months(month, 1), -1)
 	heads = [frappe.get_doc("RE Charge Head", h) for h in frappe.get_all("RE Charge Head", {"enabled": 1}, pluck="name", order_by="sequence asc")]
-	for plot in frappe.get_all("RE Plot", {"status": ("in", ["Booked", "Sold"]), "customer": ("is", "set")}, ["name", "customer", "plot_size", "booking"]):
+	for plot in frappe.get_all("RE Plot", {"status": ("in", ["Booked", "Sold"]), "customer": ("is", "set"), "society_exempt": 0},  # waived: plots given to land owners on those terms
+							   ["name", "customer", "plot_size", "booking"]):
 		if frappe.db.exists("RE Society Bill", {"plot": plot.name, "billing_month": month}):
 			continue
 		if plot.booking and getdate(frappe.db.get_value("RE Booking", plot.booking, "booking_date")) > getdate(month_end):

@@ -317,6 +317,7 @@ export const APP_NAVIGATION: Record<string, NavGroup[]> = {
       { label: "Plots", to: "/re/plots", icon: Boxes },
       { label: "Insights", to: "/re/insights", icon: BarChart3, roles: ["Sales Manager", "Accounts User", "Accounts Manager"] },
       { label: "Reports", to: "/re/reports", icon: FileText, roles: ["Sales Manager", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager", "Projects User", "Projects Manager"] },
+      { label: "Help & guides", to: "/re/help", icon: LifeBuoy },
       { label: "Acceptance checks", to: "/re/acceptance", icon: ShieldCheck, roles: ["System Manager"] },
     ] },
     { title: "Land Acquisition", items: [

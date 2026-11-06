@@ -804,8 +804,10 @@ def _phase_b(rng, people):
 			ops.act("RE Booking Cancellation", c["name"], "Approve")
 	# merges: two adjacent available plots in A block (approved) and two in B block (pending)
 	for block, approve in (("A Block", True), ("B Block", False)):
-		plots = frappe.get_all("RE Plot", {"block": block, "status": "Available"}, pluck="name", order_by="plot_no desc", limit=2)
-		mp = ops.merge_preview(json.dumps(plots))
+		from realestate.demo.daily import adjacent_pair
+
+		plots = adjacent_pair(block)
+		mp = ops.merge_preview(json.dumps(plots)) if plots else {"ok": False}
 		if mp["ok"]:
 			m = ops.create("RE Plot Merge", json.dumps({"new_plot_no": mp["suggested_no"], "plot_size": mp["suggested_size"], "plots": [{"plot": p} for p in plots],
 														 "notes": "Corner double plot for premium sale"}))

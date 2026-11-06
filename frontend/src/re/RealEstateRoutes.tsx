@@ -19,6 +19,7 @@ import { MapPage } from "./pages/MapPage";
 import { OperationsPage } from "./pages/Operations";
 import { PlotsPage } from "./pages/Plots";
 import { ReportsPage } from "./pages/Reports";
+import { HelpPage } from "./pages/Help";
 import { SocietyCollectPage } from "./pages/SocietyCollect";
 import { UsersRolesPage } from "./pages/UsersRoles";
 import { TodayPage } from "./pages/Today";
@@ -49,6 +50,7 @@ export function RealEstateRoutes() {
           <Route path="operations" element={<OperationsPage />} />
           <Route path="inbox" element={<InboxPage />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="help" element={<HelpPage />} />
           <Route path="society/collect" element={<SocietyCollectPage />} />
           <Route path="settings/users" element={<UsersRolesPage />} />
           <Route path="acceptance" element={<AcceptancePage />} />

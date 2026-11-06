@@ -14,3 +14,4 @@ frontend/.env.*.local
 tools/videos/out/
 docs/fsd/videos/
 tools/docs-book/out/
+realestate/public/downloads/

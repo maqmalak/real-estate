@@ -33,6 +33,14 @@ import {
   Building,
   MessageCircle,
   Repeat2,
+  Gauge,
+  HandCoins,
+  Scale,
+  ScrollText,
+  Calculator,
+  ArrowRightLeft,
+  UserSquare2,
+  Gavel,
   type LucideIcon,
   FileText,
 } from "lucide-react";
@@ -82,6 +90,7 @@ export interface AppTile {
 
 /** Desktop sections, in display order. */
 export const APP_GROUPS = [
+  "Land Acquisition",
   "Real Estate",
   "Overview",
   "Finance & Setup",
@@ -93,8 +102,16 @@ export const APP_GROUPS = [
 ] as const;
 
 /** Desktop app-launcher — one tile per module, shown after login, in this order. */
+const LAND_TILE_ROLES = ["Land Manager", "Accounts User", "Accounts Manager", "Projects Manager"];
+
 export const APPS: AppTile[] = [
   // ------------------------------------------------------------------ Real Estate (realestate app)
+  { id: "re-help", label: "Help & guides", tagline: "Guides · Videos", group: "Real Estate", icon: LifeBuoy, to: "/re/help", apps: ["realestate"],
+    description: "Step-by-step A4 guides with screenshots, the process flow & DFD book, videos of every operation and the manual for your role.",
+    colorClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400", features: ["Process flow & DFD", "9 guides", "Videos", "Role manuals"] },
+  { id: "re-insights", label: "Insights", tagline: "Analytics", group: "Real Estate", icon: LineChart, to: "/re/insights", apps: ["realestate"], roles: ["Sales Manager", "Accounts User", "Accounts Manager"],
+    description: "Sales, collections, receivables aging, funnel, agents, cost vs revenue and the society account.",
+    colorClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400", features: ["Sales by block", "Aging & defaulters", "Agent performance", "Cost vs revenue"] },
   { id: "re", label: "Zarmeen Gardens", tagline: "Society Dashboard", group: "Real Estate", icon: Building, to: "/re", apps: ["realestate"],
     description: "Collections, plots sold, overdue installments, site visits, follow-ups and urgent maintenance at a glance.",
     colorClass: "bg-teal-500/10 text-teal-600 dark:text-teal-400", features: ["KPIs & collections", "Visit pipeline", "Today's schedule", "Urgent maintenance"] },
@@ -104,9 +121,36 @@ export const APPS: AppTile[] = [
   { id: "re-plots", label: "Plots & Sales", tagline: "Inventory · Bookings", group: "Real Estate", icon: Grid3x3, to: "/re/plots", apps: ["realestate"],
     description: "Plot inventory with filters, bookings with installment plans posted to ERPNext Sales Invoices.",
     colorClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400", features: ["Plot cards & table", "Bookings & schedules", "Payment plans", "Allotment letters"] },
-  { id: "re-land", label: "Land Acquisition", tagline: "Khasras · Deals · Sellers", group: "Real Estate", icon: LandPlot, to: "/re/land", apps: ["realestate"], roles: ["Land Manager", "Accounts User", "Accounts Manager", "Projects Manager"],
-    description: "Khasra-wise land purchase: co-owners per fard, acquisition pipeline, multi-owner deals (iqrar nama), extensions, seller schedules, due diligence and court cases.",
-    colorClass: "bg-lime-500/10 text-lime-700 dark:text-lime-400", features: ["Khasras & co-owners", "Deals & agreements", "Seller schedules", "Due diligence"] },
+  { id: "re-land", label: "Land Overview", tagline: "Land bank · Map", group: "Land Acquisition", icon: Gauge, to: "/re/land", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Kanal acquired against the target, paid and owed to sellers, average cost, highlights and the khasra map by acquisition stage.",
+    colorClass: "bg-lime-500/10 text-lime-700 dark:text-lime-400", features: ["Land bank", "Khasra map", "Overdue owners", "Average cost"] },
+  { id: "re-land-parcels", label: "Khasras", tagline: "Fard · Co-owners", group: "Land Acquisition", icon: LandPlot, to: "/re/d/re-land-parcel", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Every khasra with mauza, khewat, khatooni, area and co-owner shares, moved through the acquisition pipeline.",
+    colorClass: "bg-green-500/10 text-green-700 dark:text-green-400", features: ["Co-owner shares", "Pipeline board", "Area in K-M-S"] },
+  { id: "re-land-deals", label: "Land Deals", tagline: "Iqrar nama", group: "Land Acquisition", icon: ScrollText, to: "/re/d/re-land-deal", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Multi-owner deals and agreements to sell: owner lines, extensions, seller schedules, approval and purchase invoices.",
+    colorClass: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400", features: ["Owner lines", "Extensions", "Purchase invoices"] },
+  { id: "re-land-sellers", label: "Sellers & Payments", tagline: "Balances · Due", group: "Land Acquisition", icon: HandCoins, to: "/re/land/payments", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "What each land owner is owed, what falls due this month and payments waiting for approval.",
+    colorClass: "bg-teal-500/10 text-teal-700 dark:text-teal-400", features: ["Owner balances", "Due this month", "Approvals"] },
+  { id: "re-land-payments", label: "Seller Payments", tagline: "Cheque · WHT", group: "Land Acquisition", icon: Calculator, to: "/re/d/re-land-payment", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Payments to land owners by cheque, pay order, transfer or cash, with withholding tax, posted as Payment Entries.",
+    colorClass: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400", features: ["Withholding tax", "Payment Entries", "Approval limit"] },
+  { id: "re-land-adjust", label: "Plot Adjustments", tagline: "Plots in lieu", group: "Land Acquisition", icon: ArrowRightLeft, to: "/re/d/re-plot-adjustment", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Land cost settled with plots instead of cash, posted to the owner's account.",
+    colorClass: "bg-sky-500/10 text-sky-700 dark:text-sky-400", features: ["Plots in lieu", "Owner ledger"] },
+  { id: "re-land-owners", label: "Land Owners", tagline: "Sellers", group: "Land Acquisition", icon: UserSquare2, to: "/re/d/re-land-owner", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Land owners (suppliers in the Land Owners group) with CNIC, contacts and their khasras.",
+    colorClass: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400", features: ["CNIC", "Khasras", "Ledger"] },
+  { id: "re-land-legal", label: "Due Diligence", tagline: "Checks · Cases", group: "Land Acquisition", icon: Scale, to: "/re/land/legal", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "The due-diligence checklist per khasra and the court cases with their hearings.",
+    colorClass: "bg-amber-500/10 text-amber-700 dark:text-amber-400", features: ["9 checks", "Hearings", "Disputes"] },
+  { id: "re-land-reports", label: "Land Reports", tagline: "14 reports · Excel · PDF", group: "Land Acquisition", icon: FileText, to: "/re/reports?r=Land%20Purchase%20Status", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Land purchase status, owner ledgers and trial balance, payables aging, payments due, cost per kanal, registry pending and the litigation register.",
+    colorClass: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-400", features: ["Purchase status", "Owners trial balance", "Payables aging", "Litigation"] },
+  { id: "re-land-cases", label: "Court Cases", tagline: "Hearings", group: "Land Acquisition", icon: Gavel, to: "/re/d/re-land-case", apps: ["realestate"], roles: LAND_TILE_ROLES,
+    description: "Disputes over khasras: court, judge, next hearing and status.",
+    colorClass: "bg-rose-500/10 text-rose-700 dark:text-rose-400", features: ["Next hearing", "Court & judge"] },
   { id: "re-operations", label: "Sales Operations", tagline: "Approvals · Transfers · Refunds", group: "Real Estate", icon: Repeat2, to: "/re/operations", apps: ["realestate"], roles: ["Sales Manager", "Sales User", "Sales Agent", "Accounts User", "Recovery Officer"],
     description: "Approvals inbox, plot transfers, cancellations & refunds, plot merges, surcharges & waivers, commissions and recovery.",
     colorClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400", features: ["Approval workflows", "Transfers & NDC check", "Refunds & merges", "Commission payouts"] },
@@ -128,9 +172,6 @@ export const APPS: AppTile[] = [
   { id: "re-reports", label: "Reports", tagline: "Excel · PDF", group: "Real Estate", icon: FileText, to: "/re/reports", apps: ["realestate"], roles: ["Sales Manager", "Accounts User", "Accounts Manager", "Recovery Officer", "Society Manager", "Projects Manager"],
     description: "Every collection, society, development and CRM report with preview and Excel / PDF export on the letterhead.",
     colorClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400", features: ["Installment dues", "Defaulters", "Budget vs actual", "Agent activity"] },
-  { id: "re-insights", label: "Insights", tagline: "Analytics", group: "Real Estate", icon: LineChart, to: "/re/insights", apps: ["realestate"], roles: ["Sales Manager", "Accounts User", "Accounts Manager"],
-    description: "Sales, collections, receivables aging, funnel, agents, cost vs revenue and the society account.",
-    colorClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400", features: ["Sales by block", "Aging & defaulters", "Agent performance", "Cost vs revenue"] },
   // ------------------------------------------------------------------ Overview
   {
     id: "dashboard",

@@ -19,7 +19,7 @@ GROUP = "Commission Agents"
 
 
 def _company():
-	return frappe.db.get_single_value("RE Settings", "company")
+	return frappe.db.get_single_value("RE Settings", "company") or frappe.db.get_single_value("Global Defaults", "default_company")
 
 
 def payable_account(company=None) -> str:
@@ -234,8 +234,11 @@ def ensure_voucher_format():
 
 
 def setup():
-	payable_account()
 	ensure_voucher_format()
+	company = _company()
+	if not (company and frappe.db.exists("Company", company)):
+		return  # fresh site before the ERPNext setup wizard: accounts come on the first migrate after it
+	payable_account(company)
 	return migrate()
 
 

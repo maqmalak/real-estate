@@ -120,12 +120,20 @@ def merge_preview(plots: str) -> dict:
 	rows = frappe.get_all("RE Plot", {"name": ("in", names)}, ["name", "block", "plot_size", "area_marla", "list_price", "status", "customer", "customer_name"])
 	statuses, owners, blocks = {r.status for r in rows}, {r.customer for r in rows}, {r.block for r in rows}
 	ok = len(rows) >= 2 and len(blocks) == 1 and (statuses == {"Available"} or (statuses <= {"Sold", "Possession Given"} and len(owners) == 1))
+	problem = None
+	if ok:
+		from realestate.real_estate.doctype.re_plot_merge.re_plot_merge import outline
+
+		docs = [frappe.get_doc("RE Plot", r.name) for r in rows]
+		if all(d.geojson for d in docs):
+			problem = outline(docs)[1]
+			ok = not problem
 	totals = merge([{"area_marla": r.area_marla, "list_price": r.list_price} for r in rows]) if rows else {"area_marla": 0, "list_price": 0}
 	sizes = frappe.get_all("RE Plot Size", ["name", "area_marla"], order_by="area_marla")
 	size = min(sizes, key=lambda s: abs(flt(s.area_marla) - totals["area_marla"])).name if sizes else None
 	nums = sorted(r.name for r in rows)
 	return {"plots": rows, "ok": ok, **totals, "suggested_no": f"{nums[0]}/{nums[-1].split('-')[-1]}" if nums else "", "suggested_size": size,
-			"reason": None if ok else _("Pick 2+ plots in one block that are all available, or all fully paid by the same owner")}
+			"reason": None if ok else _(problem) if problem else _("Pick 2+ plots in one block that are all available, or all fully paid by the same owner")}
 
 
 @frappe.whitelist()

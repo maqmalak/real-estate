@@ -8,6 +8,8 @@ import { join } from "node:path";
 export const BASE = process.env.RE_BASE ?? "http://realestate.localhost:7176";
 export const OUT = new URL("./out/", import.meta.url).pathname;
 const SIZE = { width: 1440, height: 900 };
+// readable on a laptop or phone: interactions zoom in this much (RE_ZOOM=1 turns it off)
+const ZOOM = Number(process.env.RE_ZOOM ?? 1.7);
 
 function secret(key) {
   const txt = readFileSync(join(homedir(), ".realestate-site-secrets"), "utf8");
@@ -23,9 +25,9 @@ const OVERLAY = `
   const css = document.createElement('style'); css.id = 're-style';
   css.textContent = \`
     #re-cap{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2147483647;max-width:min(1100px,92vw);
-      background:rgba(15,23,42,.92);color:#fff;font:600 19px/1.4 system-ui,'Segoe UI',sans-serif;padding:12px 22px;border-radius:14px;
+      background:rgba(15,23,42,.94);color:#fff;font:600 23px/1.4 system-ui,'Segoe UI',sans-serif;padding:14px 26px;border-radius:14px;
       box-shadow:0 12px 30px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);transition:opacity .25s;pointer-events:none}
-    #re-cap small{display:block;font:500 13px/1.3 system-ui,sans-serif;color:#5eead4;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+    #re-cap small{display:block;font:600 15px/1.3 system-ui,sans-serif;color:#5eead4;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
     #re-ptr{position:fixed;z-index:2147483647;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
       background:rgba(20,184,166,.35);border:2px solid #0f766e;pointer-events:none;transition:left .05s linear,top .05s linear}
     #re-ptr.click{animation:rePulse .45s ease-out}
@@ -36,6 +38,14 @@ const OVERLAY = `
     #re-title em{font:600 15px/1 system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#99f6e4;margin-bottom:18px;font-style:normal}\`;
   // the page's own <head> may be rebuilt after this runs, so (re)attach the stylesheet whenever an overlay is shown
   window.__reEnsure = () => { if (!document.getElementById('re-style')) (document.head || document.documentElement).appendChild(css); };
+  // readable zoom: scale the app's root around a point (that point stays put, so the pointer stays on target)
+  window.__reZoom = (x, y, scale) => {
+    const root = document.getElementById('root') || document.body.firstElementChild;
+    if (!root) return;
+    root.style.transition = 'transform .55s cubic-bezier(.2,.7,.2,1)';
+    root.style.transformOrigin = x + 'px ' + y + 'px';
+    root.style.transform = scale > 1 ? 'scale(' + scale + ')' : '';
+  };
   const ptr = document.createElement('div'); ptr.id = 're-ptr'; ptr.style.left = '-50px'; ptr.style.top = '-50px';
   const mount = () => { window.__reEnsure(); if (document.body && !document.getElementById('re-ptr')) document.body.appendChild(ptr); };
   document.addEventListener('DOMContentLoaded', mount); mount();
@@ -122,13 +132,24 @@ function helpers(page, context) {
       await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
       await pause(wait);
     },
-    async click(target, after = 1100) {
+    /** Ease in on an element (or a point) so its text is readable on video, hold, then ease out. */
+    async focus(target, ms = 1800, scale = ZOOM) {
+      const [x, y] = Array.isArray(target) ? target : await center(loc(target));
+      await page.evaluate(([zx, zy, s]) => window.__reZoom?.(zx, zy, s), [x, y, scale]);
+      await pause(ms);
+      await page.evaluate(() => window.__reZoom?.(0, 0, 1));
+      await pause(450);
+    },
+    async click(target, after = 1100, zoom = true) {
       const l = loc(target);
       const [x, y] = await center(l);
       await moveTo(x, y);
+      if (zoom && ZOOM > 1) { await page.evaluate(([zx, zy, s]) => window.__reZoom?.(zx, zy, s), [x, y, ZOOM]); await pause(650); }
       await pause(250);
       await l.click({ timeout: 10000 });
-      await pause(after);
+      await pause(Math.min(after, 900));
+      if (zoom && ZOOM > 1) { await page.evaluate(() => window.__reZoom?.(0, 0, 1)); await pause(450); }
+      await pause(Math.max(after - 900, 200));
     },
     async hover(target, after = 1500) {
       const l = loc(target);
@@ -140,10 +161,12 @@ function helpers(page, context) {
       const l = loc(target);
       const [x, y] = await center(l);
       await moveTo(x, y);
+      if (ZOOM > 1) { await page.evaluate(([zx, zy, s]) => window.__reZoom?.(zx, zy, s), [x, y, ZOOM]); await pause(600); }
       await l.click({ timeout: 10000 });
       await l.fill("");
       await page.keyboard.type(text, { delay: 55 });
       await pause(after);
+      if (ZOOM > 1) { await page.evaluate(() => window.__reZoom?.(0, 0, 1)); await pause(400); }
     },
     async scroll(dy = 500, after = 1200) {
       await page.mouse.wheel(0, dy);

@@ -64,6 +64,7 @@ class REPlotAdjustment(Document):
 			if use > 0.5:
 				rc = frappe.get_doc({"doctype": "RE Payment", "payment_against": "Booking", "booking": booking.name, "posting_date": self.posting_date,
 									 "mode_of_payment": ADJUSTMENT_MODE, "amount": use, "land_adjustment": self.name, "reference_no": self.name,
+									 "send_receipt": 0,  # no cash changed hands: the adjustment memo is the owner's document
 									 "remarks": _("Adjusted against land deal {0} ({1})").format(self.deal, self.owner_name)})
 				rc.flags.ignore_permissions = True
 				rc.insert()
@@ -71,7 +72,7 @@ class REPlotAdjustment(Document):
 				receipt = rc.name
 				left = round(left - use, 2)
 			r.db_set({"booking": booking.name, "receipt": receipt})
-			frappe.db.set_value("RE Plot", r.plot, {"land_adjustment": self.name, "land_deal": self.deal})
+			frappe.db.set_value("RE Plot", r.plot, {"land_adjustment": self.name, "land_deal": self.deal, "society_exempt": 0 if self.charges_apply else 1})
 		frappe.get_doc("RE Land Deal", self.deal).refresh_ledger()
 		self._documents()
 
@@ -92,14 +93,16 @@ class REPlotAdjustment(Document):
 			if r.receipt and frappe.db.get_value("RE Payment", r.receipt, "docstatus") == 1:
 				doc = frappe.get_doc("RE Payment", r.receipt)
 				doc.flags.ignore_permissions = True
+				doc.ignore_linked_doctypes = ("WhatsApp Message", "RE Reminder Log", "Communication", "Journal Entry", "GL Entry", "Payment Ledger Entry")
 				doc.cancel()
 			if r.booking and frappe.db.get_value("RE Booking", r.booking, "docstatus") == 1:
 				if frappe.db.exists("RE Payment", {"booking": r.booking, "docstatus": 1}):
 					frappe.throw(_("Booking {0} has other receipts — cancel them first").format(r.booking))
 				doc = frappe.get_doc("RE Booking", r.booking)
 				doc.flags.ignore_permissions = True
+				doc.ignore_linked_doctypes = ("WhatsApp Message", "RE Reminder Log", "Communication", "RE Commission", "Sales Invoice", "GL Entry", "Payment Ledger Entry")
 				doc.cancel()
-			frappe.db.set_value("RE Plot", r.plot, {"land_adjustment": None, "land_deal": None})
+			frappe.db.set_value("RE Plot", r.plot, {"land_adjustment": None, "land_deal": None, "society_exempt": 0})
 		frappe.get_doc("RE Land Deal", self.deal).refresh_ledger()
 
 	def _customer(self) -> str:

@@ -5,6 +5,7 @@ All amounts are PKR; results are rounded to whole rupees (installments to the th
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import date
 
@@ -187,3 +188,58 @@ def convex_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
 			upper.pop()
 		upper.append(p)
 	return lower[:-1] + upper[:-1]
+
+
+def _ring(geojson) -> list[tuple[float, float]]:
+	g = json.loads(geojson) if isinstance(geojson, str) else geojson
+	return [tuple(c) for c in g["coordinates"][0][:-1]]
+
+
+def _on_segment(p, a, b, eps) -> bool:
+	(px, py), (ax, ay), (bx, by) = p, a, b
+	dx, dy = bx - ax, by - ay
+	seg2 = dx * dx + dy * dy
+	t = 0.0 if not seg2 else max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / seg2))
+	cx, cy = ax + t * dx, ay + t * dy
+	return (px - cx) ** 2 + (py - cy) ** 2 <= eps * eps
+
+
+def rings_touch(r1, r2, eps: float = 1e-5) -> bool:
+	"""Two plot outlines share an edge: at least two vertices of one lie on the other's boundary (eps ≈ 1 m in degrees)."""
+	def hits(a, b):
+		edges = list(zip(b, b[1:] + b[:1]))
+		return sum(1 for p in a if any(_on_segment(p, e0, e1, eps) for e0, e1 in edges))
+	return hits(r1, r2) + hits(r2, r1) >= 2
+
+
+def _inside_convex(p, hull) -> bool:
+	sign = 0
+	for a, b in zip(hull, hull[1:] + hull[:1]):
+		c = (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
+		if abs(c) < 1e-14:
+			continue
+		s = 1 if c > 0 else -1
+		if sign and s != sign:
+			return False
+		sign = s
+	return True
+
+
+def merge_outline(rings: dict, others: dict) -> tuple[list, str | None]:
+	"""Outline of plots being merged, or why they can't be: every plot must share an edge with the group, and the outline
+	(convex hull) must not take in any other plot. rings/others: {plot name: [(lng, lat), ...]}."""
+	names = list(rings)
+	seen, todo = {names[0]}, [names[0]]
+	while todo:
+		cur = todo.pop()
+		for n in names:
+			if n not in seen and rings_touch(rings[cur], rings[n]):
+				seen.add(n)
+				todo.append(n)
+	if len(seen) < len(names):
+		return [], "Plots {0} do not share a side with the others; only adjacent plots can be merged".format(", ".join(sorted(set(names) - seen)))
+	hull = convex_hull([p for r in rings.values() for p in r])
+	inside = sorted(n for n, r in others.items() if _inside_convex((sum(x for x, _y in r) / len(r), sum(y for _x, y in r) / len(r)), hull))
+	if inside:
+		return [], "The merged outline would take in plot {0}; pick plots that form a rectangle".format(", ".join(inside))
+	return hull, None

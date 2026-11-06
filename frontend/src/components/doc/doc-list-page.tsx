@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate , useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Plus, Eye, Trash2, Search, X } from "lucide-react";
+import { Plus, Eye, Trash2, Search, X, LayoutGrid, List, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { DateInput } from "@/components/forms/frappe-form";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { FrappeDataTable } from "@/components/tables/data-table";
+import { FrappeDataTable, type ColumnDef, type ServerTableControls } from "@/components/tables/data-table";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { statusDotClass } from "@/components/common/status-color";
 import { cn } from "@/utils/cn";
@@ -56,6 +56,12 @@ function DocListPageInner({ config }: { config: DocConfig }) {
     return Object.fromEntries([...q.entries()].filter(([k, v]) => v && keys.has(k) && k !== "status"));
   });
   const [pendingDelete, setPendingDelete] = useState<Doc | null>(null);
+  // card / list view, remembered per DocType in this browser
+  const viewKey = `re-list-view:${config.doctype}`;
+  const [view, setViewState] = useState<"list" | "cards">(() => {
+    try { return localStorage.getItem(viewKey) === "cards" ? "cards" : "list"; } catch { return "list"; }
+  });
+  const setView = (v: "list" | "cards") => { setViewState(v); try { localStorage.setItem(viewKey, v); } catch { /* private mode */ } };
 
   const scoped = config.companyScoped ?? config.fields.some((f) => f.fieldname === "company");
 
@@ -211,22 +217,37 @@ function DocListPageInner({ config }: { config: DocConfig }) {
           query={table.controls(total ?? 0).query}
           onQuery={table.controls(total ?? 0).onQueryChange}
           onClear={clearFilters}
+          hideField={tabs.length > 0 && !config.topFilters.status ? config.statusField : undefined}
         />
       )}
 
       {config.listHeaderExtra}
 
       {tabs.length > 0 && !config.topFilters?.status && (
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]" role="tablist" aria-label={`${config.plural} by status`}>
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]" role="tablist" aria-label={`${config.plural} by status`}>
           <StatusTab label="All" count={allCount} total={allCount} active={!status} onClick={() => setFilter("status", "")} />
-          {tabs.map((s) => (
+          {tabs.filter((s) => (counts[s] ?? 0) > 0 || status === s).map((s) => (
             <StatusTab key={s} label={s} count={counts[s] ?? 0} total={allCount} dot={statusDotClass(s)} active={status === s} onClick={() => setFilter("status", status === s ? "" : s)} />
           ))}
         </div>
       )}
 
+      {view === "cards" ? (
+        <CardGrid
+          config={config}
+          rows={data ?? []}
+          loading={isLoading}
+          controls={table.controls(total ?? 0)}
+          searchable={!config.topFilters}
+          link={rowLink}
+          toggle={<ViewToggle view={view} onChange={setView} />}
+          empty={hasFilters || table.controls(0).query ? `No ${config.plural.toLowerCase()} match` : `No ${config.plural.toLowerCase()} yet`}
+        />
+      ) : (
       <div className="rounded-2xl border bg-card p-3 shadow-sm sm:p-4">
       <FrappeDataTable
+        searchable={!config.topFilters}
+        toolbar={<ViewToggle view={view} onChange={setView} />}
         columns={config.columns}
         rows={data ?? []}
         rowKey={(r) => String(r.name)}
@@ -302,6 +323,7 @@ function DocListPageInner({ config }: { config: DocConfig }) {
         }
       />
       </div>
+      )}
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}
@@ -349,10 +371,10 @@ function StatusTab({ label, count, total, active, dot, onClick }: { label: strin
 }
 
 /** Filter bar at the top of a list: search plus chip groups with live counts; each group's counts follow the other filters. */
-function TopFilters({ config, baseFilters, extra, setField, status, statusCounts, statusTabs, query, onQuery, onClear }: {
+function TopFilters({ config, baseFilters, extra, setField, status, statusCounts, statusTabs, query, onQuery, onClear, hideField }: {
   config: DocConfig; baseFilters: unknown[][]; extra: Record<string, string>; setField: (key: string, value: string) => void;
   status: string; statusCounts: Record<string, number>; statusTabs: string[];
-  query: string; onQuery: (q: string) => void; onClear: () => void;
+  query: string; onQuery: (q: string) => void; onClear: () => void; hideField?: string;
 }) {
   const tf = config.topFilters!;
   const active = Boolean(query) || Boolean(status) || tf.fields.some((f) => extra[f.field]);
@@ -371,7 +393,7 @@ function TopFilters({ config, baseFilters, extra, setField, status, statusCounts
           </button>
         )}
       </div>
-      {tf.fields.map((f) => (
+      {tf.fields.filter((f) => f.field !== hideField).map((f) => (
         <ChipGroup key={f.field} label={f.label} doctype={config.doctype} field={f.field}
           filters={[...baseFilters, ...Object.entries(extra).filter(([k, v]) => v && k !== f.field).map(([k, v]) => [k, "=", v]), ...(status && config.statusField ? [[config.statusField, "=", status]] : [])]}
           value={extra[f.field] ?? ""} onChange={(v) => setField(f.field, v)} />
@@ -430,5 +452,111 @@ function FilterSelect({ value, onChange, options, optionsFrom }: { value: string
         </option>
       ))}
     </Select>
+  );
+}
+
+function ViewToggle({ view, onChange }: { view: "list" | "cards"; onChange: (v: "list" | "cards") => void }) {
+  return (
+    <div className="inline-flex shrink-0 rounded-xl border bg-muted/50 p-0.5" role="group" aria-label="View">
+      {([["list", List, "List"], ["cards", LayoutGrid, "Cards"]] as const).map(([v, I, label]) => (
+        <button key={v} type="button" onClick={() => onChange(v)} aria-pressed={view === v} title={`${label} view`}
+          className={cn("inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition",
+            view === v ? "bg-background text-foreground shadow-sm ring-1 ring-border" : "text-muted-foreground hover:text-foreground")}>
+          <I className="h-4 w-4" /><span className="hidden sm:inline">{label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const cellText = (c: ColumnDef<Doc>, r: Doc) => (c.render ? c.render(r) : (c.getValue ? c.getValue(r) : (r[c.key] as React.ReactNode)) ?? "—");
+
+/** Card view of the same rows, columns and paging as the table: title + status on top, the next fields as label/value pairs. */
+function CardGrid({ config, rows, loading, controls, searchable, link, toggle, empty }: {
+  config: DocConfig; rows: Doc[]; loading: boolean; controls: ServerTableControls; searchable: boolean;
+  link: (r: Doc) => string; toggle: React.ReactNode; empty: string;
+}) {
+  const navigate = useNavigate();
+  const Icon = config.icon;
+  const cols = config.columns as ColumnDef<Doc>[];
+  const statusCol = cols.find((c) => c.key === config.statusField);
+  const [title, ...rest] = cols.filter((c) => c !== statusCol);
+  const fields = rest.slice(0, 4);
+  const pages = Math.max(1, Math.ceil(controls.total / controls.pageSize));
+  const first = controls.total ? controls.page * controls.pageSize + 1 : 0;
+  const last = Math.min(controls.total, (controls.page + 1) * controls.pageSize);
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-3 shadow-sm">
+        {searchable && (
+          <div className="relative w-full sm:w-72">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input value={controls.query} onChange={(e) => controls.onQueryChange(e.target.value)} placeholder={`Search ${config.plural.toLowerCase()}…`}
+              aria-label="Search" className="field h-9 pl-9" />
+          </div>
+        )}
+        <span className="text-sm text-muted-foreground"><b className="tabular-nums text-foreground">{controls.total.toLocaleString()}</b> {config.plural.toLowerCase()}</span>
+        <div className="ml-auto">{toggle}</div>
+      </div>
+
+      {loading && !rows.length ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {Array.from({ length: 8 }, (_, i) => <div key={i} className="h-44 animate-pulse rounded-2xl border bg-card" />)}
+        </div>
+      ) : !rows.length ? (
+        <div className="grid place-items-center rounded-2xl border border-dashed bg-card py-16 text-center">
+          <Icon className="mb-3 h-10 w-10 text-muted-foreground/50" />
+          <p className="font-semibold">{empty}</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {rows.map((r) => {
+            const st = config.statusField ? String(r[config.statusField] ?? "") : "";
+            const dot = st ? statusDotClass(st) : "bg-primary";
+            return (
+              <button key={String(r.name)} type="button" onClick={() => navigate(link(r))}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card p-4 text-left transition duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1 opacity-80", dot)} />
+                <span aria-hidden className={cn("pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full opacity-[0.08] blur-xl transition group-hover:opacity-20", dot)} />
+                <div className="flex items-start gap-3">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary ring-1 ring-primary/15">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1 text-sm font-semibold leading-snug [&_*]:truncate">{title ? cellText(title, r) : String(r.name)}</div>
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition group-hover:opacity-100" />
+                </div>
+                {statusCol && st && <div className="mt-3">{cellText(statusCol, r)}</div>}
+                {fields.length > 0 && (
+                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-dashed pt-3">
+                    {fields.map((c) => (
+                      <div key={c.key} className={cn("min-w-0", c.align === "right" && "text-right")}>
+                        <dt className="truncate text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{c.label}</dt>
+                        <dd className="mt-0.5 truncate text-[13px] font-medium tabular-nums [&_*]:truncate">{cellText(c, r)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {controls.total > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card px-4 py-2.5 text-sm shadow-sm">
+          <span className="text-muted-foreground">Showing <b className="tabular-nums text-foreground">{first}–{last}</b> of <b className="tabular-nums text-foreground">{controls.total.toLocaleString()}</b></span>
+          <div className="flex items-center gap-2">
+            <select value={controls.pageSize} onChange={(e) => controls.onPageSizeChange(Number(e.target.value))} className="field h-8 w-auto py-0 text-xs" aria-label="Per page">
+              {[20, 50, 100].map((n) => <option key={n} value={n}>{n} per page</option>)}
+            </select>
+            <button type="button" disabled={controls.page === 0} onClick={() => controls.onPageChange(controls.page - 1)}
+              className="grid h-8 w-8 place-items-center rounded-lg border hover:bg-muted disabled:opacity-40" aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></button>
+            <span className="tabular-nums text-xs text-muted-foreground">{controls.page + 1} / {pages}</span>
+            <button type="button" disabled={controls.page + 1 >= pages} onClick={() => controls.onPageChange(controls.page + 1)}
+              className="grid h-8 w-8 place-items-center rounded-lg border hover:bg-muted disabled:opacity-40" aria-label="Next page"><ChevronRight className="h-4 w-4" /></button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

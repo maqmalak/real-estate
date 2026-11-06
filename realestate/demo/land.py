@@ -532,7 +532,7 @@ def wipe(guard: bool = True):
 	frappe.db.delete("RE Booking", {"name": ("in", bookings or [""])})
 	for r in adj_rows:
 		frappe.db.set_value("RE Plot", r.plot, {"status": "Available", "payment_status": None, "customer": None, "customer_name": None, "booking": None,
-												"mobile_no": None, "land_adjustment": None, "land_deal": None})
+												"mobile_no": None, "land_adjustment": None, "land_deal": None, "society_exempt": 0})
 	for dt, names, child in (("RE Land Payment", payments, []), ("RE Plot Adjustment", adjustments, ["RE Plot Adjustment Plot"]),
 							 ("RE Land Deal", deals, ["RE Land Deal Line", "RE Land Deal Extension", "RE Land Deal Schedule", "RE Land Deal Amendment"])):
 		for c in child:

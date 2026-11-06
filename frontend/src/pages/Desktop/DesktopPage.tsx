@@ -6,7 +6,7 @@ import {
   AlertTriangle, Building2, ChevronRight, Globe, Inbox, ListTodo, RefreshCw, Truck, Activity, AlertCircle, CheckCircle2, ClipboardList,
   FileCheck2, FileClock, FileWarning, Landmark, PackageMinus, PackageX, PhoneCall, ShoppingCart, BookOpen, CalendarCheck, FileText, HandCoins,
   Package, Receipt, ShoppingBag, Target, Eye, Flag, type LucideIcon, ArrowRight, BarChart3, Calculator, Cog, Factory, FileBarChart, LayoutGrid,
-  Settings, Users2, Warehouse, Zap,
+  LandPlot, Settings, Users2, Warehouse, Zap,
 } from "lucide-react";
 import { APPS, APP_GROUPS, type AppTile } from "@/app/apps";
 import { APP_NAVIGATION, appSegmentForPath } from "@/app/navigation";
@@ -50,6 +50,7 @@ const CATEGORY: Record<string, { label: string; tone: string }> = {
 
 /** Quick links: the main modules as colour cards (gradient, icon, what's inside). */
 const QUICK: { label: string; sub: string; to: string; icon: LucideIcon; bg: string }[] = [
+  { label: "Land Acquisition", sub: "Khasras, deals & seller payments", to: "/re/land", icon: LandPlot, bg: "from-lime-500 to-emerald-600 shadow-lime-500/30" },
   { label: "Production", sub: "Work orders, planning & tracking", to: "/production", icon: Factory, bg: "from-orange-500 to-amber-500 shadow-orange-500/30" },
   { label: "Stock", sub: "Inventory, warehousing & locations", to: "/inventory/stock", icon: Warehouse, bg: "from-sky-500 to-blue-600 shadow-sky-500/30" },
   { label: "Assets", sub: "Fixed assets & maintenance", to: "/asset-management", icon: Building2, bg: "from-emerald-500 to-teal-600 shadow-emerald-500/30" },
@@ -344,7 +345,7 @@ const SECTION_COLUMNS: Record<string, number | "all"> = {
   Operations: "all",
   "Customers & Collaboration": "all",
 };
-const HOME_GROUP: Record<string, string> = { admin: "Finance & Setup", settings: "Finance & Setup" };
+const HOME_GROUP: Record<string, string> = { admin: "Finance & Setup", settings: "Finance & Setup", "re-help": "Overview", "re-insights": "Overview" };
 /** Whole sections folded into another on the home page (People sits in front of Customers & Collaboration). */
 const MERGE_INTO: Record<string, string> = { People: "Customers & Collaboration" };
 const homeGroupOf = (a: AppTile) => { const g = HOME_GROUP[a.id] ?? a.group ?? "More"; return MERGE_INTO[g] ?? g; };
@@ -389,6 +390,29 @@ const PLAYBOOKS: Record<string, { title: string; steps: { label: string; to: str
     { label: "Stock levels", to: "/inventory/stock" }, { label: "Stock Ledger", to: "/inventory/reports/stock-ledger" }] },
   crm: { title: "Lead to deal", steps: [
     { label: "Leads", to: "/crm/leads" }, { label: "Follow-ups", to: "/crm/follow-ups" }, { label: "Tasks", to: "/crm/tasks" }] },
+  // real estate and land: the order the work is done in
+  "re-help": { title: "Learn the system", steps: [{ label: "Process flow & DFD", to: "/re/help?tab=guides" }, { label: "Getting started manual", to: "/re/help?m=getting-started" }, { label: "Land Manager manual", to: "/re/help?m=land-manager" }, { label: "Sales manual", to: "/re/help?m=sales" }, { label: "Accounts manual", to: "/re/help?m=accounts" }, { label: "Admin manual", to: "/re/help?m=admin" }] },
+  "re-insights": { title: "Read the numbers", steps: [{ label: "Insights", to: "/re/insights" }, { label: "Dashboard", to: "/re" }, { label: "Land Overview", to: "/re/land" }, { label: "Reports", to: "/re/reports" }] },
+  "re-land": { title: "Khasra to registry", steps: [{ label: "Add khasras & co-owners", to: "/re/d/re-land-parcel" }, { label: "Due diligence", to: "/re/land/legal" }, { label: "Land deal (iqrar nama)", to: "/re/d/re-land-deal" }, { label: "Pay sellers", to: "/re/land/payments" }, { label: "Plots in lieu", to: "/re/d/re-plot-adjustment" }, { label: "Land bank & registry", to: "/re/land" }, { label: "Land reports", to: "/re/reports?r=Land%20Purchase%20Status" }] },
+  "re-land-reports": { title: "Land reports, most used first", steps: [{ label: "Land Purchase Status", to: "/re/reports?r=Land%20Purchase%20Status" }, { label: "Seller Payments Due", to: "/re/reports?r=Seller%20Payments%20Due" }, { label: "Land Owners Trial Balance", to: "/re/reports?r=Land%20Owners%20Trial%20Balance" }, { label: "Land Payables Aging", to: "/re/reports?r=Land%20Payables%20Aging" }, { label: "Land Cost per Kanal", to: "/re/reports?r=Land%20Cost%20per%20Kanal" }, { label: "Pending Registry and Mutation", to: "/re/reports?r=Pending%20Registry%20and%20Mutation" }, { label: "Litigation Register", to: "/re/reports?r=Litigation%20Register" }] },
+  "re-land-parcels": { title: "Khasra to acquired", steps: [{ label: "New khasra from the fard", to: "/re/d/re-land-parcel/new" }, { label: "Co-owners & shares", to: "/re/d/re-land-owner" }, { label: "Due diligence checks", to: "/re/land/legal" }, { label: "Into a land deal", to: "/re/d/re-land-deal" }, { label: "Pipeline on the map", to: "/re/land" }] },
+  "re-land-deals": { title: "Deal to approval", steps: [{ label: "New land deal", to: "/re/d/re-land-deal/new" }, { label: "Owner lines & cost sheet", to: "/re/d/re-land-deal" }, { label: "Transfer cost rates", to: "/re/d/re-transfer-cost-rate" }, { label: "Submit for approval", to: "/re/operations?tab=approvals" }, { label: "Seller schedules", to: "/re/land/payments" }] },
+  "re-land-sellers": { title: "Owed to paid", steps: [{ label: "Who is owed", to: "/re/land/payments" }, { label: "Record a payment", to: "/re/d/re-land-payment/new" }, { label: "Approve above the limit", to: "/re/operations?tab=approvals" }, { label: "Plots instead of cash", to: "/re/d/re-plot-adjustment" }, { label: "Owners trial balance", to: "/re/reports" }] },
+  "re-land-payments": { title: "Cheque to ledger", steps: [{ label: "New seller payment", to: "/re/d/re-land-payment/new" }, { label: "Withholding tax", to: "/re/d/re-land-payment" }, { label: "Approval", to: "/re/operations?tab=approvals" }, { label: "Payment Entries", to: "/accounting/payment-entries" }, { label: "Seller balances", to: "/re/land/payments" }] },
+  "re-land-adjust": { title: "Plots in lieu of cash", steps: [{ label: "Owner balance", to: "/re/land/payments" }, { label: "Pick a plot", to: "/re/plots" }, { label: "New plot adjustment", to: "/re/d/re-plot-adjustment/new" }, { label: "Posted to the owner", to: "/re/d/re-land-owner" }] },
+  "re-land-owners": { title: "Seller records", steps: [{ label: "Land owners", to: "/re/d/re-land-owner" }, { label: "Their khasras", to: "/re/d/re-land-parcel" }, { label: "Their deals", to: "/re/d/re-land-deal" }, { label: "Balances & payments", to: "/re/land/payments" }] },
+  "re-land-legal": { title: "Checks before paying", steps: [{ label: "Due diligence board", to: "/re/land/legal" }, { label: "Khasra records", to: "/re/d/re-land-parcel" }, { label: "Court cases", to: "/re/d/re-land-case" }, { label: "Hold or clear the deal", to: "/re/d/re-land-deal" }] },
+  "re-land-cases": { title: "Dispute to decision", steps: [{ label: "New court case", to: "/re/d/re-land-case/new" }, { label: "Hearings", to: "/re/d/re-land-case" }, { label: "Due diligence", to: "/re/land/legal" }, { label: "Disputed land on the map", to: "/re/land" }] },
+  "re": { title: "The society at a glance", steps: [{ label: "Today", to: "/re/today" }, { label: "Dashboard", to: "/re" }, { label: "Society map", to: "/re/map" }, { label: "Insights", to: "/re/insights" }, { label: "Reports", to: "/re/reports" }] },
+  "re-map": { title: "Map to booking", steps: [{ label: "Society map", to: "/re/map" }, { label: "Available plots", to: "/re/plots" }, { label: "Plot records", to: "/re/d/re-plot" }, { label: "Map import", to: "/re/d/re-map-import" }, { label: "Infrastructure", to: "/re/d/re-map-feature" }] },
+  "re-plots": { title: "Plot to installment", steps: [{ label: "Choose a plot", to: "/re/plots" }, { label: "Customer", to: "/re/customers" }, { label: "Booking & plan", to: "/re/d/re-booking/new" }, { label: "Receipt", to: "/re/d/re-payment/new" }, { label: "Allotment letter", to: "/re/documents" }] },
+  "re-operations": { title: "After the sale", steps: [{ label: "Approvals", to: "/re/operations?tab=approvals" }, { label: "Transfers", to: "/re/d/re-plot-transfer" }, { label: "Cancellations", to: "/re/d/re-booking-cancellation" }, { label: "Re-allotments", to: "/re/d/re-re-allotment" }, { label: "Plot merges", to: "/re/d/re-plot-merge" }, { label: "Commissions", to: "/re/d/re-commission" }] },
+  "re-collections": { title: "Due to collected", steps: [{ label: "Bookings due", to: "/re/d/re-booking" }, { label: "Receive a receipt", to: "/re/d/re-payment/new" }, { label: "Reminders", to: "/re/d/re-reminder-log" }, { label: "Surcharges", to: "/re/d/re-surcharge" }, { label: "Recovery reports", to: "/re/reports" }] },
+  "re-society": { title: "Bill to collection", steps: [{ label: "Charge heads", to: "/re/d/re-charge-head" }, { label: "Monthly bills", to: "/re/d/re-society-bill" }, { label: "Bulk collection", to: "/re/society/collect" }, { label: "Maintenance plans", to: "/re/d/re-maintenance-plan" }, { label: "Infrastructure", to: "/re/d/re-map-feature" }] },
+  "re-crm": { title: "Lead to booking", steps: [{ label: "WhatsApp inbox", to: "/re/inbox" }, { label: "Leads & deals", to: "/crm" }, { label: "Site visits", to: "/re/d/re-site-visit" }, { label: "Broadcasts", to: "/re/d/re-broadcast" }, { label: "Book a plot", to: "/re/plots" }] },
+  "re-development": { title: "Budget to asset", steps: [{ label: "Cost heads & budgets", to: "/re/development" }, { label: "Material requests", to: "/import/material-requests" }, { label: "Purchase orders", to: "/import/purchase-orders" }, { label: "Receive into store", to: "/purchase/receipts" }, { label: "Stock issues", to: "/inventory/stock-entries" }, { label: "Assets", to: "/re/assets" }] },
+  "re-documents": { title: "Generate to vault", steps: [{ label: "Documents", to: "/re/documents" }, { label: "Generated versions", to: "/re/d/re-generated-document" }, { label: "Vault", to: "/re/d/re-vault-document" }] },
+  "re-reports": { title: "Pick, preview, export", steps: [{ label: "Report centre", to: "/re/reports" }, { label: "Insights", to: "/re/insights" }, { label: "Dashboard", to: "/re" }] },
 };
 
 /** A step's icon: the sidebar's icon for that page, else a file. */
@@ -414,8 +438,16 @@ function AppIcon({ app, size = "lg" }: { app: AppTile; size?: "lg" | "sm" }) {
 function AppTileCard({ app, stat }: { app: AppTile; stat?: { value: number; label: string } }) {
   const { isPathAvailable } = useInstalledApps();
   const playbook = playbookFor(app, isPathAvailable);
+  // keep the 320px playbook on screen: align it to the tile's left / right edge near the sides of the content area
+  const [align, setAlign] = useState<"center" | "start" | "end">("center");
+  const place = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    const box = (el.closest("main") ?? document.body).getBoundingClientRect();
+    const mid = r.left + r.width / 2;
+    setAlign(mid - 160 < box.left + 8 ? "start" : mid + 160 > box.right - 8 ? "end" : "center");
+  };
   return (
-    <div className="group/tile relative">
+    <div className="group/tile relative" onMouseEnter={(e) => place(e.currentTarget)} onFocus={(e) => place(e.currentTarget)}>
     <Link to={app.to} className="group flex w-full flex-col items-center gap-1.5 rounded-2xl p-2 text-center outline-none transition focus-visible:ring-2 focus-visible:ring-primary">
       <AppIcon app={app} />
       <span className="w-full truncate text-[13px] font-semibold leading-tight">{app.label}</span>
@@ -427,8 +459,8 @@ function AppTileCard({ app, stat }: { app: AppTile; stat?: { value: number; labe
     </Link>
     {playbook.steps.length > 0 && (
       // Playbook: appears on hover / keyboard focus, stays while the pointer is over it.
-      <div className="invisible absolute left-1/2 top-full z-30 w-80 -translate-x-1/2 pt-2 opacity-0 transition-all delay-150 duration-200 group-hover/tile:visible group-hover/tile:translate-y-0 group-hover/tile:opacity-100 group-focus-within/tile:visible group-focus-within/tile:opacity-100 translate-y-1">
-        <span aria-hidden className="absolute left-1/2 top-[3px] h-3 w-3 -translate-x-1/2 rotate-45 rounded-sm border-l border-t border-border bg-popover" />
+      <div className={cn("invisible absolute top-full z-30 w-80 pt-2", align === "start" ? "left-0" : align === "end" ? "right-0" : "left-1/2 -translate-x-1/2", " opacity-0 transition-all delay-150 duration-200 group-hover/tile:visible group-hover/tile:translate-y-0 group-hover/tile:opacity-100 group-focus-within/tile:visible group-focus-within/tile:opacity-100 translate-y-1")}>
+        <span aria-hidden className={cn("absolute top-[3px] h-3 w-3 rotate-45", align === "start" ? "left-12" : align === "end" ? "right-12" : "left-1/2 -translate-x-1/2", " rounded-sm border-l border-t border-border bg-popover")} />
         <div className="relative overflow-hidden rounded-2xl border border-border bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur">
           {/* header in the app's colours */}
           <div className={cn("relative overflow-hidden bg-gradient-to-br px-4 py-3 text-white", ICON_GRADIENT[hueOf(app.colorClass)] ?? ICON_GRADIENT.slate)}>

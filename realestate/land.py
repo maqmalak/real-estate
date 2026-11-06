@@ -56,7 +56,9 @@ def location_index(**parts) -> str:
 def ensure_supplier_group() -> str:
 	group = frappe.db.get_single_value("RE Settings", "land_supplier_group") or SUPPLIER_GROUP
 	if not frappe.db.exists("Supplier Group", group):
-		parent = frappe.db.get_value("Supplier Group", {"is_group": 1}, "name", order_by="lft") or "All Supplier Groups"
+		parent = frappe.db.get_value("Supplier Group", {"is_group": 1}, "name", order_by="lft")
+		if not parent:
+			frappe.throw(_("Complete the ERPNext setup wizard first (there is no supplier group tree yet)"))
 		frappe.get_doc({"doctype": "Supplier Group", "supplier_group_name": group, "parent_supplier_group": parent}).insert(ignore_permissions=True)
 	if not frappe.db.get_single_value("RE Settings", "land_supplier_group"):
 		frappe.db.set_single_value("RE Settings", "land_supplier_group", group)
@@ -104,6 +106,8 @@ def setup():
 
 	if not frappe.db.exists("DocType", "RE Land Deal"):  # module not synced yet (first migrate after adding the app files)
 		return
+	if not frappe.db.exists("Supplier Group", {"is_group": 1}):
+		return  # fresh site before the ERPNext setup wizard: no supplier group tree or company yet — runs again on the next migrate
 	ensure_supplier_group()
 	_workflow()
 	_submit_workflow("RE Land Payment", "Pay", "Paid")
